@@ -1,13 +1,13 @@
 -- ============================================================================
--- PIKIT - Migration complète avec données (Compatible Node.js)
+-- PIKIT - Complete Migration with Data (Node.js Compatible)
 -- ============================================================================
--- Description : Création BDD + Tables + Données d'exemple
--- Compatible : mysql2 (Node.js) - SANS DELIMITER
--- Version : 2.0 avec système de calendrier
+-- Description: Database Creation + Tables + Sample Data
+-- Compatible: mysql2 (Node.js) - WITHOUT DELIMITER
+-- Version: 2.0 with calendar system
 -- ============================================================================
 
 -- ============================================================================
--- CRÉATION DE LA BASE DE DONNÉES
+-- DATABASE CREATION
 -- ============================================================================
 
 CREATE DATABASE IF NOT EXISTS pickit 
@@ -53,13 +53,13 @@ CREATE TABLE IF NOT EXISTS announces (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    amount_caution INT NOT NULL COMMENT 'Montant de la caution en euros',
+    amount_caution INT NOT NULL COMMENT 'Deposit amount in euros',
     start_location_date DATE NOT NULL,
     end_location_date DATE NOT NULL,
     location VARCHAR(255) NOT NULL,
     state VARCHAR(20) DEFAULT 'active' COMMENT 'active, inactive, archived',
     categorie_id INT NOT NULL,
-    owner_id INT NOT NULL COMMENT 'Propriétaire du matériel',
+    owner_id INT NOT NULL COMMENT 'Equipment owner',
     
     FOREIGN KEY (categorie_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -74,10 +74,10 @@ CREATE TABLE IF NOT EXISTS announces (
 CREATE TABLE IF NOT EXISTS borrows (
     id INT AUTO_INCREMENT PRIMARY KEY,
     borrow_date DATETIME NOT NULL,
-    borrow TINYINT DEFAULT 0 COMMENT '0=non récupéré, 1=récupéré',
+    borrow TINYINT DEFAULT 0 COMMENT '0=not picked up, 1=picked up',
     announces_id INT NOT NULL,
-    owner_id INT NOT NULL COMMENT 'Propriétaire du matériel',
-    borrower_id INT NOT NULL COMMENT 'Emprunteur',
+    owner_id INT NOT NULL COMMENT 'Equipment owner',
+    borrower_id INT NOT NULL COMMENT 'Borrower',
     return_date DATETIME NOT NULL,
     status ENUM('pending', 'confirmed', 'ongoing', 'completed', 'cancelled', 'rejected') DEFAULT 'pending',
     deposit_status ENUM('not_paid', 'paid', 'refunded', 'kept') DEFAULT 'not_paid',
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS availability (
     date DATE NOT NULL,
     status ENUM('available', 'booked', 'blocked', 'maintenance') DEFAULT 'available',
     borrow_id INT DEFAULT NULL,
-    daily_price DECIMAL(10, 2) DEFAULT NULL COMMENT 'Prix spécifique pour ce jour',
+    daily_price DECIMAL(10, 2) DEFAULT NULL COMMENT 'Specific price for this day',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     subject VARCHAR(50) NOT NULL,
     review TEXT NOT NULL,
-    user_id INT NOT NULL COMMENT 'Auteur de l avis',
+    user_id INT NOT NULL COMMENT 'Review author',
     announce_id INT NOT NULL,
     note TINYINT NOT NULL CHECK (note >= 1 AND note <= 5),
     moderate_by INT DEFAULT NULL,
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     subject VARCHAR(100) NOT NULL,
     message TEXT NOT NULL,
-    user_id INT NOT NULL COMMENT 'Expéditeur',
+    user_id INT NOT NULL COMMENT 'Sender',
     announce_id INT DEFAULT NULL,
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     moderate_by INT DEFAULT NULL,
@@ -185,11 +185,11 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE TABLE IF NOT EXISTS reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    reporter_id INT NOT NULL COMMENT 'Utilisateur qui signale',
+    reporter_id INT NOT NULL COMMENT 'User reporting',
     description TEXT NOT NULL,
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     status ENUM('pending', 'in_progress', 'resolved', 'rejected') DEFAULT 'pending',
-    handled_by INT DEFAULT NULL COMMENT 'Admin qui traite',
+    handled_by INT DEFAULT NULL COMMENT 'Admin handling the report',
     resolution_note TEXT DEFAULT NULL,
     reported_user_id INT DEFAULT NULL,
     reported_review_id INT DEFAULT NULL,
@@ -211,10 +211,10 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS user_ban (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    superuser_id INT NOT NULL COMMENT 'Admin qui bannit',
+    superuser_id INT NOT NULL COMMENT 'Admin who banned',
     reason TEXT NOT NULL,
     start_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    end_date DATETIME DEFAULT NULL COMMENT 'NULL = bannissement permanent',
+    end_date DATETIME DEFAULT NULL COMMENT 'NULL = permanent ban',
     active TINYINT(1) DEFAULT 1,
     
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -260,42 +260,41 @@ CREATE TABLE IF NOT EXISTS category_changes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================================
--- DONNÉES D'EXEMPLE
+-- SAMPLE DATA
 -- ============================================================================
 
--- Users (3 utilisateurs)
+-- Users (3 users)
 INSERT IGNORE INTO users (id, lastname, firstname, zipcode, city, address, email, password, role) VALUES
-(1, 'Dupont', 'Jean', 59000, 'Lille', '15 rue de la Paix', 'jean.dupont@email.com', '$2y$10$examplehash123456789', 0),
-(2, 'Martin', 'Sophie', 75001, 'Paris', '42 avenue des Champs', 'sophie.martin@email.com', '$2y$10$examplehash987654321', 0),
-(3, 'Admin', 'Super', 59000, 'Lille', '1 rue Admin', 'admin@pikit.com', '$2y$10$adminhash123456789', 1);
+(1, 'Dupont', 'Jean', 59000, 'Lille', '15 Peace Street', 'jean.dupont@email.com', '$2y$10$examplehash123456789', 0),
+(2, 'Martin', 'Sophie', 75001, 'Paris', '42 Champs Avenue', 'sophie.martin@email.com', '$2y$10$examplehash987654321', 0),
+(3, 'Admin', 'Super', 59000, 'Lille', '1 Admin Street', 'admin@pikit.com', '$2y$10$adminhash123456789', 1);
 
--- Categories (7 catégories hiérarchiques)
+-- Categories (7 hierarchical categories)
 INSERT IGNORE INTO categories (id, categorie, parent_id) VALUES
-(1, 'Sports d hiver', NULL),
-(2, 'Sports nautiques', NULL),
-(3, 'Cyclisme', NULL),
-(4, 'Ski', 1),
-(5, 'Snowboard', 1),
-(6, 'Surf', 2),
-(7, 'VTT', 3);
+(1, 'Winter Sports', NULL),
+(2, 'Water Sports', NULL),
+(3, 'Cycling', NULL),
+(4, 'Skiing', 1),
+(5, 'Snowboarding', 1),
+(6, 'Surfing', 2),
+(7, 'Mountain Biking', 3);
 
--- Announces (2 annonces)
+-- Announces (2 listings)
 INSERT IGNORE INTO announces (id, title, description, amount_caution, start_location_date, end_location_date, location, state, categorie_id, owner_id) VALUES
-(1, 'Vélo VTT Giant Talon', 'VTT en excellent état, parfait pour la montagne. Taille L, freins à disque hydrauliques.', 200, '2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 7, 1),
-(2, 'Planche de Surf Quiksilver', 'Planche de surf 6 2, idéale pour débutants et intermédiaires. Avec housse de protection.', 150, '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 6, 2);
-
+(1, 'Giant Talon Mountain Bike', 'Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.', 200, '2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 7, 1),
+(2, 'Quiksilver Surfboard', '6''2" surfboard, ideal for beginners and intermediates. Includes protective cover.', 150, '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 6, 2);
 -- Announces Images (3 images)
 INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
-(1, 'https://example.com/images/vtt-giant-1.jpg', 1),
-(2, 'https://example.com/images/vtt-giant-2.jpg', 1),
-(3, 'https://example.com/images/surf-quiksilver-1.jpg', 2);
+(1, 'https://example.com/images/mountain-bike-giant-1.jpg', 1),
+(2, 'https://example.com/images/mountain-bike-giant-2.jpg', 1),
+(3, 'https://example.com/images/surfboard-quiksilver-1.jpg', 2);
 
--- Borrows (2 réservations)
+-- Borrows (2 bookings)
 INSERT IGNORE INTO borrows (id, borrow_date, announces_id, owner_id, borrower_id, return_date, status, deposit_status, borrow) VALUES
 (1, '2024-12-20 10:00:00', 2, 2, 1, '2024-12-22 18:00:00', 'confirmed', 'paid', 0),
 (2, '2024-12-15 14:00:00', 1, 1, 2, '2024-12-17 14:00:00', 'completed', 'refunded', 1);
 
--- Availability (disponibilités pour décembre 2024)
+-- Availability (availability for December 2024)
 INSERT IGNORE INTO availability (id, announce_id, date, status, borrow_id, daily_price) VALUES
 (1, 1, '2024-12-15', 'booked', 2, 25.00),
 (2, 1, '2024-12-16', 'booked', 2, 25.00),
@@ -310,35 +309,35 @@ INSERT IGNORE INTO availability (id, announce_id, date, status, borrow_id, daily
 (11, 2, '2024-12-21', 'booked', 1, 30.00),
 (12, 2, '2024-12-22', 'booked', 1, 30.00);
 
--- Favorites (2 favoris)
+-- Favorites (2 favorites)
 INSERT IGNORE INTO favorites (id, user_id, announces_id, is_favorite) VALUES
 (1, 1, 2, 1),
 (2, 2, 1, 1);
 
--- Reviews (2 avis)
+-- Reviews (2 reviews)
 INSERT IGNORE INTO reviews (id, subject, review, user_id, announce_id, note, action_moderate) VALUES
-(1, 'Excellent VTT !', 'Matériel en parfait état, propriétaire très sympa. Je recommande !', 2, 1, 5, 'approved'),
-(2, 'Très bonne planche', 'Parfaite pour débuter, échange facile avec le propriétaire.', 1, 2, 4, 'approved');
+(1, 'Excellent Mountain Bike!', 'Equipment in perfect condition, very friendly owner. I recommend!', 2, 1, 5, 'approved'),
+(2, 'Very Good Board', 'Perfect for beginners, easy exchange with the owner.', 1, 2, 4, 'approved');
 
 -- Messages (2 messages)
 INSERT IGNORE INTO messages (id, subject, message, user_id, announce_id, status) VALUES
-(1, 'Question sur le VTT', 'Bonjour, le VTT est-il toujours disponible du 20 au 22 décembre ?', 2, 1, 'sent'),
-(2, 'Disponibilité planche', 'Salut, possible de louer la planche pour le week-end prochain ?', 1, 2, 'read');
+(1, 'Question about the Mountain Bike', 'Hello, is the mountain bike still available from December 20 to 22?', 2, 1, 'sent'),
+(2, 'Board Availability', 'Hi, is it possible to rent the board for next weekend?', 1, 2, 'read');
 
--- Reports (1 signalement)
+-- Reports (1 report)
 INSERT IGNORE INTO reports (id, reporter_id, description, status, reported_announce_id) VALUES
-(1, 2, 'Cette annonce contient des informations trompeuses sur l état du matériel.', 'pending', 1);
+(1, 2, 'This listing contains misleading information about the equipment condition.', 'pending', 1);
 
--- User Ban (1 bannissement)
+-- User Ban (1 ban)
 INSERT IGNORE INTO user_ban (id, user_id, superuser_id, reason, end_date, active) VALUES
-(1, 2, 3, 'Comportement inapproprié dans les messages - Bannissement temporaire', '2024-12-25 23:59:59', 0);
+(1, 2, 3, 'Inappropriate behavior in messages - Temporary ban', '2024-12-25 23:59:59', 0);
 
 -- Admin Logs (2 logs)
 INSERT IGNORE INTO admin_logs (id, superuser_id, action_type, target_table, target_id, details) VALUES
-(1, 3, 'moderate', 'reviews', 1, 'Avis approuvé après vérification'),
-(2, 3, 'ban', 'users', 2, 'Utilisateur banni temporairement pour comportement inapproprié');
+(1, 3, 'moderate', 'reviews', 1, 'Review approved after verification'),
+(2, 3, 'ban', 'users', 2, 'User temporarily banned for inappropriate behavior');
 
--- Category Changes (2 changements)
+-- Category Changes (2 changes)
 INSERT IGNORE INTO category_changes (id, category_id, superuser_id, action, old_value, new_value) VALUES
-(1, 7, 3, 'created', NULL, 'VTT'),
-(2, 4, 3, 'updated', 'Ski alpin', 'Ski');
+(1, 7, 3, 'created', NULL, 'Mountain Biking'),
+(2, 4, 3, 'updated', 'Alpine Skiing', 'Skiing');
