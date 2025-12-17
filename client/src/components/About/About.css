@@ -1,0 +1,44 @@
+.about {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 1rem;
+}
+
+.about-container {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 1.25rem;
+}
+
+.about-title {
+  margin: 0;
+}
+
+.about-divider {
+  width: min(360px, 80%);
+  height: 2px;
+  background: var(--color-accent);
+}
+
+.about-text {
+  display: grid;
+  gap: 1rem;
+  max-width: 70ch;
+}
+
+.about-text p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.about-closing {
+  font-weight: 600;
+}
+
+.about-img {
+  margin-top: 1rem;
+  width: min(520px, 100%);
+  height: auto;
+  display: block;
+}

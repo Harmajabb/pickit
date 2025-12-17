@@ -1,0 +1,57 @@
+.hero {
+  padding: clamp(2rem, 6vw, 4rem) 1rem;
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+}
+
+.hero-container {
+  width: min(1100px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.hero-illustration-wrap {
+  width: min(720px, 100%);
+  display: grid;
+  place-items: center;
+}
+
+.hero-illustration {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: auto;
+}
+
+.hero-content {
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+}
+
+.hero-title {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
+}
+
+.hero-subtitle {
+  margin: 0;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+}
+
+.hero .primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 60vh;
+  }
+}
