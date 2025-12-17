@@ -1,4 +1,163 @@
-# Js-Crew809-TeamRocket-P3-G3-pickit
+# Pickit
+
+Pickit is a peer-to-peer sports equipment lending platform.  
+It allows users to lend, borrow, and share sports gear securely within their community.
+
+The project focuses on accessibility, trust between users, and responsible consumption.
+
+---
+
+## Project context
+
+This project is developed as part of a **8-week team project** at Wild Code School.
+
+Team size: 7 developers.  
+Methodology: Scrum with Jira.  
+Main goal: Build a functional, accessible, and maintainable web application.
+
+---
+
+## Key features
+
+- User authentication (register, login, profile).
+- Equipment listings (create, edit, delete).
+- Search and filters (by category, distance).
+- Borrowing system with deposit.
+- Real-time chat between lender and borrower.
+- Favorites / wishlist.
+- Reporting system.
+- Admin dashboard.
+- Responsive and accessible UI (WCAG AA).
+
+---
+
+## Tech stack
+
+### Frontend
+- React.
+- TypeScript.
+- Vite.
+- CSS (Design System, responsive, animations).
+
+### Backend
+- Node.js.
+- Express.
+- Database (SQL).
+- REST API.
+
+### Tools
+- Git & GitHub.
+- Jira & Confluence.
+- Figma.
+
+---
+
+## Live preview
+
+- Frontend: https://  
+- Backend API: https://
+
+Links will be updated during the project lifecycle.
+
+---
+
+## Git rules & workflow
+
+### Main branches
+- `master`: stable version (delivery / demo). **Protected**.
+- `dev`: development integration branch. **Protected**.
+
+**Rules:**
+-  No direct commits on `master` or `dev`.
+-  All changes must go through a **Pull Request**.
+-  All working branches are created from `dev` and merged back into `dev`.
+
+---
+
+### Branching strategy
+- Daily work is done on short-lived branches.
+- Continuous integration happens on `dev`.
+- `master` only receives stable and validated versions.
+
+---
+
+### Branch naming conventions
+
+**Format:**  
+`type/short-description-in-kebab-case`
+
+**Allowed types:**
+- `feature/...` - new feature  
+  e.g. `feature/hero-landing`
+- `fix/...` - bug fix  
+  e.g. `fix/button-focus`
+- `chore/...` - tooling / configuration  
+  e.g. `chore/setup-eslint`
+- `docs/...` - documentation  
+  e.g. `docs/git-rules`
+- `hotfix/...` - critical bug  
+  e.g. `hotfix/security-token`
+
+**Rules:**
+- kebab-case only.
+- no spaces, no accents.
+- short and explicit names.
+
+---
+
+### Commit message conventions
+
+Based on **Conventional Commits**.
+
+**Format:**
+```txt
+type: short description (optional: SCRUM-XXX)
+
+Allowed types:
+
+  feat - new feature.
+  fix - bug fix.
+  style - CSS / UI only.
+  refactor - refactor without functional change.
+  chore - tooling / configuration.
+  docs - documentation.
+  test - tests.
+```
+
+**Examples:**
+
+`feat`: add hero landing section.
+`fix`: correct svg aria-label.
+`style`: improve about animation.
+`docs`: document git workflow.
+
+**Rules:**
+
+    1 commit = 1 intention.
+    clear and concise message.
+    written in English.
+    avoid update, test, wip, final.
+
+### Pull Requests (PR)
+
+All changes must be merged via a Pull Request into dev.
+
+**PR checklist:**
+
+- clear and explicit title.
+- description includes What/Why.
+- project runs locally without errors.
+- at least 2 review before merge.
+
+**Recommended merge strategy:**
+
+- Squash and merge.
+- Definition of Done (Git).
+- A task is considered Done when:
+- the PR is merged into dev.
+- code review is completed.
+- build runs successfully.
+- no sensitive files are committed (.env, secrets).
 
 Ce projet est un monorepo JS, suivant l'architecture React-Express-MySQL telle qu'enseignée à la Wild Code School (v7.2.4) :
 
