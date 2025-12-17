@@ -1,4 +1,5 @@
 import "./App.css";
+import ItemHighlight from "./components/itemHighlight/itemHighlight.tsx";
 
 function App() {
   return (
@@ -6,7 +7,7 @@ function App() {
       <header>
         <h1 className="logo">JS Monorepo</h1>
       </header>
-
+      <ItemHighlight />
       <nav className="navbar">
         <ul>
           <li>
