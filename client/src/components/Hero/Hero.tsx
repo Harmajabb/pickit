@@ -23,7 +23,7 @@ function Hero({
     <header className="hero" aria-labelledby="Pickit hero section">
       <div className="hero-container">
         <div
-          className="hero-illustration-wrap"
+          className="hero-illustration-wrap hero-anim hero-anim--image"
           aria-hidden={illustrationSrc ? undefined : true}
         >
           <img
@@ -33,13 +33,17 @@ function Hero({
           />
         </div>
 
-        <div className="hero-content">
+        <div className="hero-content hero-anim hero-anim--content">
           <h1 className="hero-title" id="Pickit hero section">
             {title}
           </h1>
           <p className="hero-subtitle">{subtitle}</p>
 
-          <Link className="primary" to={ctaTo} aria-label="view listing page">
+          <Link
+            className="primary hero-anim hero-anim--cta"
+            to={ctaTo}
+            aria-label="view listing page"
+          >
             {ctaLabel}
           </Link>
         </div>
