@@ -5,7 +5,27 @@
   margin: 0;
   padding: 0;
   transition: .3s ease;
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+strong,
+.cta {
   font-family: "Poppins", sans-serif;
+}
+span,
+p,
+a,
+em,
+div,
+ul,
+li,
+button,
+input {
+  font-family: "Google Sans", sans-serif;
 }
 
 :root {
@@ -16,8 +36,14 @@
   --color-title: #14213d;
   --color-primary-text: #282727;
   --color-btn: #ccff33;
-  --cta-color: #14213d;
   --bouncy-cubicBezier: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --b-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --b-radius: 5px;
+  }
 }
 
 :root[data-theme="dark"] {
@@ -28,7 +54,6 @@
   --color-btn-hover: #4caf50;
   --color-bg: #282727;
   --color-accent: #1f2a48;
-  --cta-color: #282727;
 }
 
 body {
