@@ -6,6 +6,11 @@ const router = express.Router();
 // Define Your API Routes Here
 /* ************************************************************************* */
 
+// Define Announced-related routes
+import announcesActions from "./modules/announces/announcesActions";
+router.get("/api/announces", announcesActions.browse);
+router.get("/api/announcesFiltered", announcesActions.browseFiltered);
+
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";
 
