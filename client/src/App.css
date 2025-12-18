@@ -1,10 +1,12 @@
+/** biome-ignore-all lint/complexity/noImportantStyles: I used !important to overwrite browser */
+/** biome-ignore-all lint/style/noDescendingSpecificity: ::-webkit-calendar-picker-indicator- to change color of the calendar icon on date input */
 *,
 *::after,
 *::before {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  transition: .3s ease;
+  transition: 0.3s ease;
   text-decoration: none;
 }
 h1,
@@ -124,7 +126,7 @@ button:focus-visible {
   }
 }
 .cta.uncorrect {
-  animation: uncorrect-cta .5s linear;
+  animation: uncorrect-cta 0.5s linear;
   border: 1px solid red;
   box-shadow: 3px 3px 0 0 red;
   background: var(--color-bg);
@@ -153,6 +155,7 @@ button:focus-visible {
 
 /* Primary button */
 .primary {
+  font-size: 14px;
   padding: 0.45rem 1rem;
   background-color: color-mix(in lab, var(--color-btn) 100%, white);
   color: black;
@@ -168,6 +171,7 @@ button:focus-visible {
 
 /* Secondary button */
 .secondary {
+  font-size: 14px;
   padding: 0.45rem 1rem;
   background: var(--color-bg);
   color: var(--color-primary-text);
