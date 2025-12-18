@@ -1,11 +1,16 @@
 import "./App.css";
 import Footer from "./components/Footer";
+import Avis from "./components/avis";
 
 function App() {
   return (
-    <>
-    <Footer />
-    </>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <Avis />
+      </main>
+
+      <Footer />
+    </div>
   );
 }
 
