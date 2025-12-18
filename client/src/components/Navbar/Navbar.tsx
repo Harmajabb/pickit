@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import logo from "../../assets/icons/logo.svg";
+import roundedLogo from "../../assets/icons/rounded-logo.svg";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
@@ -69,6 +70,9 @@ function Navbar() {
         )}
         <ThemeToggle />
       </nav>
+      <Link to="/">
+        <img src={roundedLogo} alt="PICKIT logo" className="mobile-nav_logo" />
+      </Link>
       <nav className="mobile-nav">
         <Link to="">
           <svg viewBox="0 0 20 20" aria-hidden="true" className="nav-icons">

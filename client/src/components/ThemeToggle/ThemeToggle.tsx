@@ -2,18 +2,15 @@
 import { useEffect, useEffect as useEffectType, useState } from "react";
 import "./ThemeToggle.css";
 
-// Composant Toggle pour changer le thème clair/sombre en gros il y a deux valeurs "light" et "dark"
 function ThemeToggle() {
   type Theme = "light" | "dark";
   const STORAGE_KEY = "theme";
 
-  // lire le stockage local si un thème est déjà défini si oui light ou dark sinon let's go pour null
   const getStoredTheme = (): Theme | null => {
     const value = localStorage.getItem(STORAGE_KEY);
     return value === "light" || value === "dark" ? value : null;
   };
 
-  // on demande si le user a un theme enregistre sinon on check son systeme
   const getInitialTheme = (): Theme => {
     const stored = getStoredTheme();
     if (stored) return stored;
@@ -22,16 +19,13 @@ function ThemeToggle() {
       : "light";
   };
 
-  // theme = valeur actuelle , setTheme = fonction pour la mettre a jour
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
-  // applique & sauvegarde le thème + thon de texte
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme); // lie avec le css via l'attribut data-theme
+    document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 
-  // écoute changement du système (si pas de préférence enregistrée)
   useEffectType(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -43,7 +37,6 @@ function ThemeToggle() {
 
   const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
 
-  // et voici le bouton qui change le thème au clic
   return (
     <button
       type="button"
