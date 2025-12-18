@@ -1,6 +1,7 @@
 import { useEffect, useState} from "react"
 import type {Announces} from "./itemHighlight.ts"
 import ItemCard from "../ItemCard/ItemCard.tsx"
+import "./itemHighlight.css"
 function ItemHighlight() {
 const [isLoading, setIsLoading] = useState<boolean>(true);
 const [error,setError] = useState<Error | null>(null)
@@ -14,7 +15,7 @@ useEffect(() => {
             throw new Error(`Èrror HTTP: ${data.status}`)
         }
         const jsonData = await data.json();
-        setData(jsonData);
+        setData(jsonData)
 
     } catch (e) {
         setError(e as Error);
@@ -26,7 +27,12 @@ useEffect(() => {
   announcesFiltered()
 },[]);
 return (
-  <div><ItemCard data={data}/></div>
+    <>
+    <header className="itemCard-title">
+        <h2>Our featured listing</h2>
+    </header>
+  <div className="ItemHighlight-container">{data.map((item) => (<ItemCard key={item.id} id={item.id} title={item.title} location={item.location} all_images={item.all_images}/>))}</div>
+  </>
 )
 }
 

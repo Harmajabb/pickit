@@ -9,4 +9,5 @@ export interface Announces {
  end_location_date: Date,
  location: string,
  state: string,
+ all_images?: string
 }

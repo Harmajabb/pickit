@@ -24,7 +24,7 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
   async readFiltered() {
-    const [rows] = await databaseClient.query<Rows>("SELECT announces.*, GROUP_CONCAT(announces_images.url SEPARATOR ';') AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date DESC LIMIT 4");
+    const [rows] = await databaseClient.query<Rows>("SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4");
     return rows as Announces[];
   }
 };
