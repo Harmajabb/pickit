@@ -1,4 +1,5 @@
 import "./App.css";
+<<<<<<< HEAD
 import ItemHighlight from "./components/itemHighlight/itemHighlight.tsx";
 
 function App() {
@@ -57,6 +58,12 @@ function App() {
       </footer>
     </>
   );
+=======
+import Navbar from "./components/Navbar/Navbar";
+
+function App() {
+  return <Navbar />;
+>>>>>>> dev
 }
 
 export default App;

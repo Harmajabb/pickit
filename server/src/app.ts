@@ -108,7 +108,7 @@ if (fs.existsSync(clientBuildPath)) {
 import type { ErrorRequestHandler } from "express";
 
 // Define a middleware function to log errors
-const logErrors: ErrorRequestHandler = (err, req, res, next) => {
+const logErrors: ErrorRequestHandler = (err, req, _res, next) => {
   // Log the error to the console for debugging purposes
   console.error(err);
   console.error("on req:", req.method, req.path);
