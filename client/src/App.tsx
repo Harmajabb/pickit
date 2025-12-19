@@ -1,18 +1,16 @@
+import { Outlet } from "react-router";
 import "./App.css";
-import Footer from "./components/Footer";
-import ItemHighlight from "./components/itemHighlight/itemHighlight.tsx";
+import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
-
 
 function App() {
   return (
-  <>
-    <Navbar />
-    <ItemHighlight/>
-    <Footer/>
-  </>
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+    </>
   );
-  
 }
 
 export default App;
