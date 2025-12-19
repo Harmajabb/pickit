@@ -90,6 +90,7 @@ p {
 
 body {
   background: var(--color-bg);
+  color: var(--color-primary-text);
 }
 
 button {
