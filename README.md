@@ -2,7 +2,6 @@
 
 Pickit is a peer-to-peer sports equipment lending platform.  
 It allows users to lend, borrow, and share sports gear securely within their community.
-
 The project focuses on accessibility, trust between users, and responsible consumption.
 
 ---
@@ -11,9 +10,9 @@ The project focuses on accessibility, trust between users, and responsible consu
 
 This project is developed as part of a **8-week team project** at Wild Code School.
 
-Team size: 7 developers.  
-Methodology: Scrum with Jira.  
-Main goal: Build a functional, accessible, and maintainable web application.
+**Team size:** 7 developers.  
+**Methodology:** Scrum with Jira.  
+**Main goal:** Build a functional, accessible, and maintainable full web application.
 
 ---
 
@@ -36,6 +35,7 @@ Main goal: Build a functional, accessible, and maintainable web application.
 ### Frontend
 - React.
 - TypeScript.
+- JavaScript (Vanilla).
 - Vite.
 - CSS (Design System, responsive, animations).
 
@@ -49,6 +49,7 @@ Main goal: Build a functional, accessible, and maintainable web application.
 - Git & GitHub.
 - Jira & Confluence.
 - Figma.
+- Workbench
 
 ---
 
@@ -64,11 +65,11 @@ Links will be updated during the project lifecycle.
 ## Git rules & workflow
 
 ### Main branches
-- `master`: stable version (delivery / demo). **Protected**.
+- `main`: stable version (delivery / demo). **Protected**.
 - `dev`: development integration branch. **Protected**.
 
 **Rules:**
--  No direct commits on `master` or `dev`.
+-  No direct commits on `main` or `dev`.
 -  All changes must go through a **Pull Request**.
 -  All working branches are created from `dev` and merged back into `dev`.
 
@@ -77,7 +78,7 @@ Links will be updated during the project lifecycle.
 ### Branching strategy
 - Daily work is done on short-lived branches.
 - Continuous integration happens on `dev`.
-- `master` only receives stable and validated versions.
+- `main` only receives stable and validated versions.
 
 ---
 
@@ -88,11 +89,9 @@ Links will be updated during the project lifecycle.
 
 **Allowed types:**
 - `feature/...` - new feature  
-  e.g. `feature/hero-landing`
+  e.g. `feature/52-hero-landing`
 - `fix/...` - bug fix  
-  e.g. `fix/button-focus`
-- `chore/...` - tooling / configuration  
-  e.g. `chore/setup-eslint`
+  e.g. `fix/11-button-focus`
 - `docs/...` - documentation  
   e.g. `docs/git-rules`
 - `hotfix/...` - critical bug  
@@ -111,25 +110,26 @@ Based on **Conventional Commits**.
 
 **Format:**
 ```txt
-type: short description (optional: SCRUM-XXX)
+type: short description
 
 Allowed types:
 
   feat - new feature.
-  fix - bug fix.
+  fix - bug fix or biome fix.
   style - CSS / UI only.
   refactor - refactor without functional change.
-  chore - tooling / configuration.
   docs - documentation.
   test - tests.
+  save - intention or session end.
 ```
 
 **Examples:**
 
-`feat`: add hero landing section.
-`fix`: correct svg aria-label.
-`style`: improve about animation.
-`docs`: document git workflow.
+- `feat:` add hero landing section.
+- `fix:` correct svg aria-label.
+- `style:` improve about animation.
+- `docs:` document git workflow.
+- `save:` end of the day, saving on feature/hero only.
 
 **Rules:**
 
@@ -145,7 +145,7 @@ All changes must be merged via a Pull Request into dev.
 **PR checklist:**
 
 - clear and explicit title.
-- description includes What/Why.
+- description includes What/Why (you can add your commits).
 - project runs locally without errors.
 - at least 2 review before merge.
 
@@ -153,13 +153,133 @@ All changes must be merged via a Pull Request into dev.
 
 - Squash and merge.
 - Definition of Done (Git).
-- A task is considered Done when:
+
+**A task is considered Done when:**
+
 - the PR is merged into dev.
 - code review is completed.
 - build runs successfully.
 - no sensitive files are committed (.env, secrets).
 
-Ce projet est un monorepo JS, suivant l'architecture React-Express-MySQL telle qu'enseignée à la Wild Code School (v7.2.4) :
+## Environment variables
+
+This project uses environment varaibles for configuration. 
+
+An `.env` file is required to run the project locally.
+
+### Setup
+
+- Create a .env file at the root of the project.
+- Copy the content of .env.sample into .env.
+- Fill in the required values.
+
+### Required environment variables
+
+**Application configuration**
+
+| Variable | Description | Example |
+|--------|------------|---------|
+| `APP_PORT` | Port on which the backend server runs | `3310` |
+| `APP_SECRET` | Secret key used by the application | `your-secret-key` |
+
+**Database configuration**
+| Variable | Description | Example |
+|--------|------------|---------|
+| `DB_HOST` | Database host | `localhost` |
+| `DB_PORT` | Database port | `3306` |
+| `DB_USER` | Database username | `root` |
+| `DB_PASSWORD` | Database password | `password` |
+| `DB_NAME` | Database name | `pickit` |
+
+**Client configuration**
+| Variable | Description | Example |
+|--------|------------|---------|
+| `CLIENT_URL` | Frontend URL | `http://localhost:3000` |
+
+
+**Never commit the .env file!!**
+
+ Restart the server after modifying environment variables.
+
+## Project Architecture
+
+The project is structured as a monorepo with two main parts: 
+A frontend application and a backend API.
+
+```plaintext
+pickit/
+│
+├── client/                     # Frontend application (React)
+│├── src/
+││   ├── assets/                # Images, icons, static assets
+││   ├── components/            # Reusable UI components
+││   ├── pages/                 # Page-level components
+││   ├── services/              # API calls and external services
+││   ├── types/                 # Shared TypeScript types
+││   ├── App.tsx
+││   └── main.tsx
+│├── public/
+│├── .env                       # Local environment variables (ignored)
+│├── .env.sample                # Environment variables template
+│├── index.html
+│├── package.json
+│└── vite.config.ts
+│
+├── server/                     # Backend API (Node.js / Express)
+│├── src/
+││   ├── controllers/           # HTTP request handlers
+││   ├── routes/                # API route definitions
+││   ├── services/              # Business logic
+││   ├── models/                # Database models
+││   ├── middlewares/           # Auth, validation, error handling
+││   └── app.ts
+│├── database/                  # Database scripts and migrations
+│├── tests/                     # Backend tests
+│├── public/                    # Public static files
+│├── .env                       # Local environment variables (ignored)
+│├── .env.sample                # Environment variables template
+│├── docker-compose.yml
+│├── Dockerfile
+│├── jest.config.js
+│├── package.json
+│└── tsconfig.json
+│
+└── README.md
+```
+
+### Frontend architecture (client)
+
+The frontend is built with React, TypeScript, and Vite.
+
+- `components/:` reusable UI components
+- `pages/:` application views and routes
+- `services/:` communication with the backend API
+- `types/:` shared TypeScript definitions
+- `assets/:` images and static resources
+
+Routing and state management are handled on the client side.
+
+### Backend architecture (server)
+The backend is built with Node.js and Express, following a layered architecture.
+
+- `routes/:` define API endpoints
+- `controllers/:` handle HTTP requests and responses
+- `services/:` business logic
+- `models/:` database access
+- `middlewares:` authentication, validation, error handling
+- `tests/:` automated backend tests
+
+The backend exposes a REST API consumed by the frontend.
+
+### Communication flow
+
+- The frontend communicates with the backend via HTTP requests
+- The backend handles authentication, data persistence, and business rules
+- Configuration is managed through environment variables
+
+
+
+<!-- Ce projet est un monorepo JS, suivant l'architecture React-Express-MySQL telle qu'enseignée à la Wild Code School (v7.2.4) :
 
 ```mermaid
 sequenceDiagram
@@ -547,4 +667,4 @@ Nous accueillons avec plaisir les contributions ! Veuillez suivre ces étapes po
 
 - Assurez-vous que votre code respecte les standards de codage en exécutant `npm run check` avant de pousser vos modifications.
 - Ajoutez des tests pour toute nouvelle fonctionnalité ou correction de bug.
-- Documentez clairement vos modifications dans la description de la pull request.
+- Documentez clairement vos modifications dans la description de la pull request. -->
