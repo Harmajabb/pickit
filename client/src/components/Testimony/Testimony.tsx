@@ -1,6 +1,6 @@
-import "./avis.css";
+import "./Testimony.css";
 
-const Avis = () => {
+const Testimony = () => {
   return (
     <div className="container-temoignage">
       <div className="wrapper-avis">
@@ -43,4 +43,4 @@ const Avis = () => {
   );
 };
 
-export default Avis;
+export default Testimony;

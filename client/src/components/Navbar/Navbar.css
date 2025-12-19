@@ -55,6 +55,7 @@
 }
 
 .mobile-nav {
+  z-index: 10;
   position: fixed;
   bottom: 0;
   background: var(--color-card);
