@@ -1,0 +1,69 @@
+.switch {
+  box-shadow:
+    inset 0px -1px 0px 1px
+    color-mix(in lab, var(--color-primary-text) 30%, var(--color-bg)),
+    0px 1px 0 1px
+    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg)),
+    0px -1px 0 1px
+    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg)),
+    0px 1px 10px 1px
+    color-mix(in lab, var(--color-primary-text) 10%, var(--color-bg));
+  position: relative;
+  height: 39px;
+  width: 75px;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border: none;
+}
+
+.switch::after {
+  box-shadow:
+    inset 0px -1px 0px 1px
+    color-mix(in lab, var(--color-primary-text) 30%, var(--color-bg)),
+    0px 1px 0 1px
+    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg)),
+    0px -0.5px 0 1px
+    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg));
+  content: "";
+  border-radius: 50%;
+  position: absolute;
+  height: 31px;
+  width: 31px;
+  top: 50%;
+  left: 50%;
+  transform: translate(0%, -50%);
+  display: inline-block;
+  transition: 0.5s var(--bouncy-cubicBezier);
+}
+.switch.light::after {
+  transform: translate(0%, -50%);
+}
+.switch.dark::after {
+  transform: translate(-100%, -50%);
+}
+
+.iconSwitch {
+  fill: var(--color-primary-text);
+  height: 70%;
+  width: fit-content;
+  z-index: 2;
+  transition: fill 0.5s ease-in-out;
+}
+.switch.light .sun.iconSwitch {
+  opacity: 1;
+}
+.switch.light .moon.iconSwitch {
+  opacity: 0.5;
+}
+.switch.dark .sun.iconSwitch {
+  opacity: 0.5;
+}
+
+.switch.dark .moon.iconSwitch {
+  opacity: 1;
+}

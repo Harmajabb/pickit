@@ -1,17 +1,20 @@
 import "./App.css";
 import Footer from "./components/Footer";
-import Avis from "./components/avis";
+import ItemHighlight from "./components/itemHighlight/itemHighlight.tsx";
+import Navbar from "./components/Navbar/Navbar";
+import Avis from "./components/avis.tsx";
+
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <main className="flex-grow">
-        <Avis />
-      </main>
-
-      <Footer />
-    </div>
+  <>
+    <Navbar />
+    <ItemHighlight/>
+    <Avis/>
+    <Footer/>
+  </>
   );
+  
 }
 
 export default App;

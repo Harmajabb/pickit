@@ -1,0 +1,126 @@
+.desktop-nav .nav-icons {
+  fill: none;
+  stroke: var(--color-primary-text);
+  cursor: pointer;
+  border-radius: var(--b-radius);
+  height: 39px;
+  padding: 0.4rem;
+  aspect-ratio: 1 / 1;
+}
+.desktop-nav .nav-icons:hover {
+  stroke: #282727;
+  background: var(--color-btn);
+  box-shadow: 0 0 0 2px var(--color-btn);
+}
+.desktop-nav {
+  background-color: var(--color-card);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-shadow: 0 1px 0 0 var(--color-primary-text);
+  white-space: nowrap;
+
+  display: grid;
+  grid-template-columns: auto 1fr 3fr auto auto auto auto auto;
+
+  gap: 2rem;
+  padding: 1rem 3rem;
+  place-items: center;
+}
+@media (max-width: 740px) {
+  .desktop-nav {
+    display: none;
+  }
+}
+@media (max-width: 1200px) {
+  .desktop-nav {
+    gap: 1rem;
+    padding: 1rem 1rem;
+  }
+}
+.desktop-nav img {
+  height: 55px;
+  cursor: pointer;
+}
+.desktop-nav input {
+  min-width: 200px;
+  width: 60%;
+}
+.desktop-nav .cta {
+  font-size: 14px;
+}
+.desktop-nav .heart {
+  padding: 0.3rem;
+}
+
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  background: var(--color-card);
+  width: 100%;
+  padding: 1rem 0 calc(env(safe-area-inset-bottom) + 1rem) 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+.mobile-nav .nav-icons {
+  fill: none;
+  stroke: var(--color-primary-text);
+  cursor: pointer;
+  height: 39px;
+  padding: 0.4rem;
+  aspect-ratio: 1 / 1;
+  transition: none;
+}
+.nav-icons.add {
+  fill: var(--color-primary-text);
+  stroke: none;
+}
+@media (min-width: 740px) {
+  .mobile-nav,
+  .mobile-nav_logo {
+    display: none;
+  }
+}
+@media (min-width: 530px) {
+  .mobile-nav {
+    padding: 0.5rem 13% calc(env(safe-area-inset-bottom) + 0.5rem) 13%;
+  }
+}
+.mobile-nav > a {
+  cursor: pointer;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  padding: 0.2rem;
+  color: var(--color-primary-text);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2fr 1fr;
+  max-height: 100px;
+  place-items: center;
+}
+
+@media (max-width: 300px) {
+  .mobile-nav > a {
+    padding: 0;
+  }
+}
+.mobile-nav > a:is(:hover, :active, :focus, :focus-visible) {
+  background: var(--color-btn);
+  box-shadow: 0 0 0 2px var(--color-btn);
+  color: #282727;
+}
+.mobile-nav > a:is(:hover, :active, :focus, :focus-visible) .nav-icons {
+  stroke: #282727;
+}
+.mobile-nav > a:is(:hover, :active, :focus, :focus-visible) .nav-icons.add {
+  fill: #282727;
+  stroke: none;
+}
+.mobile-nav_logo {
+  position: absolute;
+  margin: calc(env(safe-area-inset-top) + 1rem) 0 0
+    calc(env(safe-area-inset-left) + 1rem);
+  top: 0;
+  left: 0;
+  width: 70px;
+}
