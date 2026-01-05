@@ -1,20 +1,7 @@
 import { useEffect, useState } from "react";
 import ItemCard from "../ItemCard/ItemCard.tsx";
 import "./ItemHighlight.css";
-
-interface Announces {
-  id: number;
-  title: string;
-  description: string;
-  amount_caution: number;
-  creation_date: Date;
-  update_date: Date;
-  start_location_date: Date;
-  end_location_date: Date;
-  location: string;
-  state: string;
-  all_images?: string;
-}
+import type {Announces} from "./Ts-ItemHighlight.ts";
 
 function ItemHighlight() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
