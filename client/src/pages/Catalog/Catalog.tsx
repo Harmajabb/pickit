@@ -1,18 +1,18 @@
-import "./ItemHighlight.css";
+import CatalogCard from "../../components/CatalogCard/CatalogCard.tsx";
+import "./Catalog.css";
 import { useEffect, useState } from "react";
-import ItemCard from "../ItemCard/ItemCard.tsx";
-import type { Announces } from "./Ts-ItemHighlight.ts";
+import type { Announces } from "../../components/ItemHighlight/Ts-ItemHighlight.ts";
 
-function ItemHighlight() {
+function Catalog() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<Announces[]>([]);
 
   useEffect(() => {
-    const announcesFiltered = async () => {
+    const Announces = async () => {
       try {
         const data = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/announcesFiltered`,
+          `${import.meta.env.VITE_API_URL}/api/announces`,
         );
         if (!data.ok) {
           throw new Error(`Error HTTP: ${data.status}`);
@@ -26,7 +26,7 @@ function ItemHighlight() {
         setIsLoading(false);
       }
     };
-    announcesFiltered();
+    Announces();
   }, []);
 
   if (isLoading) {
@@ -38,23 +38,12 @@ function ItemHighlight() {
   }
 
   return (
-    <>
-      <header className="itemCard-title">
-        <h2>Our featured listing</h2>
-      </header>
-      <div className="ItemHighlight-container">
-        {data.map((item) => (
-          <ItemCard
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            location={item.location}
-            all_images={item.all_images}
-          />
-        ))}
-      </div>
-    </>
+    <div className="catalog-container">
+      {data.map((announce) => (
+        <CatalogCard key={announce.id} data={announce} />
+      ))}
+    </div>
   );
 }
 
-export default ItemHighlight;
+export default Catalog;
