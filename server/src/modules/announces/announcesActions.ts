@@ -1,7 +1,6 @@
 // imports
-import announcesRepository from "./announcesRepository";
-
 import type { RequestHandler } from "express";
+import announcesRepository from "./announcesRepository";
 
 // browse announces
 const browse: RequestHandler = async (req, res, next) => {
@@ -23,5 +22,15 @@ const browseFiltered: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-
-export default { browse, browseFiltered };
+const createAnnouce: RequestHandler = async (req, res, next) => {
+  try {
+    await announcesRepository.createAnnouce(req.body);
+    res.status(201).json({
+      success: true,
+      message: "Successful listing !",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+export default { browse, browseFiltered, createAnnouce };
