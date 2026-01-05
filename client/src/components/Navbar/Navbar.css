@@ -13,6 +13,7 @@
   box-shadow: 0 0 0 2px var(--color-btn);
 }
 .desktop-nav {
+  z-index: 10;
   background-color: var(--color-card);
   position: fixed;
   top: 0;
@@ -54,6 +55,7 @@
 }
 
 .mobile-nav {
+  z-index: 10;
   position: fixed;
   bottom: 0;
   background: var(--color-card);

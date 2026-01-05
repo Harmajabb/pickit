@@ -1,39 +1,73 @@
-import { useEffect, useState} from "react"
-import type {Announces} from "./itemHighlight.ts"
-import ItemCard from "../ItemCard/ItemCard.tsx"
-import "./itemHighlight.css"
-function ItemHighlight() {
-const [isLoading, setIsLoading] = useState<boolean>(true);
-const [error,setError] = useState<Error | null>(null)
-const [data,setData] = useState <Announces []>([])
+import { useEffect, useState } from "react";
+import ItemCard from "../ItemCard/ItemCard.tsx";
+import "./ItemHighlight.css";
 
-useEffect(() => {
- const announcesFiltered = async () => {
-    try{
-        const data = await fetch(`${import.meta.env.VITE_API_URL}/api/announcesFiltered`);
-        if (!data.ok){
-            throw new Error(`Èrror HTTP: ${data.status}`)
+interface Announces {
+  id: number;
+  title: string;
+  description: string;
+  amount_caution: number;
+  creation_date: Date;
+  update_date: Date;
+  start_location_date: Date;
+  end_location_date: Date;
+  location: string;
+  state: string;
+  all_images?: string;
+}
+
+function ItemHighlight() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<Announces[]>([]);
+
+  useEffect(() => {
+    const announcesFiltered = async () => {
+      try {
+        const data = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/announcesFiltered`,
+        );
+        if (!data.ok) {
+          throw new Error(`Error HTTP: ${data.status}`);
         }
         const jsonData = await data.json();
-        setData(jsonData)
-
-    } catch (e) {
+        console.log(data);
+        setData(jsonData);
+      } catch (e) {
         setError(e as Error);
-    } finally {
-        setIsLoading(false)
-    }
-    
-}
-  announcesFiltered()
-},[]);
-return (
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    announcesFiltered();
+  }, []);
+
+  if (isLoading) {
+    return <p>Loading..</p>;
+  }
+  if (error !== null) {
+    console.log(error);
+    return <p>An error has occurred</p>;
+  }
+
+  return (
     <>
-    <header className="itemCard-title">
+      <header className="itemCard-title">
         <h2>Our featured listing</h2>
-    </header>
-  <div className="ItemHighlight-container">{data.map((item) => (<ItemCard key={item.id} id={item.id} title={item.title} location={item.location} all_images={item.all_images}/>))}</div>
-  </>
-)
+      </header>
+      <div className="ItemHighlight-container">
+        {data.map((item) => (
+          <ItemCard
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            location={item.location}
+            all_images={item.all_images}
+          />
+        ))}
+      </div>
+    </>
+  );
 }
 
 export default ItemHighlight;
