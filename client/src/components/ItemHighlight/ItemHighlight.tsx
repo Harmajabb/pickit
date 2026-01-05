@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ItemCard from "../ItemCard/ItemCard.tsx";
 import "./ItemHighlight.css";
-import type {Announces} from "./Ts-ItemHighlight.ts";
+import type { Announces } from "./Ts-ItemHighlight.ts";
 
 function ItemHighlight() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
