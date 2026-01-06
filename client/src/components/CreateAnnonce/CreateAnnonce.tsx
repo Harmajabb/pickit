@@ -31,12 +31,12 @@ function CreateAnnonce() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input type="text" name="title" placeholder="Titre" value={formData.title} onChange={handleChange} required />
-      <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} required />
-      <input type="number" name="amount_caution" placeholder="Caution" value={formData.amount_caution} onChange={handleChange} required />
-      <input type="date" name="start_location_date" value={formData.start_location_date} onChange={handleChange} required />
-      <input type="date" name="end_location_date" value={formData.end_location_date} onChange={handleChange} required />
-      <input type="text" name="location" placeholder="Lieu" value={formData.location} onChange={handleChange} required />
+      <input type="text" name="title" placeholder="Titre de l'annonce" value={formData.title} onChange={handleChange} required />
+      <textarea name="description" placeholder="Description de l'annonce" value={formData.description} onChange={handleChange} required />
+      <input type="number" name="amount_caution" placeholder="Montant de la caution" value={formData.amount_caution} onChange={handleChange} required />
+      <input type="date" name="start_location_date" placeholder="Date de début" value={formData.start_location_date} onChange={handleChange} required />
+      <input type="date" name="end_location_date" placeholder="Date de fin" value={formData.end_location_date} onChange={handleChange} required />
+      <input type="text" name="location" placeholder="Lieu de l'annonce" value={formData.location} onChange={handleChange} required />
       <select name="categorie_id" value={formData.categorie_id} onChange={handleChange} required>
         <option value="1">Categorie 1</option>
         <option value="2">Categorie 2</option>
