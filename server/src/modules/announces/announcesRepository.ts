@@ -36,14 +36,14 @@ class AnnouncesRepository {
   async createAnnouce(form: Announces) {
     const query = `
       INSERT INTO announces 
-      (title, description, amount_caution, creation_date, update_date, location, state) 
+      (title, description, amount_deposit, creation_date, update_date, location, state) 
       VALUES (?, ?, ?, NOW(), NOW(), ?, ?)
     `;
 
     const values = [
       form.title,
       form.description,
-      form.amount_caution,
+      form.amount_deposit,
       form.location,
       form.state,
     ];
