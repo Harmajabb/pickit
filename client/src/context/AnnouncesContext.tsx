@@ -11,8 +11,6 @@ import type { Announce } from "../types/Announce"; //importation du type Announc
 
 type AnnouncesContextType = {
   announces: Announce[]; //tableau des annonces
-  query: string; //texte de recherche tapé par l'utilisateur
-  setQuery: (v: string) => void; //fonction pour mettre à jour le texte de recherche
   isLoading: boolean; //indicateur de chargement des annonces
   error: string | null; //message d'erreur en cas de problème lors du chargement
   refreshAnnounces: (q?: string) => Promise<void>; //fonction pour rafraîchir la liste des annonces, optionnellement avec une requête de recherche
@@ -30,7 +28,6 @@ const AnnouncesContext = createContext<AnnouncesContextType | undefined>(
 export function AnnouncesProvider({ children }: { children: ReactNode }) {
   // console.log("AnnouncesProvider rendered");
   const [announces, setAnnounces] = useState<Announce[]>([]); //état pour stocker les annonces
-  const [query, setQuery] = useState(""); //état pour stocker le texte de recherche
   const [isLoading, setIsLoading] = useState(true); //état pour indiquer si les annonces sont en cours de chargement
   const [error, setError] = useState<string | null>(null); //état pour stocker un message d'erreur éventuel
 
@@ -66,8 +63,6 @@ export function AnnouncesProvider({ children }: { children: ReactNode }) {
   // Valeur du contexte à fournir aux composants enfants /!\IMPORTANT/!\
   const value: AnnouncesContextType = {
     announces,
-    query,
-    setQuery,
     isLoading,
     error,
     refreshAnnounces,
