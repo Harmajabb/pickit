@@ -1,9 +1,10 @@
 // Import necessary modules from React and React Router
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { RouterProvider, createBrowserRouter } from "react-router";
 
 import App from "./App";
+import { AnnouncesProvider } from "./context/AnnouncesContext";
 import Home from "./pages/Home";
 
 const router = createBrowserRouter([
@@ -19,7 +20,9 @@ if (rootElement == null) {
 }
 
 createRoot(rootElement).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+  <AnnouncesProvider>
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>
+  </AnnouncesProvider>,
 );

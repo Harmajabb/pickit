@@ -1,7 +1,7 @@
 import About from "../components/About/About";
 import Hero from "../components/Hero/Hero";
-import ItemHighlight from "../components/ItemHighlight/ItemHighlight";
 import Testimony from "../components/Testimony/Testimony";
+import ItemHighlight from "../components/itemHighlight/itemHighlight";
 
 import "./Home.css";
 
