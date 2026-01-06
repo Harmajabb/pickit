@@ -6,11 +6,16 @@ import { RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import Home from "./pages/Home";
+import Catalog from "./pages/Catalog/Catalog";
 
 const router = createBrowserRouter([
   {
     element: <App />,
     children: [{ path: "/", element: <Home /> }],
+  },
+  {
+    path: "/catalog",
+    element: <Catalog />,
   },
 ]);
 
