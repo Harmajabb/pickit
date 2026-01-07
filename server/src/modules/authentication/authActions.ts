@@ -31,7 +31,7 @@ const login: RequestHandler = async (req, res, next) => {
       .cookie("access_token", token, { httpOnly: true, secure: false })
       .status(200)
       .json({
-        message: "Connexion réussie",
+        message: "Login success !",
         user: { id: user.id, email: user.email },
       });
   } catch (err) {
@@ -43,7 +43,7 @@ const logout: RequestHandler = (req, res) => {
   res
     .clearCookie("access_token")
     .status(200)
-    .json({ message: "Déconnexion réussie" });
+    .json({ message: "Logout success !" });
 };
 
 const checkAuth: RequestHandler = (req, res, next) => {
