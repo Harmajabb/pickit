@@ -7,33 +7,33 @@ interface Props {
 
 interface AuthContextType {
   token: string | null;
-  userid: string | null;
+  userId: string | null;
   login: (tokenid: string, id: string) => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   token: null,
-  userid: null,
+  userId: null,
   login: () => {},
   logout: () => {},
 });
 
 export const AuthProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string | null>(null);
-  const [userid, setUserid] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const login = (tokenid: string, id: string) => {
     setToken(tokenid);
-    setUserid(id);
+    setUserId(id);
   };
   const logout = () => {
     setToken(null);
-    setUserid(null);
+    setUserId(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, userid, login, logout }}>
+    <AuthContext.Provider value={{ token, userId, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
