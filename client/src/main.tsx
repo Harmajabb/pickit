@@ -7,15 +7,15 @@ import App from "./App";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog/Catalog";
+import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
   {
     element: <App />,
-    children: [{ path: "/", element: <Home /> }],
-  },
-  {
-    path: "/catalog",
-    element: <Catalog />,
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/catalog", element: <Catalog /> },
+    ],
   },
 ]);
 
@@ -25,9 +25,11 @@ if (rootElement == null) {
 }
 
 createRoot(rootElement).render(
-  <AnnouncesProvider>
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>
-  </AnnouncesProvider>,
+  <AuthProvider>
+    <AnnouncesProvider>
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>
+    </AnnouncesProvider>
+  </AuthProvider>,
 );
