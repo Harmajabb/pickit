@@ -8,7 +8,7 @@ interface Props {
 interface AuthContextType {
   token: string | null;
   userId: string | null;
-  login: (tokenid: string, id: string) => void;
+  login: (token: string, id: string) => void;
   logout: () => void;
 }
 
@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const login = (tokenid: string, id: string) => {
-    setToken(tokenid);
+  const login = (token: string, id: string) => {
+    setToken(token);
     setUserId(id);
   };
   const logout = () => {
