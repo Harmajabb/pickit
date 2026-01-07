@@ -10,6 +10,7 @@ const router = express.Router();
 import announcesActions from "./modules/announces/announcesActions";
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
+router.post("/api/create_announce", announcesActions.createAnnounce);
 
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";

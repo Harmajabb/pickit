@@ -15,6 +15,7 @@ type Announces = {
   location: string;
   state: string;
   all_images: string | null;
+  categorie_id: number;
 };
 
 // read all database
@@ -33,12 +34,9 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
 
-  async createAnnouce(form: Announces) {
-    const query = `
-      INSERT INTO announces 
-      (title, description, amount_deposit, creation_date, update_date, location, state) 
-      VALUES (?, ?, ?, NOW(), NOW(), ?, ?)
-    `;
+  async sendCreateAnnounce(form: Announces) {
+    const query =
+      "INSERT INTO announces (title, description, amount_deposit, creation_date, update_date, location, state, start_borrow_date, end_borrow_date, categorie_id, owner_id) VALUES (?, ?, ?, NOW(), NOW(), ?, ?, ?, ?, ?, ?)";
 
     const values = [
       form.title,
@@ -46,6 +44,10 @@ class AnnouncesRepository {
       form.amount_deposit,
       form.location,
       form.state,
+      form.start_borrow_date,
+      form.end_borrow_date,
+      form.categorie_id,
+      1, // owner_id temporaire
     ];
 
     await databaseClient.query<Rows>(query, values);

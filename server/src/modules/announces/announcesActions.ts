@@ -24,9 +24,10 @@ const browseFiltered: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-const createAnnouce: RequestHandler = async (req, res, next) => {
+const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
-    await announcesRepository.createAnnouce(req.body);
+    console.log(req.body);
+    await announcesRepository.sendCreateAnnounce(req.body);
     res.status(201).json({
       success: true,
       message: "Successful listing !",
@@ -35,4 +36,4 @@ const createAnnouce: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-export default { browse, browseFiltered, createAnnouce };
+export default { browse, browseFiltered, createAnnounce };
