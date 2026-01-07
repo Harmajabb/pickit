@@ -52,8 +52,13 @@ app.use(
 
 // Uncomment one or more of these options depending on the format of the data sent by your client:
 
-// app.use(express.json());
-// app.use(express.urlencoded());
+// Parse JSON bodies (application/json)
+app.use(express.json());
+
+// Parse URL-encoded bodies (form submissions)
+app.use(express.urlencoded({ extended: true }));
+
+// You can also enable text/raw parsers if needed:
 // app.use(express.text());
 // app.use(express.raw());
 
