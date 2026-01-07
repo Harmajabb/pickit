@@ -33,6 +33,22 @@ class AnnouncesRepository {
     );
     return rows as Announces[];
   }
+  
+  // Récupérer une seule annonce par son ID
+  async readOne(id: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      `
+      SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images
+      FROM announces
+      LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+      WHERE announces.id = ?
+      GROUP BY announces.id
+      `,
+      [id]
+    );
+
+    return rows[0] as Announces | undefined;
+  }
 
   async sendCreateAnnounce(form: Announces) {
     const query =
@@ -48,6 +64,27 @@ class AnnouncesRepository {
       form.end_borrow_date,
       form.categorie_id,
       1, // owner_id temporaire
+    ];
+
+    await databaseClient.query<Rows>(query, values);
+  }
+  // Mettre à jour une annonce existante
+  async sendUpdateAnnounce(id: number, form: Partial<Omit<Announces, "id" | "creation_date" | "update_date" | "all_images">>) {
+    const query = `
+      UPDATE announces
+      SET title = ?, description = ?, amount_deposit = ?, location = ?, start_borrow_date = ?, end_borrow_date = ?, categorie_id = ?, update_date = NOW()
+      WHERE id = ?
+    `;
+
+    const values = [
+      form.title,
+      form.description,
+      form.amount_deposit,
+      form.location,
+      form.start_borrow_date,
+      form.end_borrow_date,
+      form.categorie_id,
+      id,
     ];
 
     await databaseClient.query<Rows>(query, values);

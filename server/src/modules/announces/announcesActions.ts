@@ -36,4 +36,40 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-export default { browse, browseFiltered, createAnnounce };
+
+// Lire une annonce spécifique
+const readOne: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const announce = await announcesRepository.readOne(Number(id));
+
+    if (!announce) {
+      return res.status(404).json({ error: "Annonce non trouvée" });
+    }
+
+    const formattedAnnounce = {
+      ...announce,
+      all_images: announce.all_images ? announce.all_images.split(",") : [],
+    };
+
+    res.json(formattedAnnounce);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Mettre à jour une annonce
+const updateAnnounce: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await announcesRepository.sendUpdateAnnounce(Number(id), req.body);
+
+    res.json({
+      success: true,
+      message: "Annonce mise à jour !",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+export default { browse, browseFiltered, createAnnounce, readOne, updateAnnounce };

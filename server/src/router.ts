@@ -11,6 +11,8 @@ import announcesActions from "./modules/announces/announcesActions";
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
 router.post("/api/create_announce", announcesActions.createAnnounce);
+router.get("/api/announces/:id", announcesActions.readOne);
+router.put("/api/announces/:id", announcesActions.updateAnnounce);
 
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";
