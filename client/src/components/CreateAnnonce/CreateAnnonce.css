@@ -1,0 +1,55 @@
+.create-annonce-page {
+  padding-top: 90px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.create-annonce-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Champs */
+.create-annonce-form input,
+.create-annonce-form textarea,
+.create-annonce-form select {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.create-annonce-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.create-annonce-form input::placeholder,
+.create-annonce-form textarea::placeholder {
+  color: #999;
+}
+
+/* Bouton */
+.create-annonce-form button {
+  padding: 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-annonce-form button:hover {
+  background-color: #0056b3;
+}

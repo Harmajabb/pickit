@@ -1,4 +1,6 @@
 import { useState } from "react";
+import "./CreateAnnonce.css";
+
 
 function CreateAnnonce() {
   const [formData, setFormData] = useState({
@@ -35,6 +37,7 @@ function CreateAnnonce() {
   };
 
   return (
+    <div className="create-annonce-page">
     <form onSubmit={handleSubmit}>
       <input type="text" name="title" placeholder="Titre de l'annonce" value={formData.title} onChange={handleChange} required />
       <textarea name="description" placeholder="Description de l'annonce" value={formData.description} onChange={handleChange} required />
@@ -49,6 +52,7 @@ function CreateAnnonce() {
       </select>
       <button type="submit">Créer l'annonce</button>
     </form>
+    </div>
   );
 }
 
