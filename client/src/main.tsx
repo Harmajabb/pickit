@@ -5,9 +5,10 @@ import { RouterProvider, createBrowserRouter } from "react-router";
 
 import App from "./App";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
-import Home from "./pages/Home";
-import Catalog from "./pages/Catalog/Catalog";
 import { AuthProvider } from "./context/AuthContext";
+import Catalog from "./pages/Catalog/Catalog";
+import Login from "./pages/Connexion/Connexion";
+import Home from "./pages/Home";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/catalog", element: <Catalog /> },
+      { path: "/login", element: <Login /> },
+      { path: "/catalog/:id", element: <Login /> }, // add your page Teddy here
     ],
   },
 ]);

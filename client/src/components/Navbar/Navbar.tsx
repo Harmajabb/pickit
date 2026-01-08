@@ -1,11 +1,14 @@
 import { Link } from "react-router";
+import { useContext } from "react"
 import logo from "../../assets/icons/logo.svg";
 import roundedLogo from "../../assets/icons/rounded-logo.svg";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
+import { AuthContext } from "../../context/AuthContext";
 function Navbar() {
-  const isLogged = false;
+  const { user, logout } = useContext(AuthContext);
+  const isLogged = !!user;
   return (
     <>
       <nav className="desktop-nav">
@@ -59,12 +62,12 @@ function Navbar() {
                 stroke-linejoin="round"
               />
             </svg>
-            <Link to="" className="secondary">
+            <Link onClick={logout} to="/" className="secondary">
               Log out
             </Link>
           </>
         ) : (
-          <Link to="" className="primary">
+          <Link to="/login" className="primary">
             Log In
           </Link>
         )}

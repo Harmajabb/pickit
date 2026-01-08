@@ -14,10 +14,11 @@ declare global {
 const login: RequestHandler = async (req, res, next) => {
   try {
     const user = await authRepository.readByEmail(req.body.email);
-
+    console.log(user);
     if (
       user == null ||
-      !(await argon2.verify(user.hashed_password, req.body.password))
+      
+      !(await argon2.verify(user.password, req.body.password))
     ) {
       res.status(422).json({ message: "Identifiants incorrects" });
       return;
@@ -65,5 +66,11 @@ const checkAuth: RequestHandler = (req, res, next) => {
     res.sendStatus(401);
   }
 };
+const check: RequestHandler = (req, res) => {
+  res.status(200).json({
+    user: req.auth,
+    message: "Utilisateur connecté"
+  });
+};
 
-export default { login, logout, checkAuth };
+export default { login, logout, checkAuth, check };
