@@ -60,7 +60,7 @@ function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mot de passe"
+            placeholder="password"
           />
           <button className="btn-connexion" type="submit">
             Se connecter

@@ -68,7 +68,7 @@ const checkAuth: RequestHandler = (req, res, next) => {
 const check: RequestHandler = (req, res) => {
   res.status(200).json({
     user: req.auth,
-    message: "Utilisateur connecté",
+    message: "user logged in",
   });
 };
 

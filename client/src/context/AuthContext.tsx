@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         credentials: "include",
       });
     } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
+      console.error("Error while log out:", error);
     } finally {
       setUser(null);
     }
