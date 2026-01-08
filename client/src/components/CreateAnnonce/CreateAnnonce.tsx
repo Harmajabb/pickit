@@ -4,9 +4,10 @@ import "./CreateAnnonce.css";
 
 function CreateAnnonce() {
   const [formData, setFormData] = useState({
+    image: "",
     title: "",
     description: "",
-    amount_deposit: "",
+    amount_deposit: 0,
     location: "",
     state: "good",
     start_borrow_date: "",
