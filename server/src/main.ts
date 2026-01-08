@@ -8,7 +8,6 @@ import "../database/checkConnection";
 
 // Import the Express application from ./app
 import app from "./app";
-
 // Get the port from the environment variables
 const port = process.env.APP_PORT;
 

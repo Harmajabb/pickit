@@ -89,19 +89,9 @@ const publicFolderPath = path.join(__dirname, "../../server/public");
 
 if (fs.existsSync(publicFolderPath)) {
   app.use(express.static(publicFolderPath));
-}
-
-// Serve client resources
-
-const clientBuildPath = path.join(__dirname, "../../client/dist");
-
-if (fs.existsSync(clientBuildPath)) {
-  app.use(express.static(clientBuildPath));
-
-  // Redirect unhandled requests to the client index file
 
   app.get("*", (_, res) => {
-    res.sendFile("index.html", { root: clientBuildPath });
+    res.sendFile("index.html", { root: publicFolderPath });
   });
 }
 
