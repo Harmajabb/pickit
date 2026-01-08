@@ -34,11 +34,13 @@ function CreateAnnonce() {
 
     const result = await response.json();
     alert(result.message || result.error);
+    console.log(result.message, result.error, result,"la");
   };
 
   return (
     <div className="create-annonce-page">
     <form onSubmit={handleSubmit}>
+      <input type="file" name="images" multiple />
       <input type="text" name="title" placeholder="Titre de l'annonce" value={formData.title} onChange={handleChange} required />
       <textarea name="description" placeholder="Description de l'annonce" value={formData.description} onChange={handleChange} required />
       <input type="number" name="amount_deposit" placeholder="Montant de la caution" value={formData.amount_deposit} onChange={handleChange} required />
