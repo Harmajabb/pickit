@@ -54,6 +54,12 @@ app.use(
 
 app.use(express.json());
 // app.use(express.urlencoded());
+// Parse JSON bodies (application/json)
+
+// Parse URL-encoded bodies (form submissions)
+app.use(express.urlencoded({ extended: true }));
+
+// You can also enable text/raw parsers if needed:
 // app.use(express.text());
 // app.use(express.raw());
 
@@ -84,19 +90,9 @@ const publicFolderPath = path.join(__dirname, "../../server/public");
 
 if (fs.existsSync(publicFolderPath)) {
   app.use(express.static(publicFolderPath));
-}
-
-// Serve client resources
-
-const clientBuildPath = path.join(__dirname, "../../client/dist");
-
-if (fs.existsSync(clientBuildPath)) {
-  app.use(express.static(clientBuildPath));
-
-  // Redirect unhandled requests to the client index file
 
   app.get("*", (_, res) => {
-    res.sendFile("index.html", { root: clientBuildPath });
+    res.sendFile("index.html", { root: publicFolderPath });
   });
 }
 
