@@ -77,7 +77,11 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
           const fs = await import("node:fs/promises");
           const path = await import("node:path");
           for (const f of files) {
-            const full = path.join(process.cwd(), "public/assets/images", f.filename);
+            const full = path.join(
+              process.cwd(),
+              "public/assets/images",
+              f.filename,
+            );
             try {
               await fs.unlink(full);
             } catch (_err) {}
@@ -93,6 +97,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       announceId: result.announceId,
       imagesUploaded: result.imagesCount,
       imagePaths: result.imagePaths,
+      title: result.title,
     });
   } catch (err) {
     next(err);
@@ -106,14 +111,14 @@ const readOne: RequestHandler = async (req, res, next) => {
     const announce = await announcesRepository.readOne(Number(id));
 
     if (!announce) {
-      return res.status(404).json({ error: "Annonce non trouvée" });
+      res.status(404).json({ error: "Annonce non trouvée" });
+      return;
     }
 
     const formattedAnnounce = {
       ...announce,
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     };
-
     res.json(formattedAnnounce);
   } catch (err) {
     next(err);
@@ -134,4 +139,10 @@ const updateAnnounce: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-export default { browse, browseFiltered, createAnnounce, readOne, updateAnnounce };
+export default {
+  browse,
+  browseFiltered,
+  createAnnounce,
+  readOne,
+  updateAnnounce,
+};
