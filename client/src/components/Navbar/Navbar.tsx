@@ -31,7 +31,7 @@ function Navbar() {
     <>
       <nav className="desktop-nav">
         <img src={logo} alt="logo PICKIT" />
-        <Link to="" className="cta">
+        <Link to="/create-annonce" className="cta">
           List an item
         </Link>
         {/* <input

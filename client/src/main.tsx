@@ -8,6 +8,7 @@ import { AnnouncesProvider } from "./context/AnnouncesContext";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog/Catalog";
 import { AuthProvider } from "./context/AuthContext";
+import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <Home /> },
       { path: "/catalog", element: <Catalog /> },
+      { path: "/create-annonce", element: <CreateAnnoncePage /> },
     ],
   },
 ]);
