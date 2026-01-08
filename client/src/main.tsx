@@ -1,15 +1,21 @@
 // Import necessary modules from React and React Router
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { RouterProvider, createBrowserRouter } from "react-router";
 
 import App from "./App";
+import { AnnouncesProvider } from "./context/AnnouncesContext";
 import Home from "./pages/Home";
+import Catalog from "./pages/Catalog/Catalog";
+import { AuthProvider } from "./context/AuthContext";
 
 const router = createBrowserRouter([
   {
     element: <App />,
-    children: [{ path: "/", element: <Home /> }],
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/catalog", element: <Catalog /> },
+    ],
   },
 ]);
 
@@ -19,7 +25,11 @@ if (rootElement == null) {
 }
 
 createRoot(rootElement).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+  <AuthProvider>
+    <AnnouncesProvider>
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>
+    </AnnouncesProvider>
+  </AuthProvider>,
 );
