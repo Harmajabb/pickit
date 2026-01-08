@@ -1,0 +1,60 @@
+.searchbar {
+  position: relative;
+  width: min(520px, 95vw);
+}
+
+/* Form wrapper */
+.searchbar-form {
+  width: 100%;
+}
+
+/* Container input + select */
+.searchbar-control {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--color-bg);
+  border: 1px solid var(--color-primary-text);
+  border-radius: var(--b-radius);
+}
+
+/* Select left side */
+.searchbar-selectWrap {
+  display: flex;
+  align-items: center;
+  border-right: solid 1px var(--color-primary-text);
+}
+
+.searchbar-select {
+  height: 2.5rem;
+  padding: 0 1rem;
+  border: none;
+  background: var(--color-bg);
+  cursor: pointer;
+  color: var(--color-primary-text);
+  font-weight: 600;
+  outline: none;
+}
+
+/* Input */
+.searchbar-input {
+  height: 2rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background-color: var(--color-bg);
+  color: var(--color-primary-text);
+}
+
+.searchbar-input::placeholder {
+  opacity: 0.3;
+  font-style: italic;
+  color: var(--color-primary-text);
+}
+
+/* Focus a11y */
+.searchbar-control:focus-within {
+  box-shadow: 0 0 0 2px var(--color-btn);
+  border: 1px solid var(--color-btn);
+}

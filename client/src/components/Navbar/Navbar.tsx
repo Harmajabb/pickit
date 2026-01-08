@@ -1,11 +1,18 @@
 import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import logo from "../../assets/icons/logo.svg";
 import roundedLogo from "../../assets/icons/rounded-logo.svg";
+import type { Tab } from "../../types/Search.ts";
+import SearchBar from "../SearchBar/SearchBar";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
 function Navbar() {
   const isLogged = false;
+  const navigate = useNavigate();
+  const handleSearchSubmit = (q: string, tab: Tab) => {
+    navigate(`/catalog?q=${encodeURIComponent(q)}&tab=${tab}`);
+  };
   return (
     <>
       <nav className="desktop-nav">
@@ -13,10 +20,14 @@ function Navbar() {
         <Link to="" className="cta">
           List an item
         </Link>
-        <input
+        {/* <input
           type="text"
           className="text-input"
           placeholder="search an item..."
+        /> */}
+        <SearchBar
+          placeholder="Search for items or members..."
+          onSubmit={handleSearchSubmit}
         />
         <svg viewBox="0 0 24 23" aria-hidden="true" className="nav-icons ">
           <path

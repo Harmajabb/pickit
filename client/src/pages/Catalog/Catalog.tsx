@@ -1,33 +1,16 @@
 import CatalogCard from "../../components/CatalogCard/CatalogCard.tsx";
 import "./Catalog.css";
-import { useEffect, useState } from "react";
-import type { Announces } from "../../components/ItemHighlight/Ts-ItemHighlight.ts";
+import { useEffect } from "react";
+import { useAnnounces } from "../../context/AnnouncesContext.tsx";
+import type { Announce } from "../../types/Announce.ts";
 
 function Catalog() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [data, setData] = useState<Announces[]>([]);
+  const { announces, isLoading, error, refreshAnnounces } = useAnnounces();
+  const data = announces as Announce[];
 
   useEffect(() => {
-    const Announces = async () => {
-      try {
-        const data = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/announces`,
-        );
-        if (!data.ok) {
-          throw new Error(`Error HTTP: ${data.status}`);
-        }
-        const jsonData = await data.json();
-        console.log(data);
-        setData(jsonData);
-      } catch (e) {
-        setError(e as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    Announces();
-  }, []);
+    refreshAnnounces();
+  }, [refreshAnnounces]);
 
   if (isLoading) {
     return <p>Loading..</p>;
