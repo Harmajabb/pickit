@@ -47,7 +47,7 @@ function Login() {
     <>
       <div className="background-connexion">
         <div className="title-connexion">
-          <h1>Connexion</h1>
+          <h1>Login</h1>
         </div>
         <form className="form-connexion" onSubmit={Submit}>
           <input
@@ -63,7 +63,7 @@ function Login() {
             placeholder="password"
           />
           <button className="btn-connexion" type="submit">
-            Se connecter
+            Login
           </button>
         </form>
 

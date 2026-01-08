@@ -19,7 +19,7 @@ const login: RequestHandler = async (req, res, next) => {
       user == null ||
       !(await argon2.verify(user.password, req.body.password))
     ) {
-      res.status(422).json({ message: "Identifiants incorrects" });
+      res.status(422).json({ message: "Wrong credentials" });
       return;
     }
 
