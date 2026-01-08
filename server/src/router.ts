@@ -1,5 +1,5 @@
 import express from "express";
-
+import { upload } from "./config/multer";
 const router = express.Router();
 
 /* ************************************************************************* */
@@ -14,6 +14,13 @@ router.post("/api/logout", authActions.logout);
 import announcesActions from "./modules/announces/announcesActions";
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
+router.get("/api/announces/:id", announcesActions.readOne);
+router.put("/api/announces/:id", announcesActions.updateAnnounce);
+router.post(
+  "/api/create_announce",
+  upload.array("images", 10),
+  announcesActions.createAnnounce,
+);
 
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";
