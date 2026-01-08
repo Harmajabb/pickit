@@ -1,22 +1,23 @@
 import type { Announce } from "../types/Announce";
-// Fonction pour récupérer les annonces depuis l'API, avec une option de requête de recherche
+// function to fetch featured announces (4 announces))
 export async function fetchFeaturedAnnounces(q?: string): Promise<Announce[]> {
-  // Construction de l'URL avec le paramètre de requête
+  // with param request we can build dynamic url
   const url = new URL(`${import.meta.env.VITE_API_URL}/api/announcesFiltered`);
   if (q && q.trim() !== "") url.searchParams.set("q", q.trim());
-  // Appel de l'API pour récupérer les annonces
+  // API call to fetch announces
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  // Retourne les données des annonces sous forme de tableau d'objets Announce
+  // return announces array in JSON format
   return (await res.json()) as Announce[];
 }
 
+// function to fetch all announces with search query
 export async function fetchAllAnnounces(q?: string): Promise<Announce[]> {
   const url = new URL(`${import.meta.env.VITE_API_URL}/api/announces`);
   if (q && q.trim() !== "") url.searchParams.set("q", q.trim());
-
+  // API call to fetch announces
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
+  // return announces array in JSON format
   return (await res.json()) as Announce[];
 }

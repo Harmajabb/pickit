@@ -22,10 +22,10 @@ router.get("/api/items", itemActions.browse);
 router.get("/api/items/:id", itemActions.read);
 router.post("/api/items", itemActions.add);
 
-// Define user-related routes
-import userActions from "./modules/users/usersActions";
+// Define search-related routes
+import searchActions from "./modules/search/searchAction";
 
-router.get("/api/users/search", userActions.search);
+router.get("/api/search", searchActions.search);
 
 /* ************************************************************************* */
 

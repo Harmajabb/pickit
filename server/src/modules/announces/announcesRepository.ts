@@ -33,6 +33,8 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
 
+  // it allows searching announces with the search bar if we don't have this function
+  // we can't search announces by title, description, location, owner's firstname or lastname
   async readSearch(q: string) {
     const likeQuery = `%${q}%`;
 

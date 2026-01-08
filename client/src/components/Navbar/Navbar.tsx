@@ -1,17 +1,31 @@
-import { Link } from "react-router";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import logo from "../../assets/icons/logo.svg";
 import roundedLogo from "../../assets/icons/rounded-logo.svg";
-import type { Tab } from "../../types/Search.ts";
-import SearchBar from "../SearchBar/SearchBar";
+import type { SearchResult, Tab } from "../../types/Search";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
+import SearchBar from "../SearchBar/SearchBar.tsx";
+
 function Navbar() {
   const isLogged = false;
   const navigate = useNavigate();
+
   const handleSearchSubmit = (q: string, tab: Tab) => {
-    navigate(`/catalog?q=${encodeURIComponent(q)}&tab=${tab}`);
+    if (tab === "announces") {
+      navigate(`/catalog?q=${encodeURIComponent(q)}`);
+    }
+  };
+
+  // Handle selection from search results
+  const handleSearchSelect = (result: SearchResult) => {
+    if (result.type === "users") {
+      // redirection to user profile
+      navigate(`/profile/${result.item.id}`);
+    } else {
+      // redirection to announce details
+      navigate(`/catalog?q=${encodeURIComponent(result.item.title)}`);
+    }
   };
   return (
     <>
@@ -26,8 +40,9 @@ function Navbar() {
           placeholder="search an item..."
         /> */}
         <SearchBar
-          placeholder="Search for items or members..."
+          placeholder="Search for announcements or members..."
           onSubmit={handleSearchSubmit}
+          onSelect={handleSearchSelect}
         />
         <svg viewBox="0 0 24 23" aria-hidden="true" className="nav-icons ">
           <path

@@ -9,7 +9,7 @@ const browse: RequestHandler = async (req, res, next) => {
     const announcesFromDB =
       q === ""
         ? await announcesRepository.readAll()
-        : await announcesRepository.readSearch(q);
+        : await announcesRepository.readSearch(q); // search announces if q is provided by the navigation bar
 
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce,

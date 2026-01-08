@@ -1,103 +1,136 @@
-//import
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { Tab } from "../../types/Search.ts";
+import { useEffect, useRef, useState } from "react";
+import { searchApi } from "../../services/ServiceSearchApi";
+import type { Announce } from "../../types/Announce";
+import type { SearchResult, Tab } from "../../types/Search";
+import type { User } from "../../types/User";
 import "./SearchBar.css";
 
-// props interface because this is a reusable component
 interface Props {
-  defaultTab?: Tab; // default selected tab aka announces or users optionnal
-  minLength?: number; // minimum length of the query to trigger search
-  placeholder?: string; // input placeholder text which will be different in some pages
-  onSubmit: (q: string, tab: Tab) => void; // indispensable for navigation and filtering
-  onQueryChange?: (q: string, tab: Tab) => void; // for dropdown suggestions
+  placeholder?: string; // placeholder text for the search input
+  onSubmit: (q: string, tab: Tab) => void; // callback when a search is submitted
+  onSelect?: (result: SearchResult) => void; // optional callback when a search result is selected
 }
 
-// hook to debounce a value
-function useDebounce<T>(value: T, delayMs = 300) {
-  const [debounced, setDebounced] = useState(value);
-  // update debounced value after delay
+function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
+  const [tab, setTab] = useState<Tab>("announces"); // selected tab announce/user
+  const [input, setInput] = useState(""); // current input value
+  const [open, setOpen] = useState(false); // dropdown visibility state
+  const [results, setResults] = useState<SearchResult[]>([]); // current search results
+  const [isLoading, setIsLoading] = useState(false); // loading state during api call
+  const containerRef = useRef<HTMLDivElement | null>(null); // ref for detecting outside clicks
+
   useEffect(() => {
-    const t = window.setTimeout(() => setDebounced(value), delayMs);
-    return () => window.clearTimeout(t);
-  }, [value, delayMs]);
+    // the search isn't performed unless the dropdown is closed or query is less than 2 characters
+    if (!open || input.trim().length < 2) {
+      setResults([]);
+      setIsLoading(false);
+      return;
+    }
 
-  return debounced;
-}
+    setIsLoading(true);
+    // debounce the search input by 300ms
+    const timer = setTimeout(async () => {
+      try {
+        const query = input.trim();
+        const data = await searchApi(query, tab);
 
-function SearchBar({
-  defaultTab = "announces", // default to articles tab
-  minLength = 2, // default minimum length
-  placeholder = "Searching...", // default placeholder
-  onSubmit, // mandatory submit handler
-  onQueryChange, // optional live query change handler
-}: Props) {
-  // ui states
-  const [tab, setTab] = useState<Tab>(defaultTab); // selected tab state
-  const [input, setInput] = useState(""); // input value state
-  const [open, setOpen] = useState(false); // dropdown open state
-  //debounced input value
-  const debounced = useDebounce(input, 300); // debounce input value
-  const q = useMemo(() => debounced.trim(), [debounced]); // trimmed debounced query (usememo for optimization)
+        // transform api response to SearchResult format
+        // type property to differentiate between announces and users
+        const formattedResults: SearchResult[] =
+          tab === "announces"
+            ? (data as Announce[]).slice(0, 6).map((item) => ({
+                // limit to 6 results
+                type: "announces",
+                item,
+              }))
+            : (data as User[]).slice(0, 6).map((item) => ({
+                // limit to 6 results
+                type: "users",
+                item,
+              }));
 
-  const containerRef = useRef<HTMLDivElement | null>(null); // ref to the main container for the click outside handler
+        setResults(formattedResults);
+      } catch (error) {
+        console.error("Search error:", error);
+        setResults([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300); // 300ms debounce
 
-  // click outside it will close the dropdown
+    return () => clearTimeout(timer);
+  }, [input, tab, open]);
+
+  // close dropdown on outside click
   useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(e.target as Node)) setOpen(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
     };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // use escape touch to close the dropdown
+  // close dropdown on Escape key press
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  // effect to call onQueryChange when q changes and dropdown is open
-  useEffect(() => {
-    if (!onQueryChange) return;
-    if (!open) return;
-
-    if (q.length >= minLength) onQueryChange(q, tab);
-    else onQueryChange("", tab);
-  }, [q, tab, open, minLength, onQueryChange]);
-
-  // form submit handler
+  // handle form submission (enter key)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const query = input.trim();
-    if (query.length < minLength) return;
+
+    if (query.length < 2) return;
+
     onSubmit(query, tab);
+    setOpen(false);
+  };
+  // handle selection of a search result (click)
+  const handlePick = (result: SearchResult) => {
+    if (onSelect) {
+      onSelect(result);
+      setOpen(false);
+      return;
+    }
+
+    let nextQuery = "";
+
+    if (result.type === "announces") {
+      nextQuery = result.item.title || "";
+    } else {
+      nextQuery = `${result.item.firstname} ${result.item.lastname}`.trim();
+    }
+
+    setInput(nextQuery);
+
+    if (nextQuery.length >= 2) {
+      onSubmit(nextQuery, tab);
+    }
+
     setOpen(false);
   };
 
   return (
-    // if the user clicks outside the container, the dropdown will close
     <div ref={containerRef} className="searchbar">
-      {/* enter in the input will open the submit automatically */}
       <form className="searchbar-form" onSubmit={handleSubmit}>
         <div className="searchbar-control">
-          <label
-            className="searchbar-selectWrap"
-            aria-label="search category" // accessibility label
+          <select
+            className="searchbar-select"
+            value={tab}
+            onChange={(e) => setTab(e.target.value as Tab)}
+            aria-label="Search category"
           >
-            <select
-              className="searchbar-select"
-              value={tab}
-              onChange={(e) => setTab(e.target.value as Tab)}
-            >
-              <option value="announces">Announcement</option>
-              <option value="users">Members</option>
-            </select>
-          </label>
-
+            <option value="announces">Announcements</option>
+            <option value="users">Members</option>
+          </select>
           <input
             className="searchbar-input"
             type="search"
@@ -105,10 +138,61 @@ function SearchBar({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onFocus={() => setOpen(true)}
-            aria-label="Search" // accessibility label
+            aria-label="Search"
           />
         </div>
       </form>
+      {open && (
+        <ul className="searchbar-dropdown-slot" aria-label="Search results">
+          {input.trim().length < 2 ? (
+            <li className="searchbar-dropdown-empty">
+              Type at least 2 characters...
+            </li>
+          ) : isLoading ? (
+            <li className="searchbar-dropdown-empty">Loading...</li>
+          ) : results.length === 0 ? (
+            <li className="searchbar-dropdown-empty">No results.</li>
+          ) : (
+            results.map((result) => {
+              // unique key for each result item
+              const key =
+                result.type === "announces"
+                  ? `announce-${result.item.id}`
+                  : `user-${result.item.id}`;
+
+              return (
+                <li key={key}>
+                  <button
+                    type="button"
+                    className="searchbar-dropdown-btn"
+                    onClick={() => handlePick(result)}
+                  >
+                    {result.type === "announces" ? (
+                      <div>
+                        <div className="searchbar-dropdown-title">
+                          {result.item.title}
+                        </div>
+                        <div className="searchbar-dropdown-sub">
+                          {result.item.location || ""}
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="searchbar-dropdown-title">
+                          {result.item.firstname} {result.item.lastname}
+                        </div>
+                        <div className="searchbar-dropdown-sub">
+                          {result.item.city || ""}
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                </li>
+              );
+            })
+          )}
+        </ul>
+      )}
     </div>
   );
 }
