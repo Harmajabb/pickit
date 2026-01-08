@@ -1,5 +1,5 @@
 import express from "express";
-
+import { upload } from "./config/multer";
 const router = express.Router();
 
 /* ************************************************************************* */
@@ -10,8 +10,11 @@ const router = express.Router();
 import announcesActions from "./modules/announces/announcesActions";
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
-router.post("/api/create_announce", announcesActions.createAnnounce);
-
+router.post(
+  "/api/create_announce",
+  upload.array("images", 10),
+  announcesActions.createAnnounce,
+);
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";
 
