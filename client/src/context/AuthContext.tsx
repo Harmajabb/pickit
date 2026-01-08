@@ -1,4 +1,10 @@
-import { type ReactNode, createContext, useCallback, useEffect, useState } from "react";
+import {
+  type ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 interface User {
   id: string;
@@ -25,19 +31,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback((user: User) => {
     setUser(user);
   }, []);
-  
-const logout = useCallback(async () => {
-  try {
-    await fetch(`${Base_URL}/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-  } catch (error) {
-    console.error("Erreur lors de la déconnexion:", error);
-  } finally {
-    setUser(null);
-  }
-}, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await fetch(`${Base_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion:", error);
+    } finally {
+      setUser(null);
+    }
+  }, []);
 
   useEffect(() => {
     async function checkUser() {

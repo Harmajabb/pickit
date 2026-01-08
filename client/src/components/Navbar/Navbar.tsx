@@ -1,5 +1,5 @@
+import { useContext } from "react";
 import { Link } from "react-router";
-import { useContext } from "react"
 import logo from "../../assets/icons/logo.svg";
 import roundedLogo from "../../assets/icons/rounded-logo.svg";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";

@@ -1,7 +1,7 @@
-import authRepository from "./authRepository";
-import jwt from "jsonwebtoken";
 import argon2 from "argon2";
-import type { RequestHandler, Request } from "express";
+import type { Request, RequestHandler } from "express";
+import jwt from "jsonwebtoken";
+import authRepository from "./authRepository";
 
 declare global {
   namespace Express {
@@ -17,7 +17,6 @@ const login: RequestHandler = async (req, res, next) => {
     console.log(user);
     if (
       user == null ||
-      
       !(await argon2.verify(user.password, req.body.password))
     ) {
       res.status(422).json({ message: "Identifiants incorrects" });
@@ -69,7 +68,7 @@ const checkAuth: RequestHandler = (req, res, next) => {
 const check: RequestHandler = (req, res) => {
   res.status(200).json({
     user: req.auth,
-    message: "Utilisateur connecté"
+    message: "Utilisateur connecté",
   });
 };
 
