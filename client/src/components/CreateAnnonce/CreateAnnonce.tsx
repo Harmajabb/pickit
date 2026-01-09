@@ -3,7 +3,7 @@ import "./CreateAnnonce.css";
 
 function CreateAnnonce() {
   const [formData, setFormData] = useState({
-    title: "titre test",
+    title: "",
     description: "",
     amount_deposit: 0,
     location: "",
@@ -22,15 +22,16 @@ function CreateAnnonce() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      setFormData({
-        ...formData,
-        files: Array.from(files),
-      });
-    }
-  };
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (files) {
+    setFormData({
+      ...formData,
+      files: [...formData.files, ...Array.from(files)],
+    });
+  }
+};
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -73,81 +74,94 @@ function CreateAnnonce() {
   };
 
   return (
-    <div className="create-annonce-page">
-      <h1 className="create-annonce-title">Création d'une annonce</h1>
-      <form className="create-annonce-form" onSubmit={handleSubmit}>
-        <input type="file" name="images" multiple onChange={handleFileChange} />
-         {formData.files.length > 0 && (
-    <div className="image-preview">
-      <img
-        src={URL.createObjectURL(formData.files[0])}
-        alt="Prévisualisation"
-      />
+   <div className="create-annonce-page">
+  <h1 className="create-annonce-title">Create Your Ad</h1>
+
+  <div className="form-container">
+    <div className="image-column">
+      <input type="file" name="images" multiple onChange={handleFileChange} />
+      {formData.files.length > 0 && (
+        <div className="image-preview-container">
+      {formData.files.map((file, index) => (
+        <div key={file.name +index} className="image-preview">
+          <img src={URL.createObjectURL(file)} alt={`Prévisualisation ${index + 1}`} />
+        </div>
+      ))}
     </div>
-  )}
+      )}
+    </div>
+
+    <form className="create-annonce-form" onSubmit={handleSubmit}>
+      <div className="main-info-container">
         <input
           type="text"
           name="title"
-          placeholder="Titre de l'annonce"
+          placeholder="Title"
           value={formData.title}
           onChange={handleChange}
-          // required
-        />
-        <textarea
-          name="description"
-          placeholder="Description de l'annonce"
-          value={formData.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="number"
-          name="amount_deposit"
-          placeholder="Montant de la caution"
-          value={formData.amount_deposit}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="date"
-          name="start_borrow_date"
-          placeholder="Date de début"
-          value={formData.start_borrow_date}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="date"
-          name="end_borrow_date"
-          placeholder="Date de fin"
-          value={formData.end_borrow_date}
-          onChange={handleChange}
-          required
+          className="auto-width-input"
         />
         <input
           type="text"
           name="location"
-          placeholder="Lieu de l'annonce"
+          placeholder="Location"
           value={formData.location}
           onChange={handleChange}
-          required
+          className="auto-width-input"
         />
         <select
           name="categorie_id"
           value={formData.categorie_id}
           onChange={handleChange}
-          required
+          className="auto-width-input"
         >
-          <option value="1">Categorie 1</option>
-          <option value="2">Categorie 2</option>
-          <option value="3">Categorie 3</option>
+          <option value="1">Category 1</option>
+          <option value="2">Category 2</option>
+          <option value="3">Category 3</option>
         </select>
-        <button type="submit" className="cta">
-  Créer l'annonce
-</button>
+      </div>
 
-      </form>
-    </div>
+      <textarea
+        name="description"
+        placeholder="Ad Description"
+        value={formData.description}
+        onChange={handleChange}
+        required
+      />
+
+      <div className="small-inputs-container">
+        <input
+          type="number"
+          name="amount_deposit"
+          placeholder="Deposit"
+          value={formData.amount_deposit}
+          onChange={handleChange}
+          className="auto-width-input"
+        />
+        <input
+          type="date"
+          name="start_borrow_date"
+          placeholder="Start Date"
+          value={formData.start_borrow_date}
+          onChange={handleChange}
+          className="auto-width-input"
+        />
+        <input
+          type="date"
+          name="end_borrow_date"
+          placeholder="End Date"
+          value={formData.end_borrow_date}
+          onChange={handleChange}
+          className="auto-width-input"
+        />
+      </div>
+
+      <button type="submit" className="cta">Create Ad</button>
+    </form>
+  </div>
+</div>
+
+
   );
 }
 
