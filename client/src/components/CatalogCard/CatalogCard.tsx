@@ -29,7 +29,7 @@ function CatalogCard({ data }: CatalogCardProps) {
         <p>{data.amount_deposit}€</p>
         <Link
           to={`/announce/${data.id}`}
-          state={{ announce: data }}
+          // state={{ announce: data }}
           className="catalogCard-button"
         >
           Voir l'annonce
