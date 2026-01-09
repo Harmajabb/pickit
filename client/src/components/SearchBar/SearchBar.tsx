@@ -29,6 +29,7 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
 
     setIsLoading(true);
     // debounce the search input by 300ms
+    // note Leah: think to use a library like lodash.debounce or use-debounce
     const timer = setTimeout(async () => {
       try {
         const query = input.trim();
@@ -83,15 +84,19 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  // handle form submission (enter key)
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // handle search submission (button click or enter key)
+  const performSubmit = () => {
     const query = input.trim();
-
     if (query.length < 2) return;
 
     onSubmit(query, tab);
     setOpen(false);
+  };
+
+  // handle form submission (enter key)
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    performSubmit();
   };
   // handle selection of a search result (click)
   const handlePick = (result: SearchResult) => {
@@ -140,6 +145,26 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
             onFocus={() => setOpen(true)}
             aria-label="Search"
           />
+          <button
+            type="button"
+            className="searchbar-btn"
+            onClick={performSubmit}
+            aria-label="Search"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {/* biome asked for it */}
+              <title>Search</title>
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
+          </button>
         </div>
       </form>
       {open && (

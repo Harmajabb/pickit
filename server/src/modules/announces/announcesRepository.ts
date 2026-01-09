@@ -34,19 +34,6 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
 
-  // it allows searching announces with the search bar if we don't have this function
-  // we can't search announces by title, description, location, owner's firstname or lastname
-  async readSearch(q: string) {
-    const likeQuery = `%${q}%`;
-
-    const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
-      [likeQuery, likeQuery, likeQuery, likeQuery, likeQuery],
-    );
-
-    return rows as Announces[];
-  }
-
   // Récupérer une seule annonce par son ID
   async readOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(

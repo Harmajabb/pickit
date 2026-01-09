@@ -24,4 +24,23 @@ const search: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default { search };
+const searchFullAnnounces: RequestHandler = async (req, res, next) => {
+  try {
+    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    if (q === "") {
+      res.json([]);
+      return;
+    }
+
+    const announcesFromDB = await searchRepository.searchFullAnnounces(q);
+    const formattedAnnounces = announcesFromDB.map((announce) => ({
+      ...announce,
+      all_images: announce.all_images ? announce.all_images.split(",") : [],
+    }));
+    res.json(formattedAnnounces);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { search, searchFullAnnounces };

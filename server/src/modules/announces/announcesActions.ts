@@ -4,13 +4,7 @@ import announcesRepository from "./announcesRepository";
 
 const browse: RequestHandler = async (_req, res, next) => {
   try {
-    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
-
-    const announcesFromDB =
-      q === ""
-        ? await announcesRepository.readAll()
-        : await announcesRepository.readSearch(q); // search announces if q is provided by the navigation bar
-
+    const announcesFromDB = await announcesRepository.readAll();
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce,
       all_images: announce.all_images ? announce.all_images.split(",") : [],

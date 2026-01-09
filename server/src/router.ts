@@ -33,6 +33,7 @@ router.post("/api/items", itemActions.add);
 import searchActions from "./modules/search/searchAction";
 
 router.get("/api/search", searchActions.search);
+router.get("/api/searchFullAnnounces", searchActions.searchFullAnnounces);
 
 /* ************************************************************************* */
 

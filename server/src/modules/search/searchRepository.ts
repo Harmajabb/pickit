@@ -8,7 +8,6 @@ type SearchAnnounceRow = {
   id: number;
   title: string;
   location: string;
-  all_images: string;
 };
 
 // for search users
@@ -20,11 +19,26 @@ type SearchUserRow = {
   profil_picture: string;
 };
 
+// for announces catalog
+type FullAnnounceRow = {
+  id: number;
+  title: string;
+  description: string;
+  amount_deposit: number;
+  creation_date: Date;
+  update_date: Date;
+  start_borrow_date: Date;
+  end_borrow_date: Date;
+  location: string;
+  state: string;
+  all_images: string | null;
+};
+
 class SearchRepository {
   async searchAnnounces(q: string) {
     const likeQuery = `%${q}%`;
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
+      "SELECT announces.id, announces.title, announces.location FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
       [likeQuery, likeQuery, likeQuery, likeQuery, likeQuery],
     );
     return rows as SearchAnnounceRow[];
@@ -37,6 +51,15 @@ class SearchRepository {
       [likeQuery, likeQuery, likeQuery],
     );
     return rows as SearchUserRow[];
+  }
+
+  async searchFullAnnounces(q: string) {
+    const likeQuery = `%${q}%`;
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
+      [likeQuery, likeQuery, likeQuery, likeQuery, likeQuery],
+    );
+    return rows as FullAnnounceRow[];
   }
 }
 

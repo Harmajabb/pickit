@@ -54,6 +54,24 @@
   font-style: italic;
 }
 
+/* Search Button */
+.searchbar-btn {
+  padding: 0.88rem;
+  background-color: var(--color-btn);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchbar-btn svg {
+  width: 20px;
+  height: 20px;
+  color: black;
+}
+
+/* Dropdown */
 .searchbar-dropdown-slot {
   position: absolute;
   top: calc(100% + 8px);
