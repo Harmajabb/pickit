@@ -33,7 +33,7 @@ class AnnouncesRepository {
     );
     return rows as Announces[];
   }
-  
+
   // Récupérer une seule annonce par son ID
   async readOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
@@ -44,14 +44,13 @@ class AnnouncesRepository {
       WHERE announces.id = ?
       GROUP BY announces.id
       `,
-      [id]
+      [id],
     );
 
     return rows[0] as Announces | undefined;
   }
 
   async sendCreateAnnounce(form: Announces, files: Express.Multer.File[]) {
-    // 1) Insert announcement and get insertId
     const insertAnnounceQuery = `
     INSERT INTO announces
     (title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, state, categorie_id, owner_id)
@@ -88,16 +87,20 @@ class AnnouncesRepository {
       try {
         await databaseClient.query(insertImagesQuery, [rows]);
       } catch (err) {
-          try {
-            const fs = await import("node:fs/promises");
-            const path = await import("node:path");
-            for (const f of files) {
-              const full = path.join(process.cwd(), "public/assets/images", f.filename);
-              try {
-                await fs.unlink(full);
-              } catch (_err) {}
-            }
-          } catch (_err) {}
+        try {
+          const fs = await import("node:fs/promises");
+          const path = await import("node:path");
+          for (const f of files) {
+            const full = path.join(
+              process.cwd(),
+              "public/assets/images",
+              f.filename,
+            );
+            try {
+              await fs.unlink(full);
+            } catch (_err) {}
+          }
+        } catch (_err) {}
         try {
           await databaseClient.query("DELETE FROM announces WHERE id = ?", [
             insertId,
@@ -114,7 +117,12 @@ class AnnouncesRepository {
     };
   }
   // Mettre à jour une annonce existante
-  async sendUpdateAnnounce(id: number, form: Partial<Omit<Announces, "id" | "creation_date" | "update_date" | "all_images">>) {
+  async sendUpdateAnnounce(
+    id: number,
+    form: Partial<
+      Omit<Announces, "id" | "creation_date" | "update_date" | "all_images">
+    >,
+  ) {
     const query = `
       UPDATE announces
       SET title = ?, description = ?, amount_deposit = ?, location = ?, start_borrow_date = ?, end_borrow_date = ?, categorie_id = ?, update_date = NOW()
