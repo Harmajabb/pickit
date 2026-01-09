@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import type { Announces } from "./announcesRepository";
 import announcesRepository from "./announcesRepository";
 
-const browse: RequestHandler = async (_req, res, next) => {
+const browse: RequestHandler = async (_renpmq, res, next) => {
   try {
     const announcesFromDB = await announcesRepository.readAll();
     const formattedAnnounces = announcesFromDB.map((announce) => ({
