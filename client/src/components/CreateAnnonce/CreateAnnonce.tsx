@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import "./CreateAnnonce.css";
+const Base_URL = import.meta.env.VITE_API_URL;
 
 function CreateAnnonce() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    title: "titre test",
+    title: "",
     description: "",
     amount_deposit: "",
     location: "",
@@ -14,6 +17,27 @@ function CreateAnnonce() {
     owner_id: 1,
     files: [] as File[],
   });
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: this hook does not need to specify its depedency on navigate.
+  useEffect(() => {
+    async function checkUser() {
+      try {
+        const response = await fetch(`${Base_URL}/auth/check`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate("/login");
+          }
+        }
+      } catch (error: unknown) {
+        console.error("Error checking auth status:", error);
+      }
+    }
+    checkUser();
+  }, []);
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
