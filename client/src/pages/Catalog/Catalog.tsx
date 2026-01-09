@@ -18,21 +18,11 @@ function Catalog() {
   }, [q, refreshAnnounces]);
 
   if (isLoading) {
-    return (
-      <div className="catalog-page">
-        <p className="catalog-loading">Loading announces...</p>
-      </div>
-    );
+    return <p>Loading..</p>;
   }
   if (error !== null) {
     console.log(error);
-    return (
-      <div className="catalog-page">
-        <p className="catalog-error">
-          An error occurred while loading announces. Please try again.
-        </p>
-      </div>
-    );
+    return <p>An error has occurred</p>;
   }
 
   return (
