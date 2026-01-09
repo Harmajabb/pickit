@@ -38,6 +38,14 @@
 }
 
 /* Input */
+.searchbar input {
+  &:focus,
+  &:hover {
+    box-shadow: none;
+    border: none;
+    outline: none;
+  }
+}
 .searchbar-input {
   width: 100%;
   height: 2rem;
