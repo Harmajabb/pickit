@@ -2,16 +2,19 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
-
 import App from "./App";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import Home from "./pages/Home";
 import Catalog from "./pages/Catalog/Catalog";
+import ProductSheet from "./components/ProductSheet/ProductSheet";
 
 const router = createBrowserRouter([
   {
     element: <App />,
-    children: [{ path: "/", element: <Home /> }],
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/product", element: <ProductSheet /> },
+    ],
   },
   {
     path: "/catalog",
@@ -21,7 +24,7 @@ const router = createBrowserRouter([
 
 const rootElement = document.getElementById("root");
 if (rootElement == null) {
-  throw new Error(`Your HTML Document should contain a <div id="root"></div>`);
+  throw new Error("Your HTML Document should contain a <div id='root'></div>");
 }
 
 createRoot(rootElement).render(
