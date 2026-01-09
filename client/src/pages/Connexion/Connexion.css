@@ -1,0 +1,41 @@
+.background-connexion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.title-connexion {
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
+    align-items: center;
+}
+.title-connexion p{
+font-weight: lighter;
+opacity: 0.8;
+}
+.form-connexion {
+  display: flex;
+  flex-direction: column;
+  width: 370px;
+  gap: 0.7em;
+  padding: 2em;
+}
+.form-connexion > * {
+ width: 100%;
+}
+.loginbtn {
+  align-self: end;
+  width: 100px;
+}
+.forgot-password-link { 
+text-decoration: underline;
+text-align: end;
+color: var(--primary-color);
+}
+.register-link { 
+text-decoration: underline;
+text-align: end;
+color: var(--primary-color);
+}

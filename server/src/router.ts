@@ -8,8 +8,9 @@ const router = express.Router();
 
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
-router.post("/api/login", authActions.login);
-router.post("/api/logout", authActions.logout);
+router.post("/auth/login", authActions.login);
+router.post("/auth/logout", authActions.logout);
+router.get("/auth/check", authActions.checkAuth, authActions.check);
 // Define Announced-related routes
 import announcesActions from "./modules/announces/announcesActions";
 router.get("/api/announces", announcesActions.browse);
