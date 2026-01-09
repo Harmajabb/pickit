@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
 import type { LoginData } from "./Ts-Connexion";
 import "./Connexion.css";
-import "../../App.css"
+import "../../App.css";
 
 const Base_URL = `${import.meta.env.VITE_API_URL}`;
 
