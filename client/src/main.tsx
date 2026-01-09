@@ -4,21 +4,24 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
-import Home from "./pages/Home";
+import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
+import Login from "./pages/Connexion/Connexion";
+import Home from "./pages/Home";
+import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 
 const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/", element: <Home /> },
       { path: "/product", element: <ProductSheet /> },
+      { path: "/", element: <Home /> },
+      { path: "/catalog", element: <Catalog /> },
+      { path: "/login", element: <Login /> },
+      { path: "/catalog/:id", element: <Login /> }, // add your page Teddy here
+      { path: "/create-annonce", element: <CreateAnnoncePage /> },
     ],
-  },
-  {
-    path: "/catalog",
-    element: <Catalog />,
   },
 ]);
 
@@ -28,9 +31,11 @@ if (rootElement == null) {
 }
 
 createRoot(rootElement).render(
-  <AnnouncesProvider>
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>
-  </AnnouncesProvider>,
+  <AuthProvider>
+    <AnnouncesProvider>
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>
+    </AnnouncesProvider>
+  </AuthProvider>,
 );
