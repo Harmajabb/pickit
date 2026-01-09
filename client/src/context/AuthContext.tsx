@@ -1,42 +1,76 @@
-import { createContext, useState } from "react";
-import type { ReactNode } from "react";
+import {
+  type ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
-interface Props {
-  children: ReactNode;
+interface User {
+  id: string;
+  email: string;
 }
 
+const Base_URL = import.meta.env.VITE_API_URL;
+
 interface AuthContextType {
-  token: string | null;
-  userId: string | null;
-  login: (token: string, id: string) => void;
+  user: User | null;
+  login: (user: User) => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  token: null,
-  userId: null,
+  user: null,
   login: () => {},
   logout: () => {},
 });
 
-export const AuthProvider = ({ children }: Props) => {
-  const [token, setToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
 
-  const login = (token: string, id: string) => {
-    setToken(token);
-    setUserId(id);
-  };
-  const logout = () => {
-    setToken(null);
-    setUserId(null);
-  };
+  const login = useCallback((user: User) => {
+    setUser(user);
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await fetch(`${Base_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Error while log out:", error);
+    } finally {
+      setUser(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    async function checkUser() {
+      try {
+        const response = await fetch(`${Base_URL}/auth/check`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          const res = await response.json();
+          login(res.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+        setUser(null);
+      }
+    }
+
+    checkUser();
+  }, [login]);
 
   return (
-    <AuthContext.Provider value={{ token, userId, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthContextType;
