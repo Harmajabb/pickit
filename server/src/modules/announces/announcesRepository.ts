@@ -34,6 +34,15 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
 
+  // Announce by owner ID.
+  async readByOwnerId(ownerId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.state = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      [ownerId],
+    );
+    return rows as Announces[];
+  }
+
   // Récupérer une seule annonce par son ID
   async readOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
