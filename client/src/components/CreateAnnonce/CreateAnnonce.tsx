@@ -5,7 +5,7 @@ function CreateAnnonce() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    amount_deposit: 0,
+    amount_deposit: "",
     location: "",
     state: "good",
     start_borrow_date: "",
@@ -93,6 +93,8 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     <form className="create-annonce-form" onSubmit={handleSubmit}>
       <div className="main-info-container">
+      <div className="field-group">
+              <label htmlFor="title">Title</label>
         <input
           type="text"
           name="title"
@@ -101,6 +103,9 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           onChange={handleChange}
           className="auto-width-input"
         />
+      </div>
+      <div className="field-group">
+              <label htmlFor="location">Location</label>
         <input
           type="text"
           name="location"
@@ -109,6 +114,9 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           onChange={handleChange}
           className="auto-width-input"
         />
+      </div>
+      <div className="field-group">
+              <label htmlFor="categorie_id">Category</label>
         <select
           name="categorie_id"
           value={formData.categorie_id}
@@ -120,16 +128,22 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           <option value="3">Category 3</option>
         </select>
       </div>
-
+      </div>
+<div className="field-group">
+            <label htmlFor="description">Description</label>
       <textarea
+      className="auto-width-input"
         name="description"
         placeholder="Ad Description"
         value={formData.description}
         onChange={handleChange}
         required
       />
+    </div>
 
       <div className="small-inputs-container">
+        <div className="field-group">
+              <label htmlFor="amount_deposit">Deposit (in €)</label>
         <input
           type="number"
           name="amount_deposit"
@@ -138,6 +152,9 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           onChange={handleChange}
           className="auto-width-input"
         />
+        </div>
+        <div className="field-group">
+              <label htmlFor="start_borrow_date">Start date</label>
         <input
           type="date"
           name="start_borrow_date"
@@ -146,6 +163,9 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           onChange={handleChange}
           className="auto-width-input"
         />
+        </div>
+        <div className="field-group">
+              <label htmlFor="end_borrow_date">End date</label>
         <input
           type="date"
           name="end_borrow_date"
@@ -154,6 +174,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           onChange={handleChange}
           className="auto-width-input"
         />
+      </div>
       </div>
 
       <button type="submit" className="cta">Create Ad</button>

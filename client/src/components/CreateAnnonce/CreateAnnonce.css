@@ -1,3 +1,17 @@
+/* Supprimer les flèches sur input type number */
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .create-annonce-page {
   padding-top: 130px;
   padding-left: 20px;
@@ -18,7 +32,8 @@
 
 
 .form-container {
-  display: flex;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
   align-items: flex-start;
   width: 100%;
@@ -30,7 +45,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-left: -200px;
+  /* margin-left: -200px; */
 }
 
 .image-preview-container {
@@ -90,7 +105,7 @@
 .auto-width-input:focus {
   outline: none;
   border-color: #ccff33;
-  background-color: #f8fff0;
+  background-color: #ffffff;
   box-shadow: 0 0 6px rgba(204, 255, 51, 0.5);
 }
 
@@ -128,4 +143,74 @@
   outline: none;
   border-color: #ccff33;
   background-color: #f8fff0;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.field-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+}
+
+/* Bouton Create Ad spécifique au formulaire */
+.create-annonce-form button.cta {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
+}
+.create-annonce-form button.cta:hover,
+.create-annonce-form button.cta:active {
+  box-shadow: none;
+  transform: translate(1.5px, 1.5px);
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .image-column {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .image-preview img {
+    width: 45%;
+    max-width: 200px;
+    height: auto;
+  }
+
+  .create-annonce-form {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .main-info-container,
+  .small-inputs-container {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .main-info-container > .field-group,
+  .small-inputs-container > .field-group {
+    flex: 1 1 calc(33.333% - 8px);
+  }
+
+  .field-group textarea {
+    flex: 1 1 100%;
+  }
 }
