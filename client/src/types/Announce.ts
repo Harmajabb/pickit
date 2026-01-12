@@ -1,3 +1,4 @@
+//used for search results and announces listing
 export interface Announce {
   id: number;
   title: string;

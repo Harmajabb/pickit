@@ -30,6 +30,12 @@ router.get("/api/items", itemActions.browse);
 router.get("/api/items/:id", itemActions.read);
 router.post("/api/items", itemActions.add);
 
+// Define search-related routes
+import searchActions from "./modules/search/searchAction";
+
+router.get("/api/search", searchActions.search);
+router.get("/api/searchFullAnnounces", searchActions.searchFullAnnounces);
+
 /* ************************************************************************* */
 
 export default router;

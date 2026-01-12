@@ -300,8 +300,11 @@ INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
 (3, 'ART000146698001.jpg', 2),
 (4, 'raquette-de-tennis-adulte-wilson-pro-staff-97-ls-v14-noir-290g.avif', 3),
 (5, 'e77cbda607bdd5b645676d59cfc78e3bf9d6bfd7_H26ROSSSKI513763_0.webp', 4),
-(6, 'stand-up-paddle-gonflable-debutant-compact-m-blanc-et-vert-4282237345.jpg',6);
-
+(6, 'stand-up-paddle-gonflable-debutant-compact-m-blanc-et-vert-4282237345.jpg',6),
+(7, 'sac-a-dos-de-randonnee-trekking-70-litres-noir-bleu-4283248734.jpg',7),
+(8, 'callaway-série-de-fers-rogue-st-max-5-pw-droitier-shaft-acier-regulier-4284058731.jpg',8),
+(9, 'Rollers-Rollerblade.webp',9),
+(10, 'escalade.jpg',10);
 
 -- Borrows (2 bookings)
 INSERT IGNORE INTO borrows (id, borrow_date, announces_id, owner_id, borrower_id, return_date, status, deposit_status, borrow) VALUES
