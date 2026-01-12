@@ -69,7 +69,7 @@ function Login() {
           <Link to="" className="forgot-password-link">
             Oops i forgot my password
           </Link>
-          <Link to="" className="register-link">
+          <Link to="/register" className="register-link">
             Not registered ?
           </Link>
           <button className="primary loginbtn" type="submit">
