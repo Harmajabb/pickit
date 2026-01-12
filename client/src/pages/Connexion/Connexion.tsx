@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
 import type { LoginData } from "./Ts-Connexion";
 import "./Connexion.css";
+import "../../App.css";
 
 const Base_URL = `${import.meta.env.VITE_API_URL}`;
 
@@ -47,22 +48,31 @@ function Login() {
     <>
       <div className="background-connexion">
         <div className="title-connexion">
-          <h1>Login</h1>
+          <h1>CONNEXION</h1>
+          <p>Welcome back</p>
         </div>
         <form className="form-connexion" onSubmit={Submit}>
+          <p>Mail</p>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
           />
+          <p>Password</p>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="password"
           />
-          <button className="btn-connexion" type="submit">
+          <Link to="" className="forgot-password-link">
+            Oops i forgot my password
+          </Link>
+          <Link to="" className="register-link">
+            Not registered ?
+          </Link>
+          <button className="primary loginbtn" type="submit">
             Login
           </button>
         </form>

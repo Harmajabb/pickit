@@ -8,8 +8,8 @@ import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
 import Login from "./pages/Connexion/Connexion";
-import Home from "./pages/Home";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
+import Home from "./pages/Home";
 
 const router = createBrowserRouter([
   {
