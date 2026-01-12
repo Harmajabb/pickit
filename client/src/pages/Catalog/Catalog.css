@@ -12,6 +12,10 @@
   margin: 6.5rem 0;
 }
 
+.catalog-header .searchbar {
+  width: min(720px, 95vw);
+}
+
 .catalog-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -24,6 +28,5 @@
 @media (min-width: 740px) {
   .catalog-header .searchbar {
     display: none;
-    width: min(720px, 95vw);
   }
 }
