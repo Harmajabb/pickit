@@ -1,8 +1,27 @@
+.catalog-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.catalog-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin: 6.5rem 0;
+}
+
+.catalog-header .searchbar {
+  width: 100%;
+  max-width: 620px;
+}
+
 .catalog-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    max-width: 1200px;
-    margin:6em auto;
-    gap: 1.5rem;
-    padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  max-width: 1200px;
+  margin: 6em auto;
+  gap: 1.5rem;
+  padding: 20px;
 }

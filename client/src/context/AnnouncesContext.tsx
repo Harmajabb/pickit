@@ -6,7 +6,7 @@ import {
   useEffect, //utilisé pour déclencher le chargement initial des annonces lorsque le composant est monté
   useState, //utilisé pour gérer l'état des annonces, de la requête, du chargement et des erreurs
 } from "react";
-import { fetchAnnounces } from "../services/ServiceAnnouncesApi"; //importation de la fonction fetchAnnounces pour récupérer les annonces depuis l'API
+import { fetchAllAnnounces } from "../services/ServiceAnnouncesApi"; //importation de la fonction fetchAnnounces pour récupérer les annonces depuis l'API
 import type { Announce } from "../types/Announce"; //importation du type Announce pour typer les annonces
 
 type AnnouncesContextType = {
@@ -41,7 +41,7 @@ export function AnnouncesProvider({ children }: { children: ReactNode }) {
 
     // Appel de la fonction fetchAnnounces pour récupérer les annonces depuis l'API
     try {
-      const data = await fetchAnnounces(q);
+      const data = await fetchAllAnnounces(q);
       // console.log("Fetched announces:", data);
       setAnnounces(data);
     } catch {
