@@ -26,15 +26,51 @@ class AnnouncesRepository {
 
     return rows as Announces[];
   }
+// FILTER BY CATEGORY_ID AND LOCATION
 
+ /* OLD CODE LOGIC
   async readFiltered() {
     const [rows] = await databaseClient.query<Rows>(
       "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4",
     );
     return rows as Announces[];
   }
+ */
 
-  // Récupérer une seule annonce par son ID
+  async readFiltered(filters: any) {
+  // Using a "let" because it will be modified later
+  let sql = "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id";
+
+  // Preparing boxes to stock SQL and values
+  const sqlValues: any[] = [];
+  const conditions: string[] = [];
+
+  // Filter logic
+  if (filters.location) {
+    conditions.push("announces.location LIKE ?");
+    sqlValues.push(`${filters.location}%`);
+  }
+
+  if (filters.categorie_id) {
+    conditions.push("announces.categorie_id = ?");
+    sqlValues.push(filters.categorie_id);
+  }
+
+  // Put together (change the content of SQL using let)
+  if (conditions.length > 0) {
+    sql += ` WHERE ${conditions.join(" AND ")}`;
+  }
+
+  // Add the end (return every announcement and not only 4)
+  sql += " GROUP BY announces.id ORDER BY creation_date DESC";
+
+  // Execution : use the variable SQL and the SQLValues
+  const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
+  
+  return rows as Announces[];
+}
+
+  // Get juste one announcement with its ID
   async readOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `

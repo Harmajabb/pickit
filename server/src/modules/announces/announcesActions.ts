@@ -15,9 +15,10 @@ const browse: RequestHandler = async (_renpmq, res, next) => {
   }
 };
 
-const browseFiltered: RequestHandler = async (_req, res, next) => {
+const browseFiltered: RequestHandler = async (req, res, next) => {
   try {
-    const readFiltered = await announcesRepository.readFiltered();
+    // Sends the whole object rez.query to the repository
+    const readFiltered = await announcesRepository.readFiltered(req.query);
     res.json(readFiltered);
   } catch (err) {
     next(err);
@@ -104,7 +105,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Lire une annonce spécifique
+// Read a specific announcement
 const readOne: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -125,7 +126,7 @@ const readOne: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Mettre à jour une annonce
+// Update an announcement
 const updateAnnounce: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
