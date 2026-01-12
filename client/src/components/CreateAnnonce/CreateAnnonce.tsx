@@ -7,7 +7,7 @@ function CreateAnnonce() {
     description: "",
     amount_deposit: "",
     location: "",
-    state: "good",
+    state_of_product: "",
     start_borrow_date: "",
     end_borrow_date: "",
     categorie_id: "1",
@@ -43,7 +43,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       "amount_deposit",
       formData.amount_deposit.toString());
     formDataToSend.append("location", formData.location);
-    formDataToSend.append("state", formData.state);
+    formDataToSend.append("state_of_product", formData.state_of_product);
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
     formDataToSend.append("categorie_id", formData.categorie_id);
