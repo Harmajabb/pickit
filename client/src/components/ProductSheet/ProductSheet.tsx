@@ -1,21 +1,45 @@
-import { useState } from "react";
 import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 import "./ProductSheet.css";
 
+interface Announce {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  state: string;
+  owner_id: number;
+  all_images: string[];
+  favourites?: number;
+}
+
 export default function ProductSheet() {
+  const announceId = useParams();
+  const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
-  const images = [
-    "https://contents.mediadecathlon.com/p2691312/k$c73bfb994a8c51cb15cb38549397dec6/picture.jpg",
-    "https://contents.mediadecathlon.com/p2691311/k$5777bd5bf52208485450b7c17be286d0/picture.jpg",
-    "https://contents.mediadecathlon.com/p2944527/k$4e49461a8bf8128842fd16143fcdb295/picture.jpg",
-  ];
+
+  useEffect(() => {
+    fetch(`/announces/${announceId}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch announce");
+        return res.json();
+      })
+      .then((data) => setAnnounce(data))
+      .catch((err) => console.error(err));
+  }, [announceId]);
+
+  if (!announce) return <p>Loading...</p>;
 
   const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % images.length);
+    setCurrentImage((prev) => (prev + 1) % announce.all_images.length);
   };
 
   const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentImage(
+      (prev) =>
+        (prev - 1 + announce.all_images.length) % announce.all_images.length,
+    );
   };
 
   return (
@@ -25,15 +49,23 @@ export default function ProductSheet() {
           <div className="image-section">
             <div className="image-wrapper">
               <img
-                src={images[currentImage]}
+                src={announce.all_images[currentImage]}
                 alt="Ski poles"
                 className="product-image"
               />
 
-              <button onClick={prevImage} className="nav-arrow nav-arrow-left">
+              <button
+                type="button"
+                onClick={prevImage}
+                className="nav-arrow nav-arrow-left"
+              >
                 <ChevronLeft className="arrow-icon" />
               </button>
-              <button onClick={nextImage} className="nav-arrow nav-arrow-right">
+              <button
+                type="button"
+                onClick={nextImage}
+                className="nav-arrow nav-arrow-right"
+              >
                 <ChevronRight className="arrow-icon" />
               </button>
             </div>
@@ -43,8 +75,12 @@ export default function ProductSheet() {
             <h1 className="product-title">SKI POLES 120CM</h1>
 
             <div className="action-buttons">
-              <button className="btn btn-delete">Delete</button>
-              <button className="btn btn-modify">Modify</button>
+              <button type="button" className="btn btn-delete">
+                Delete
+              </button>
+              <button type="button" className="btn btn-modify">
+                Modify
+              </button>
             </div>
 
             <div className="info-fields">
@@ -77,17 +113,19 @@ export default function ProductSheet() {
               </div>
             </div>
 
-            <button className="btn btn-contact">Contact the borrower</button>
+            <button type="button" className="btn btn-contact">
+              Contact the borrower
+            </button>
           </div>
         </div>
         <div className="tiny-img">
           <img
-            src={images[currentImage]}
+            src={announce.all_images[currentImage]}
             alt="Ski poles"
             className="product-image"
           />
-                    <img
-            src={images[currentImage]}
+          <img
+            src={announce.all_images[currentImage]}
             alt="Ski poles"
             className="product-image"
           />

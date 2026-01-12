@@ -72,6 +72,7 @@ class AnnouncesRepository {
       insertAnnounceQuery,
       announceValues,
     );
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const insertId = (result as any).insertId as number;
     const imagePaths: string[] = [];
 

@@ -1,4 +1,3 @@
-import React from "react";
 import CreateAnnonce from "../components/CreateAnnonce/CreateAnnonce"; // chemin exact de ton composant
 
 const CreateAnnoncePage = () => {

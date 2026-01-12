@@ -3,13 +3,13 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App";
+import ProductSheet from "./components/ProductSheet/ProductSheet";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
-import ProductSheet from "./components/ProductSheet/ProductSheet";
 import Login from "./pages/Connexion/Connexion";
-import Home from "./pages/Home";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
+import Home from "./pages/Home";
 
 const router = createBrowserRouter([
   {
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/catalog", element: <Catalog /> },
       { path: "/login", element: <Login /> },
-      { path: "/catalog/:id", element: <Login /> }, // add your page Teddy here
+      { path: "/announce/:Id", element: <ProductSheet /> }, // add your page Teddy here
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
     ],
   },
