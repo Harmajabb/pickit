@@ -17,7 +17,9 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.14.0",
     "multer": "^2.0.2",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "cookie-parser": "^1.4.7",
+    "js-cookies": "^1.0.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",

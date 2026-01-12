@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./CreateAnnonce.css";
-const Base_URL = import.meta.env.VITE_API_URL;
+import { AuthContext } from "../../context/AuthContext";
 
 function CreateAnnonce() {
+  const { user } = useContext(AuthContext);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
@@ -20,22 +22,9 @@ function CreateAnnonce() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: this hook does not need to specify its depedency on navigate.
   useEffect(() => {
-    async function checkUser() {
-      try {
-        const response = await fetch(`${Base_URL}/auth/check`, {
-          method: "GET",
-          credentials: "include",
-        });
-        if (!response.ok) {
-          if (response.status === 401 || response.status === 403) {
-            navigate("/login");
-          }
-        }
-      } catch (error: unknown) {
-        console.error("Error checking auth status:", error);
-      }
+    if (user === null) {
+      navigate("/login");
     }
-    checkUser();
   }, []);
 
   const handleChange = (
@@ -81,6 +70,7 @@ function CreateAnnonce() {
         "http://localhost:3310/api/create_announce",
         {
           method: "POST",
+          credentials: "include",
           body: formDataToSend,
         },
       );
