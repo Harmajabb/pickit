@@ -19,10 +19,10 @@ export type Announces = {
   end_borrow_date?: string;
   location?: string;
   status?: string;
-  state?: string;
   all_images?: string | null;
   categorie_id?: number;
   owner_id?: number;
+  state_of_product?: string;
 };
 
 class AnnouncesRepository {
@@ -72,7 +72,7 @@ class AnnouncesRepository {
   ): Promise<CreateAnnounceResult> {
     const insertAnnounceQuery = `
     INSERT INTO announces
-    (title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, state, categorie_id, owner_id)
+    (title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, categorie_id, owner_id, state_of_product)
     VALUES (?, ?, ?, NOW(), NULL, ?, ?, ?, ?, ?, ?)
   `;
     const announceValues = [
@@ -82,9 +82,9 @@ class AnnouncesRepository {
       form.start_borrow_date,
       form.end_borrow_date,
       form.location,
-      form.state ?? "active",
       form.categorie_id,
       form.owner_id,
+      form.state_of_product,
     ];
 
     const [result] = await databaseClient.query<ResultSetHeader>(

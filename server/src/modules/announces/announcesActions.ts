@@ -36,9 +36,9 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       start_borrow_date,
       end_borrow_date,
       location,
-      state,
       categorie_id,
       owner_id,
+      state_of_product,
     } = req.body;
     if (
       !title ||
@@ -47,9 +47,9 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       !start_borrow_date ||
       !end_borrow_date ||
       !location ||
-      !state ||
       !categorie_id ||
-      !owner_id
+      !owner_id ||
+      !state_of_product
     ) {
       res
         .status(400)
@@ -64,7 +64,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       location: String(location),
       categorie_id: Number(categorie_id),
       owner_id: Number(owner_id),
-      state: String(state),
+      state_of_product: String(state_of_product),
     };
     let result: CreateAnnounceResult;
     try {

@@ -60,11 +60,11 @@ function CreateAnnonce() {
     formDataToSend.append("categorie_id", formData.categorie_id);
     formDataToSend.append("owner_id", formData.owner_id.toString());
 
-    for (const file of ormData.files) {
+    for (const file of formData.files) {
       formDataToSend.append("images", file);
     }
 
-    console.log("Fichiers à envoyer:", formData.files);
+    console.log("Files to send:", formData.files);
 
     try {
       const response = await fetch(
@@ -78,10 +78,10 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
-      console.log("Résultat:", result);
+      console.log("Result:", result);
     } catch (error) {
-      console.error("Erreur:", error);
-      alert("Erreur lors de l'envoi");
+      console.error("Error:", error);
+      alert("Error while sending");
     }
   };
 
@@ -99,11 +99,11 @@ function CreateAnnonce() {
           />
           {formData.files.length > 0 && (
             <div className="image-preview-container">
-              {formData.files.map((file, index) => (
-                <div key={file.name + index} className="image-preview">
+              {formData.files.map((file) => (
+                <div key={file.name} className="image-preview">
                   <img
                     src={URL.createObjectURL(file)}
-                    alt={`Prévisualisation ${index + 1}`}
+                    alt={`Prévisualisation ${file.name}`}
                   />
                 </div>
               ))}
