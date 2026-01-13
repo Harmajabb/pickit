@@ -66,7 +66,7 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="password"
           />
-          <Link to="" className="forgot-password-link">
+          <Link to="/forgot-password" className="forgot-password-link">
             Oops i forgot my password
           </Link>
           <Link to="" className="register-link">

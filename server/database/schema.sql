@@ -59,9 +59,10 @@ CREATE TABLE IF NOT EXISTS announces (
     start_borrow_date DATE NOT NULL,
     end_borrow_date DATE NOT NULL,
     location VARCHAR(255) NOT NULL,
-    state VARCHAR(20) DEFAULT 'active' COMMENT 'active, inactive, archived',
+    status VARCHAR(20) DEFAULT 'active' COMMENT 'active, inactive, archived',
     categorie_id INT NOT NULL,
     owner_id INT NOT NULL COMMENT 'Equipment owner',
+    state_of_product ENUM('new', 'excellent', 'good', 'fair', 'poor') DEFAULT 'good',
     
     FOREIGN KEY (categorie_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -270,6 +271,7 @@ INSERT IGNORE INTO users (id, lastname, firstname, zipcode, city, address, email
 (1, 'Dupont', 'Jean', 59000, 'Lille', '15 Peace Street', 'jean.dupont@email.com', '$2y$10$examplehash123456789', 0),
 (2, 'Martin', 'Sophie', 75001, 'Paris', '42 Champs Avenue', 'sophie.martin@email.com', '$2y$10$examplehash987654321', 0),
 (3, 'Admin', 'Super', 59000, 'Lille', '1 Admin Street', 'admin@pikit.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', 1);
+(4, 'Fourdin', 'Pierre', 59000, 'Lille', '1 Admin Street', 'fourdin.pfmg@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', 1);
 
 -- Categories (7 hierarchical categories)
 INSERT IGNORE INTO categories (id, categorie, parent_id) VALUES
@@ -282,17 +284,17 @@ INSERT IGNORE INTO categories (id, categorie, parent_id) VALUES
 (7, 'Mountain Biking', 3);
 
 -- Announces (2 listings)
-INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, state, categorie_id, owner_id) VALUES
-(1, 'Giant Talon Mountain Bike', 'Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.', 200, '2024-10-09', '2024-10-31','2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 7, 1),
-(2, 'Quiksilver Surfboard', '6''2" surfboard, ideal for beginners and intermediates. Includes protective cover.', 150, '2024-11-25', '', '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 6, 2),
-(3, 'Raquette de Tennis Wilson Pro Staff', 'Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.', 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', 'Lyon, Rhône', 'active', 5, 3),
-(4, 'Pack Ski Alpin Rossignol', 'Skis de piste performants + bâtons. Taille 175cm. Idéal pour skieur confirmé.', 300, '2024-11-15', '', '2024-12-20', '2025-04-15', 'Grenoble, Isère', 'active', 8, 4),
-(5, 'Banc de musculation pliable', 'Banc réglable avec support barre. Très peu encombrant une fois plié. État neuf.', 80, '2024-12-10', '', '2024-12-15', '2025-12-31', 'Paris, Île-de-France', 'active', 9, 5),
-(6, 'Paddle Gonflable Itiwit', 'Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.', 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', 'Annecy, Haute-Savoie', 'active', 6, 1),
-(7, 'Sac à dos de randonnée 70L', 'Sac de trekking avec système de portage ventilé. Nombreuses poches, housse de pluie incluse.', 40, '2024-12-05', '', '2024-12-15', '2025-10-31', 'Chamonix, Haute-Savoie', 'active', 10, 2),
-(8, 'Série de fers Callaway (5-PW)', 'Série complète pour droitier, shaft acier régulier. Très tolérant pour progresser.', 250, '2024-11-30', '', '2024-12-01', '2025-08-30', 'Bordeaux, Gironde', 'active', 11, 6),
-(9, 'Rollers en ligne Rollerblade', 'Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.', 30, '2024-12-12', '', '2024-12-15', '2025-12-31', 'Montpellier, Hérault', 'active', 7, 3),
-(10, 'Crashpad d''escalade Black Diamond', 'Tapis de réception pour le bloc en extérieur. Mousse haute densité, bretelles de transport.', 70, '2024-12-08', '2024-12-08', '2025-03-01', '2025-11-30', 'Fontainebleau, Seine-et-Marne', 'active', 12, 4);
+INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, status, categorie_id, owner_id, state_of_product) VALUES
+(1, 'Giant Talon Mountain Bike', 'Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.', 200, '2024-10-09', '2024-10-31','2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 7, 1, 'excellent'),
+(2, 'Quiksilver Surfboard', '6''2" surfboard, ideal for beginners and intermediates. Includes protective cover.', 150, '2024-11-25', '', '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 6, 2, 'good'),
+(3, 'Raquette de Tennis Wilson Pro Staff', 'Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.', 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', 'Lyon, Rhône', 'active', 5, 3, 'new'),
+(4, 'Pack Ski Alpin Rossignol', 'Skis de piste performants + bâtons. Taille 175cm. Idéal pour skieur confirmé.', 300, '2024-11-15', '', '2024-12-20', '2025-04-15', 'Grenoble, Isère', 'active', 8, 4, ''),
+(5, 'Banc de musculation pliable', 'Banc réglable avec support barre. Très peu encombrant une fois plié. État neuf.', 80, '2024-12-10', '', '2024-12-15', '', '', '', '', '', ''),
+(6, 'Paddle Gonflable Itiwit', 'Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.', 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', 'Annecy, Haute-Savoie', 'active', 6, 1, ''),
+(7, 'Sac à dos de randonnée 70L', 'Sac de trekking avec système de portage ventilé. Nombreuses poches, housse de pluie incluse.', 40, '2024-12-05', '', '2024-12-15', '2025-10-31', 'Chamonix, Haute-Savoie', 'active', 10, 2, ''),
+(8, 'Série de fers Callaway (5-PW)', 'Série complète pour droitier, shaft acier régulier. Très tolérant pour progresser.', 250, '2024-11-30', '', '2024-12-01', '2025-08-30', 'Bordeaux, Gironde', 'active', 11, 6, ''),
+(9, 'Rollers en ligne Rollerblade', 'Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.', 30, '2024-12-12', '', '2024-12-15', '2025-12-31', 'Montpellier, Hérault', 'active', 7, 3, ''),
+(10, 'Crashpad d''escalade Black Diamond', 'Tapis de réception pour le bloc en extérieur. Mousse haute densité, bretelles de transport.', 70, '2024-12-08', '', '2025-03-01', '', '', '', '', '', '');
 -- Announces Images (3 images)
 INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
 (1, '2025-Giant-Talon-2.jpeg.webp', 1),
