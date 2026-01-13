@@ -35,7 +35,7 @@ class AnnouncesRepository {
   }
 
   // Récupérer une seule annonce par son ID
-  async readOne(id: number) {
+  async getOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
       SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images

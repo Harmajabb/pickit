@@ -108,7 +108,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
 const readOne: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const announce = await announcesRepository.readOne(Number(id));
+    const announce = await announcesRepository.getOne(Number(id));
 
     if (!announce) {
       res.status(404).json({ error: "Annonce non trouvée" });

@@ -15,12 +15,12 @@ interface Announce {
 }
 
 export default function ProductSheet() {
-  const announceId = useParams();
+  const { announceId } = useParams();
   const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
-    fetch(`/announces/${announceId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/api/announces/${announceId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch announce");
         return res.json();
@@ -44,6 +44,7 @@ export default function ProductSheet() {
 
   return (
     <div className="product-sheet">
+      {console.log(announce)}
       <div className="product-container">
         <div className="product-content">
           <div className="image-section">

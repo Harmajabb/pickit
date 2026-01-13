@@ -15,11 +15,11 @@ const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/product", element: <ProductSheet /> },
       { path: "/", element: <Home /> },
       { path: "/catalog", element: <Catalog /> },
       { path: "/login", element: <Login /> },
-      { path: "/announce/:Id", element: <ProductSheet /> }, // add your page Teddy here
+      //{ path: "/product", element: <ProductSheet /> },
+      { path: "/announce/:announceId", element: <ProductSheet /> }, // add your page Teddy here
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
     ],
   },
