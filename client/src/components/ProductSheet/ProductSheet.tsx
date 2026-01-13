@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import "./ProductSheet.css";
+import EditAnnonce from "../EditAnnonce/EditAnnonce";
 
 interface Announce {
   id: number;
@@ -12,12 +13,20 @@ interface Announce {
   owner_id: number;
   all_images: string[];
   favourites?: number;
+  start_borrow_date: Date;
+  end_borrow_date: Date;
+  amount_deposit: number;
+  state_of_product: string;
+  name: string;
 }
 
 export default function ProductSheet() {
   const { announceId } = useParams();
   const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
+  const DateStartshort =
+    announce?.start_borrow_date.toLocaleDateString("fr-FR");
+  const DateEndShort = announce?.end_borrow_date.toLocaleDateString("fr-FR");
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/announces/${announceId}`)
@@ -25,7 +34,14 @@ export default function ProductSheet() {
         if (!res.ok) throw new Error("Failed to fetch announce");
         return res.json();
       })
-      .then((data) => setAnnounce(data))
+      .then((data) => {
+        const formattedData = {
+          ...data,
+          start_borrow_date: new Date(data.start_borrow_date),
+          end_borrow_date: new Date(data.end_borrow_date),
+        };
+        setAnnounce(formattedData);
+      })
       .catch((err) => console.error(err));
   }, [announceId]);
 
@@ -44,7 +60,6 @@ export default function ProductSheet() {
 
   return (
     <div className="product-sheet">
-      {console.log(announce)}
       <div className="product-container">
         <div className="product-content">
           <div className="image-section">
@@ -73,36 +88,43 @@ export default function ProductSheet() {
           </div>
 
           <div className="info-section">
-            <h1 className="product-title">SKI POLES 120CM</h1>
+            <h1 className="product-title">{announce.title}</h1>
 
             <div className="action-buttons">
-              <button type="button" className="btn btn-delete">
-                Delete
+              <button type="button">
+                {/* <ButtonDelete annonceId={announce.id} /> */}
               </button>
-              <button type="button" className="btn btn-modify">
-                Modify
+              <button type="button">
+                <EditAnnonce annonceId={announce.id} />
               </button>
             </div>
 
             <div className="info-fields">
               <div className="info-field">
                 <p className="info-label">Location</p>
-                <p className="info-value">Marseille 13th</p>
+                <p className="info-value">{announce.location}</p>
               </div>
 
               <div className="info-field">
-                <p className="info-label">Year</p>
-                <p className="info-value">2008</p>
+                <p className="info-label">Caution</p>
+                <p className="info-value">{announce.amount_deposit}€</p>
+              </div>
+
+              <div className="info-field">
+                <p className="info-label">Disponibility</p>
+                <p className="info-value">
+                  {DateStartshort} - {DateEndShort}
+                </p>
               </div>
 
               <div className="info-field">
                 <p className="info-label">Global state</p>
-                <p className="info-value">Good</p>
+                <p className="info-value">{announce.state_of_product}</p>
               </div>
 
               <div className="info-field">
                 <p className="info-label">Posted by</p>
-                <p className="info-value">Jean_mich51</p>
+                <p className="info-value">{announce.name}</p>
               </div>
 
               <div className="info-field">
@@ -122,32 +144,18 @@ export default function ProductSheet() {
         <div className="tiny-img">
           <img
             src={announce.all_images[currentImage]}
-            alt="Ski poles"
+            alt="Files"
             className="product-image"
           />
           <img
             src={announce.all_images[currentImage]}
-            alt="Ski poles"
+            alt="Files"
             className="product-image"
           />
         </div>
         <div className="description">
-          <p className="description-paragraph">
-            <strong>
-              Lightweight and sturdy ski poles, ideal for recreational or
-              occasional skiing.
-            </strong>
-          </p>
-          <p className="description-paragraph">
-            Suitable for skiers around 1.55 m to 1.65 m tall, these poles
-            provide good balance and comfort on the slopes.
-          </p>
-          <p className="description-paragraph">
-            Well maintained and ready to use.
-          </p>
-          <p className="description-paragraph">
-            Perfect for a weekend, a short trip, or testing before buying your
-            own equipment.
+          <p className={announce.description.length > 300 ? "long-text" : ""}>
+            {announce.description}
           </p>
         </div>
       </div>
