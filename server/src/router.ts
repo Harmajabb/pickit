@@ -5,7 +5,6 @@ const router = express.Router();
 /* ************************************************************************* */
 // Define Your API Routes Here
 /* ************************************************************************* */
-
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
 router.post("/auth/login", authActions.login);
