@@ -2,9 +2,13 @@ import type { RequestHandler } from "express";
 import type { Announces } from "./announcesRepository";
 import announcesRepository from "./announcesRepository";
 
-const browse: RequestHandler = async (_renpmq, res, next) => {
+const browse: RequestHandler = async (req, res, next) => {
   try {
-    const announcesFromDB = await announcesRepository.readAll();
+    const filters = {
+      location: req.query.location,
+      category_id: req.query.category_id
+    };
+    const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce,
       all_images: announce.all_images ? announce.all_images.split(",") : [],
@@ -24,6 +28,7 @@ const browseFiltered: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
+
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
