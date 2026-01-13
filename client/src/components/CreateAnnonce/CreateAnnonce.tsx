@@ -48,7 +48,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
     formDataToSend.append("categorie_id", formData.categorie_id);
     formDataToSend.append("owner_id", formData.owner_id.toString());
-
+    // biome-ignore lint/complexity/noForEach: <explanation>
     formData.files.forEach((file) => {
       formDataToSend.append("images", file);
     });
