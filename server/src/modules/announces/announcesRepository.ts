@@ -12,6 +12,7 @@ export type Announces = {
   start_borrow_date?: string;
   end_borrow_date?: string;
   location?: string;
+  status?: string;
   state?: string;
   all_images?: string | null;
   categorie_id?: number;
@@ -19,17 +20,49 @@ export type Announces = {
 };
 
 class AnnouncesRepository {
-  async readAll() {
-    const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date DESC",
-    );
+ async readAll(filters: any = {}) {
+  let sql = 
+    `SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images 
+    FROM announces 
+    LEFT JOIN announces_images ON announces.id = announces_images.announce_id`;
 
-    return rows as Announces[];
+  const sqlValues: any[] = [];
+  const conditions: string[] = [];
+
+  if (filters.location) {
+    conditions.push("announces.location LIKE ?");
+    sqlValues.push(filters.location);
   }
 
+  if (filters.categorie_id) {
+    conditions.push("announces.categorie_id = ?");
+    sqlValues.push(filters.categorie_id);
+  }
+
+  if (conditions.length > 0) {
+    sql +=  `WHERE ${conditions.join(" AND ")}`;
+  }
+
+  sql += " GROUP BY announces.id ORDER BY creation_date DESC";
+
+  const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
+
+  return rows as Announces[];
+}
+ 
   async readFiltered() {
     const [rows] = await databaseClient.query<Rows>(
       "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4",
+    );
+    return rows as Announces[];
+  }
+
+  // Get just one announcement with its ID
+  // Announce by owner ID.
+  async readByOwnerId(ownerId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      [ownerId],
     );
     return rows as Announces[];
   }

@@ -30,7 +30,7 @@ type FullAnnounceRow = {
   start_borrow_date: Date;
   end_borrow_date: Date;
   location: string;
-  state: string;
+  status: string;
   all_images: string | null;
 };
 
