@@ -13,8 +13,7 @@
 }
 
 .catalog-header .searchbar {
-  width: 100%;
-  max-width: 620px;
+  width: min(720px, 95vw);
 }
 
 .catalog-container {
@@ -24,4 +23,10 @@
   margin: 6em auto;
   gap: 1.5rem;
   padding: 20px;
+}
+
+@media (min-width: 740px) {
+  .catalog-header .searchbar {
+    display: none;
+  }
 }
