@@ -1,11 +1,37 @@
-import { Link } from "react-router";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router";
 import logo from "../../assets/icons/logo.svg";
 import roundedLogo from "../../assets/icons/rounded-logo.svg";
+import type { SearchResult, Tab } from "../../types/Search";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
+import { AuthContext } from "../../context/AuthContext";
+import SearchBar from "../SearchBar/SearchBar.tsx";
+
 function Navbar() {
-  const isLogged = false;
+  const { user, logout } = useContext(AuthContext);
+  const isLogged = !!user;
+
+  const navigate = useNavigate();
+
+  const handleSearchSubmit = (q: string, tab: Tab) => {
+    if (tab === "announces") {
+      navigate(`/catalog?q=${encodeURIComponent(q)}`);
+    }
+  };
+
+  // Handle selection from search results
+  const handleSearchSelect = (result: SearchResult) => {
+    if (result.type === "users") {
+      // redirection to user profile
+      navigate(`/profile/${result.item.id}`);
+    } else {
+      // redirection to announce details
+      navigate(`/catalog?q=${encodeURIComponent(result.item.title)}`);
+    }
+  };
+
   return (
     <>
       <nav className="desktop-nav">
@@ -13,10 +39,15 @@ function Navbar() {
         <Link to="/create-annonce" className="cta">
           List an item
         </Link>
-        <input
+        {/* <input
           type="text"
           className="text-input"
           placeholder="search an item..."
+        /> */}
+        <SearchBar
+          placeholder="Search for announcements or members..."
+          onSubmit={handleSearchSubmit}
+          onSelect={handleSearchSelect}
         />
         <svg viewBox="0 0 24 23" aria-hidden="true" className="nav-icons ">
           <path
@@ -59,12 +90,12 @@ function Navbar() {
                 stroke-linejoin="round"
               />
             </svg>
-            <Link to="" className="secondary">
+            <Link onClick={logout} to="/" className="secondary">
               Log out
             </Link>
           </>
         ) : (
-          <Link to="" className="primary">
+          <Link to="/login" className="primary">
             Log In
           </Link>
         )}
