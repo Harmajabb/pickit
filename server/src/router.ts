@@ -39,6 +39,11 @@ import searchActions from "./modules/search/searchAction";
 router.get("/api/search", searchActions.search);
 router.get("/api/searchFullAnnounces", searchActions.searchFullAnnounces);
 
+// Define user-related routes
+import userAction from "./modules/user/userActions";
+
+router.get("/api/users/:id/profile", userAction.readProfileById);
+
 /* ************************************************************************* */
 
 export default router;
