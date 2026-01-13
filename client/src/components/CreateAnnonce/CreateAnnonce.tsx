@@ -12,7 +12,7 @@ function CreateAnnonce() {
     description: "",
     amount_deposit: "",
     location: "",
-    state: "good",
+    state_of_product: "good",
     start_borrow_date: "",
     end_borrow_date: "",
     categorie_id: "1",
@@ -35,15 +35,16 @@ function CreateAnnonce() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      setFormData({
-        ...formData,
-        files: Array.from(files),
-      });
-    }
-  };
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (files) {
+    setFormData({
+      ...formData,
+      files: [...formData.files, ...Array.from(files)],
+    });
+  }
+};
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -51,9 +52,11 @@ function CreateAnnonce() {
 
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("amount_deposit", formData.amount_deposit);
+    formDataToSend.append(
+      "amount_deposit",
+      formData.amount_deposit.toString());
     formDataToSend.append("location", formData.location);
-    formDataToSend.append("state", formData.state);
+    formDataToSend.append("state_of_product", formData.state_of_product);
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
     formDataToSend.append("categorie_id", formData.categorie_id);
@@ -85,69 +88,131 @@ function CreateAnnonce() {
   };
 
   return (
-    <div className="create-annonce-page">
-      <form onSubmit={handleSubmit}>
-        <input type="file" name="images" multiple onChange={handleFileChange} />
+   <div className="create-annonce-page">
+  <h1 className="create-annonce-title">Create Your Ad</h1>
+
+  <div className="form-container">
+    <div className="image-column">
+      <input type="file" name="images" multiple onChange={handleFileChange} />
+      {formData.files.length > 0 && (
+        <div className="image-preview-container">
+      {formData.files.map((file, index) => (
+        <div key={file.name +index} className="image-preview">
+          <img src={URL.createObjectURL(file)} alt={`Prévisualisation ${index + 1}`} />
+        </div>
+      ))}
+    </div>
+      )}
+    </div>
+
+    <form className="create-annonce-form" onSubmit={handleSubmit}>
+      <div className="main-info-container">
+      <div className="field-group">
+              <label htmlFor="title">Title</label>
         <input
           type="text"
           name="title"
-          placeholder="Titre de l'annonce"
+          placeholder="Title"
           value={formData.title}
           onChange={handleChange}
-          // required
+          className="auto-width-input"
         />
-        <textarea
-          name="description"
-          placeholder="Description de l'annonce"
-          value={formData.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="number"
-          name="amount_deposit"
-          placeholder="Montant de la caution"
-          value={formData.amount_deposit}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="date"
-          name="start_borrow_date"
-          placeholder="Date de début"
-          value={formData.start_borrow_date}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="date"
-          name="end_borrow_date"
-          placeholder="Date de fin"
-          value={formData.end_borrow_date}
-          onChange={handleChange}
-          required
-        />
+      </div>
+      <div className="field-group">
+              <label htmlFor="location">Location</label>
         <input
           type="text"
           name="location"
-          placeholder="Lieu de l'annonce"
+          placeholder="Location"
           value={formData.location}
           onChange={handleChange}
-          required
+          className="auto-width-input"
         />
+      </div>
+      <div className="field-group">
+              <label htmlFor="categorie_id">Category</label>
         <select
           name="categorie_id"
           value={formData.categorie_id}
           onChange={handleChange}
-          required
+          className="auto-width-input"
         >
-          <option value="1">Categorie 1</option>
-          <option value="2">Categorie 2</option>
-          <option value="3">Categorie 3</option>
+          <option value="1">Category 1</option>
+          <option value="2">Category 2</option>
+          <option value="3">Category 3</option>
         </select>
-        <button type="submit">Créer l'annonce</button>
-      </form>
+      </div>
+      </div>
+      <div className="field-group">
+  <label htmlFor="state_of_product">Product condition</label>
+  <select
+    name="state_of_product"
+    value={formData.state_of_product}
+    onChange={handleChange}
+    className="auto-width-input"
+    required
+  >
+    <option value="new">New</option>
+    <option value="excellent">Excellent</option>
+    <option value="good">Good</option>
+    <option value="fair">Fair</option>
+    <option value="poor">Poor</option>
+  </select>
+</div>
+<div className="field-group">
+            <label htmlFor="description">Description</label>
+      <textarea
+      className="auto-width-input"
+        name="description"
+        placeholder="Ad Description"
+        value={formData.description}
+        onChange={handleChange}
+        required
+      />
     </div>
+
+      <div className="small-inputs-container">
+        <div className="field-group">
+              <label htmlFor="amount_deposit">Deposit (in €)</label>
+        <input
+          type="number"
+          name="amount_deposit"
+          placeholder="Deposit"
+          value={formData.amount_deposit}
+          onChange={handleChange}
+          className="auto-width-input"
+        />
+        </div>
+        <div className="field-group">
+              <label htmlFor="start_borrow_date">Start date</label>
+        <input
+          type="date"
+          name="start_borrow_date"
+          placeholder="Start Date"
+          value={formData.start_borrow_date}
+          onChange={handleChange}
+          className="auto-width-input"
+        />
+        </div>
+        <div className="field-group">
+              <label htmlFor="end_borrow_date">End date</label>
+        <input
+          type="date"
+          name="end_borrow_date"
+          placeholder="End Date"
+          value={formData.end_borrow_date}
+          onChange={handleChange}
+          className="auto-width-input"
+        />
+      </div>
+      </div>
+
+      <button type="submit" className="cta">Create Ad</button>
+    </form>
+  </div>
+</div>
+
+
   );
 }
 
