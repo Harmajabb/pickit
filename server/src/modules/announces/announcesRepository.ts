@@ -12,6 +12,7 @@ export type Announces = {
   start_borrow_date?: string;
   end_borrow_date?: string;
   location?: string;
+  status?: string;
   state?: string;
   all_images?: string | null;
   categorie_id?: number;
@@ -37,7 +38,7 @@ class AnnouncesRepository {
   // Announce by owner ID.
   async readByOwnerId(ownerId: number) {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.state = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
       [ownerId],
     );
     return rows as Announces[];
