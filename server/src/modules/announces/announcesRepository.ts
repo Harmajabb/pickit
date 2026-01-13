@@ -19,37 +19,42 @@ export type Announces = {
   owner_id?: number;
 };
 
+type AnnouncesFilter = {
+  zipcode?: number;
+  categorie_id?: number;
+};
+
 class AnnouncesRepository {
- async readAll(filters: any = {}) {
-  let sql = 
-    `SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images 
+  async readAll(filters: AnnouncesFilter = {}) {
+    let sql = `SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id`;
 
-  const sqlValues: any[] = [];
-  const conditions: string[] = [];
+    console.log(filters);
+    const sqlValues: any[] = [];
+    const conditions: string[] = [];
 
-  if (filters.location) {
-    conditions.push("announces.location LIKE ?");
-    sqlValues.push(filters.location);
+    if (filters.zipcode) {
+      conditions.push("announces.zipcode LIKE ?");
+      sqlValues.push(`%${filters.zipcode}%`); // filters the two first numbers of the zipcode
+    }
+
+    if (filters.categorie_id) {
+      conditions.push("announces.categorie_id = ?");
+      sqlValues.push(filters.categorie_id);
+    }
+
+    if (conditions.length > 0) {
+      sql += `WHERE ${conditions.join(" AND ")}`;
+    }
+
+    sql += " GROUP BY announces.id ORDER BY creation_date DESC";
+
+    const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
+
+    return rows as Announces[];
   }
 
-  if (filters.categorie_id) {
-    conditions.push("announces.categorie_id = ?");
-    sqlValues.push(filters.categorie_id);
-  }
-
-  if (conditions.length > 0) {
-    sql +=  `WHERE ${conditions.join(" AND ")}`;
-  }
-
-  sql += " GROUP BY announces.id ORDER BY creation_date DESC";
-
-  const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
-
-  return rows as Announces[];
-}
- 
   async readFiltered() {
     const [rows] = await databaseClient.query<Rows>(
       "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4",

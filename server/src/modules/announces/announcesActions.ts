@@ -5,12 +5,14 @@ import announcesRepository from "./announcesRepository";
 const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
-      location: req.query.location,
+      zipcode: req.query.zipcode,
       category_id: req.query.category_id
     };
+    console.log(filters)
+
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
-      ...announce,
+      ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
     res.json(formattedAnnounces);
@@ -21,8 +23,8 @@ const browse: RequestHandler = async (req, res, next) => {
 
 const browseFiltered: RequestHandler = async (req, res, next) => {
   try {
-    // Sends the whole object rez.query to the repository
-    const readFiltered = await announcesRepository.readFiltered(req.query);
+    // Sends the whole object res.query to the repository
+    const readFiltered = await announcesRepository.readFiltered();
     res.json(readFiltered);
   } catch (err) {
     next(err);
