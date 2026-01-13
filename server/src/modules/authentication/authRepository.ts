@@ -10,6 +10,12 @@ class AuthRepository {
 
     return rows[0];
   }
-}
 
+  async updatePassword(id: number, newPassword: string) {
+    await databaseClient.query(
+      "UPDATE users SET password = ? WHERE id = ?",
+      [newPassword, id],  
+    );
+  }
+} 
 export default new AuthRepository();

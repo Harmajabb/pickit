@@ -1,33 +1,24 @@
 import CatalogCard from "../../components/CatalogCard/CatalogCard.tsx";
 import "./Catalog.css";
-import { useEffect, useState } from "react";
-import type { Announces } from "../../components/ItemHighlight/Ts-ItemHighlight.ts";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router";
+import SearchBar from "../../components/SearchBar/SearchBar.tsx";
+import { useAnnounces } from "../../context/AnnouncesContext.tsx";
+import type { Announce } from "../../types/Announce.ts";
+import type { SearchResult, Tab } from "../../types/Search";
 
 function Catalog() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [data, setData] = useState<Announces[]>([]);
+  const navigate = useNavigate();
+  const { announces, isLoading, error, refreshAnnounces } = useAnnounces();
+  const [searchParams] = useSearchParams(); // Hook to read URL query parameters (e.g. ?q=bike)
+  const data = announces as Announce[];
 
+  const q = searchParams.get("q") ?? ""; // extract search query from URL, defaults to empty string if not present
+
+  // fetch announces when component mounts or when search query changes
   useEffect(() => {
-    const Announces = async () => {
-      try {
-        const data = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/announces`,
-        );
-        if (!data.ok) {
-          throw new Error(`Error HTTP: ${data.status}`);
-        }
-        const jsonData = await data.json();
-        console.log(data);
-        setData(jsonData);
-      } catch (e) {
-        setError(e as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    Announces();
-  }, []);
+    refreshAnnounces(q);
+  }, [q, refreshAnnounces]);
 
   if (isLoading) {
     return <p>Loading..</p>;
@@ -37,11 +28,43 @@ function Catalog() {
     return <p>An error has occurred</p>;
   }
 
+  const handleSearchSubmit = (q: string, tab: Tab) => {
+    if (tab === "announces") {
+      navigate(`/catalog?q=${encodeURIComponent(q)}`);
+    }
+  };
+
+  // Handle selection from search results
+  const handleSearchSelect = (result: SearchResult) => {
+    if (result.type === "users") {
+      // redirection to user profile
+      navigate(`/profile/${result.item.id}`);
+    } else {
+      // redirection to announce details
+      navigate(`/catalog?q=${encodeURIComponent(result.item.title)}`);
+    }
+  };
+
   return (
-    <div className="catalog-container">
-      {data.map((announce) => (
-        <CatalogCard key={announce.id} data={announce} />
-      ))}
+    <div className="catalog-page">
+      <header className="catalog-header">
+        <h1>Item catalog</h1>
+        <div className="catalog-search">
+          <SearchBar
+            placeholder="Search for announcements or members..."
+            onSubmit={handleSearchSubmit}
+            onSelect={handleSearchSelect}
+          />
+        </div>
+        {q.trim() !== "" && (
+          <p className="catalog-subtitle">Results for "{q}"</p>
+        )}
+      </header>
+      <div className="catalog-container">
+        {data.map((announce) => (
+          <CatalogCard key={announce.id} data={announce} />
+        ))}
+      </div>
     </div>
   );
 }

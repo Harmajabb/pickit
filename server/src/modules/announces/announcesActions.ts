@@ -2,9 +2,13 @@ import type { RequestHandler } from "express";
 import type { Announces } from "./announcesRepository";
 import announcesRepository from "./announcesRepository";
 
-const browse: RequestHandler = async (_renpmq, res, next) => {
+const browse: RequestHandler = async (req, res, next) => {
   try {
-    const announcesFromDB = await announcesRepository.readAll();
+    const filters = {
+      location: req.query.location,
+      category_id: req.query.category_id
+    };
+    const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce,
       all_images: announce.all_images ? announce.all_images.split(",") : [],
@@ -15,14 +19,16 @@ const browse: RequestHandler = async (_renpmq, res, next) => {
   }
 };
 
-const browseFiltered: RequestHandler = async (_req, res, next) => {
+const browseFiltered: RequestHandler = async (req, res, next) => {
   try {
-    const readFiltered = await announcesRepository.readFiltered();
+    // Sends the whole object rez.query to the repository
+    const readFiltered = await announcesRepository.readFiltered(req.query);
     res.json(readFiltered);
   } catch (err) {
     next(err);
   }
 };
+
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
@@ -104,7 +110,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Lire une annonce spécifique
+// Read a specific announcement
 const readOne: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -125,7 +131,7 @@ const readOne: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Mettre à jour une annonce
+// Update an announcement
 const updateAnnounce: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
