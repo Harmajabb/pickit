@@ -7,7 +7,7 @@ function CreateAnnonce() {
     description: "",
     amount_deposit: "",
     location: "",
-    state_of_product: "",
+    state_of_product: "good",
     start_borrow_date: "",
     end_borrow_date: "",
     categorie_id: "1",
@@ -129,6 +129,22 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         </select>
       </div>
       </div>
+      <div className="field-group">
+  <label htmlFor="state_of_product">Product condition</label>
+  <select
+    name="state_of_product"
+    value={formData.state_of_product}
+    onChange={handleChange}
+    className="auto-width-input"
+    required
+  >
+    <option value="new">New</option>
+    <option value="excellent">Excellent</option>
+    <option value="good">Good</option>
+    <option value="fair">Fair</option>
+    <option value="poor">Poor</option>
+  </select>
+</div>
 <div className="field-group">
             <label htmlFor="description">Description</label>
       <textarea
