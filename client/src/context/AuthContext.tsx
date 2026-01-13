@@ -45,28 +45,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   async function checkUser() {
-  //     try {
-  //       const response = await fetch(`${Base_URL}/auth/check`, {
-  //         method: "GET",
-  //         credentials: "include",
-  //       });
+  useEffect(() => {
+    async function checkUser() {
+      try {
+        const response = await fetch(`${Base_URL}/auth/check`, {
+          method: "GET",
+          credentials: "include",
+        });
 
-  //       if (response.ok) {
-  //         const res = await response.json();
-  //         login(res.user);
-  //       } else {
-  //         setUser(null);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error checking auth status:", error);
-  //       setUser(null);
-  //     }
-  //   }
+        if (response.ok) {
+          const res = await response.json();
+          login(res.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+        setUser(null);
+      }
+    }
 
-  //   checkUser();
-  // }, [login]);
+    checkUser();
+  }, [login]);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
