@@ -3,8 +3,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App";
-import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
+import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -24,7 +24,7 @@ const router = createBrowserRouter([
       { path: "/announce/:announceId", element: <ProductSheet /> }, // add your page Teddy here
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
       { path: "/reset-password/:token", element: <ResetPassword /> },
-      { path: "/forgot-password", element: <ForgotPassword />},
+      { path: "/forgot-password", element: <ForgotPassword /> },
     ],
   },
 ]);

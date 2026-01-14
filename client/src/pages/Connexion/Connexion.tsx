@@ -62,19 +62,27 @@ function Login() {
           />
           <p>Password</p>
           <input
-          aria-label="password"
+            aria-label="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="password"
           />
-          <Link aria-label="Forgot password link" to="/forgot-password" className="forgot-password-link">
+          <Link
+            aria-label="Forgot password link"
+            to="/forgot-password"
+            className="forgot-password-link"
+          >
             Oops i forgot my password
           </Link>
           <Link aria-label="Register link" to="" className="register-link">
             Not registered ?
           </Link>
-          <button aria-label="Login button" className="primary loginbtn" type="submit">
+          <button
+            aria-label="Login button"
+            className="primary loginbtn"
+            type="submit"
+          >
             Login
           </button>
         </form>

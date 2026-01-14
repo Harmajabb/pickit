@@ -6,7 +6,7 @@ const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
       location: req.query.location,
-      category_id: req.query.category_id
+      category_id: req.query.category_id,
     };
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
@@ -41,9 +41,9 @@ const destroy: RequestHandler = async (req, res, next) => {
     }
 
     res.json({ message: "La suppression s'est bien passée" });
-  }catch (err) {
+  } catch (err) {
     next(err);
-  };
+  }
 };
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
@@ -124,7 +124,6 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-
 
 // Read a specific announcement
 const readOne: RequestHandler = async (req, res, next) => {

@@ -21,36 +21,35 @@ export type Announces = {
 
 // problème any entrain d'être réglé par cécile
 class AnnouncesRepository {
- async readAll(filters: any = {}) {
-  let sql = 
-    `SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images 
+  async readAll(filters: any = {}) {
+    let sql = `SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id`;
 
-  const sqlValues: any[] = [];
-  const conditions: string[] = [];
+    const sqlValues: any[] = [];
+    const conditions: string[] = [];
 
-  if (filters.location) {
-    conditions.push("announces.location LIKE ?");
-    sqlValues.push(filters.location);
+    if (filters.location) {
+      conditions.push("announces.location LIKE ?");
+      sqlValues.push(filters.location);
+    }
+
+    if (filters.categorie_id) {
+      conditions.push("announces.categorie_id = ?");
+      sqlValues.push(filters.categorie_id);
+    }
+
+    if (conditions.length > 0) {
+      sql += `WHERE ${conditions.join(" AND ")}`;
+    }
+
+    sql += " GROUP BY announces.id ORDER BY creation_date DESC";
+
+    const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
+
+    return rows as Announces[];
   }
 
-  if (filters.categorie_id) {
-    conditions.push("announces.categorie_id = ?");
-    sqlValues.push(filters.categorie_id);
-  }
-
-  if (conditions.length > 0) {
-    sql +=  `WHERE ${conditions.join(" AND ")}`;
-  }
-
-  sql += " GROUP BY announces.id ORDER BY creation_date DESC";
-
-  const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
-
-  return rows as Announces[];
-}
- 
   async readFiltered() {
     const [rows] = await databaseClient.query<Rows>(
       "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4",
