@@ -1,5 +1,6 @@
 // Load the express module to create a web application
 
+import cookieParser from "cookie-parser";
 import express from "express";
 
 const app = express();
@@ -21,7 +22,7 @@ const app = express();
 import cors from "cors";
 
 if (process.env.CLIENT_URL != null) {
-  app.use(cors({ origin: [process.env.CLIENT_URL] }));
+  app.use(cors({ origin: [process.env.CLIENT_URL], credentials: true }));
 }
 
 // If you need to allow extra origins, you can add something like this:
@@ -52,8 +53,15 @@ app.use(
 
 // Uncomment one or more of these options depending on the format of the data sent by your client:
 
-// app.use(express.json());
+app.use(express.json());
+app.use(cookieParser());
 // app.use(express.urlencoded());
+// Parse JSON bodies (application/json)
+
+// Parse URL-encoded bodies (form submissions)
+app.use(express.urlencoded({ extended: true }));
+
+// You can also enable text/raw parsers if needed:
 // app.use(express.text());
 // app.use(express.raw());
 
@@ -84,19 +92,9 @@ const publicFolderPath = path.join(__dirname, "../../server/public");
 
 if (fs.existsSync(publicFolderPath)) {
   app.use(express.static(publicFolderPath));
-}
-
-// Serve client resources
-
-const clientBuildPath = path.join(__dirname, "../../client/dist");
-
-if (fs.existsSync(clientBuildPath)) {
-  app.use(express.static(clientBuildPath));
-
-  // Redirect unhandled requests to the client index file
 
   app.get("*", (_, res) => {
-    res.sendFile("index.html", { root: clientBuildPath });
+    res.sendFile("index.html", { root: publicFolderPath });
   });
 }
 

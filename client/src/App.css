@@ -212,7 +212,7 @@ button:focus-visible {
 }
 
 /* Inputs */
-.text-input {
+input {
   color: var(--color-primary-text);
   background-color: var(--color-bg);
   padding: 0.55rem 1rem;
@@ -225,12 +225,12 @@ button:focus-visible {
     outline: none;
   }
 }
-.text-input::placeholder {
+input::placeholder {
   opacity: 0.3;
   color: var(--color-primary-text);
   font-style: italic;
 }
-.text-input.uncorrect {
+input.uncorrect {
   animation: uncorrect 0.5s linear both;
   border: solid 1px red;
   &:focus,
