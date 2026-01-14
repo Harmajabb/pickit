@@ -75,9 +75,8 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
 
-  // Get just one announcement with its ID
-  // DISTINCT to avoid carthesian products (= similar entries)
-  async readOne(id: number) {
+  // Récupérer une seule annonce par son ID
+  async getOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
       SELECT announces.*, users.zipcode, users.lastname, users.fistname, COUNT(DISTINCT is.favorite) AS total_likes GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
@@ -116,6 +115,7 @@ class AnnouncesRepository {
       insertAnnounceQuery,
       announceValues,
     );
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const insertId = (result as any).insertId as number;
     const imagePaths: string[] = [];
 

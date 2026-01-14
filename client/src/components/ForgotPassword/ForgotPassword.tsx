@@ -27,16 +27,25 @@ function ForgotPassword() {
   return (
     <div className="forgot-password-container">
       <h2>Forgot Password</h2>
-      <form className="forgot-password-form" onSubmit={handleSubmit}>
+      <form
+        aria-label="Forgot password form"
+        className="forgot-password-form"
+        onSubmit={handleSubmit}
+      >
         <label htmlFor="email">Email:</label>
         <input
+          aria-label="Email address"
           type="email"
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button className="primary btnreset" type="submit">
+        <button
+          aria-label="Reset password button"
+          className="primary btnreset"
+          type="submit"
+        >
           Reset Password
         </button>
       </form>
