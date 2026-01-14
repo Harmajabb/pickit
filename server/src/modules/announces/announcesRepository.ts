@@ -24,11 +24,14 @@ type AnnouncesFilter = {
   categorie_id?: number;
 };
 
+// DISTINCT to avoid carthesian products (= similar entries)
 class AnnouncesRepository {
   async readAll(filters: AnnouncesFilter = {}) {
-    let sql = `SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images 
+    let sql = `SELECT announces.*, users.zipcode, COUNT(DISTINCT is.favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
     FROM announces 
-    LEFT JOIN announces_images ON announces.id = announces_images.announce_id`;
+    LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+    LEFT JOIN users ON owner.id = users.id
+    LEFT JOIN favorites ON announces.id = favorites.announces_id`;
 
     console.log(filters);
     const sqlValues: any[] = [];
@@ -72,13 +75,16 @@ class AnnouncesRepository {
     return rows as Announces[];
   }
 
-  // Récupérer une seule annonce par son ID
+  // Get just one announcement with its ID
+  // DISTINCT to avoid carthesian products (= similar entries)
   async readOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
-      SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images
+      SELECT announces.*, users.zipcode, users.lastname, users.fistname, COUNT(DISTINCT is.favorite) AS total_likes GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
       FROM announces
       LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+      LEFT JOIN users ON owner.id = users.id
+      LEFT JOIN favorites ON announces.id = favorites.announces_id
       WHERE announces.id = ?
       GROUP BY announces.id
       `,
