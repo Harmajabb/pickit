@@ -104,7 +104,7 @@ button:focus-visible {
 /* cta button */
 .cta {
   padding: 0.45rem 1.25rem;
-  color: var(--cta-color);
+  color: #282727;
   border-radius: 999px;
   border: 1px solid var(--color-primary-text);
   background-color: var(--color-btn);
@@ -258,8 +258,9 @@ input.uncorrect {
 /* Input date specific */
 input[type="date"] {
   padding: 0.47rem 1rem;
-  color: color-mix(in lab, var(--color-primary-text) 50%, transparent);
+  color: var(--color-primary-text);
 }
+
 :root[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
@@ -267,6 +268,10 @@ input[type="date"] {
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0);
   cursor: pointer;
+}
+textarea {
+  font-family: "Google Sans", sans-serif;
+  color: var(--color-primary-text);
 }
 
 /* a11y: for screen reader pour dire a l'user que la page mene a une autre*/
