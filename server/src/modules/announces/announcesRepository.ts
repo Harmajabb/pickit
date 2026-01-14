@@ -32,6 +32,13 @@ class AnnouncesRepository {
     );
     return rows as Announces[];
   }
+  async delete(id: number) {
+    const [result] = await databaseClient.query<Result>(
+      "DELETE FROM announces WHERE id = ?",
+      [id],
+    );
+    return result;
+  }
 }
 
 export default new AnnouncesRepository();

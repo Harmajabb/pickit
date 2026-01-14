@@ -14,6 +14,7 @@ router.post("/api/logout", authActions.logout);
 import announcesActions from "./modules/announces/announcesActions";
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
+router.delete("/api/announcesDelete", announcesActions.destroy);
 
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";

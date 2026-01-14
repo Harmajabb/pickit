@@ -25,4 +25,21 @@ const browseFiltered: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default { browse, browseFiltered };
+const destroy: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.query.id);
+
+    const resultDelete = await announcesRepository.delete(id);
+    console.log(resultDelete);
+    if (resultDelete.affectedRows === 0) {
+      res.status(404).json({ message: "Annonce non trouvée" });
+      return;
+    }
+
+    res.json({ message: "La suppression s'est bien passée" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { browse, browseFiltered, destroy };
