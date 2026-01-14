@@ -32,16 +32,25 @@ function ResetPassword() {
   return (
     <div className="reset-password-container">
       <h2>Reset Password</h2>
-      <form className="reset-password-form" onSubmit={handleSubmit}>
+      <form
+        aria-label="Reset password form"
+        className="reset-password-form"
+        onSubmit={handleSubmit}
+      >
         <label htmlFor="new-password">New Password:</label>
         <input
+          aria-label="New password"
           type="password"
           id="new-password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           required
         />
-        <button className="primary btnreset" type="submit">
+        <button
+          aria-label="Set new password button"
+          className="primary btnreset"
+          type="submit"
+        >
           Set New Password
         </button>
       </form>
