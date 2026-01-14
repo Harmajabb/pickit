@@ -9,6 +9,8 @@ import {
 interface User {
   id: number;
   email: string;
+  name: string;
+  role: number;
 }
 
 const Base_URL = import.meta.env.VITE_API_URL;
@@ -22,7 +24,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  user: null,
+        user: null,
   login: () => {},
   logout: () => {},
   initResetPassword: async () => {},
