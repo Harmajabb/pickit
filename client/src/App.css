@@ -70,6 +70,7 @@ p {
   --color-btn: #ccff33;
   --bouncy-cubicBezier: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --b-radius: 10px;
+  --color-dark-text: #282727;
 }
 
 @media (max-width: 640px) {
@@ -86,6 +87,7 @@ p {
   --color-btn-hover: #4caf50;
   --color-bg: #282727;
   --color-accent: #1f2a48;
+  --color-dark-text: #282727;
 }
 
 body {
@@ -104,7 +106,7 @@ button:focus-visible {
 /* cta button */
 .cta {
   padding: 0.45rem 1.25rem;
-  color: #282727;
+  color: var(--color-dark-text);
   border-radius: 999px;
   border: 1px solid var(--color-primary-text);
   background-color: var(--color-btn);
