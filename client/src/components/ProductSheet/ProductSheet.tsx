@@ -24,9 +24,7 @@ export default function ProductSheet() {
   const { announceId } = useParams();
   const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
-  const DateStartshort =
-    announce?.start_borrow_date.toLocaleDateString("fr-FR");
-  const DateEndShort = announce?.end_borrow_date.toLocaleDateString("fr-FR");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/announces/${announceId}`)
@@ -54,26 +52,35 @@ export default function ProductSheet() {
   const prevImage = () => {
     setCurrentImage(
       (prev) =>
-        (prev - 1 + announce.all_images.length) % announce.all_images.length,
+        (prev - 1 + announce.all_images.length) % announce.all_images.length
     );
+  };
+
+  const DateStartshort = announce.start_borrow_date.toLocaleDateString("fr-FR");
+  const DateEndShort = announce.end_borrow_date.toLocaleDateString("fr-FR");
+
+  const handleSave = (updatedAnnounce: Announce) => {
+    setAnnounce(updatedAnnounce);
+    setIsEditing(false);
   };
 
   return (
     <div className="product-sheet">
       <div className="product-container">
         <div className="product-content">
+          {/* Section image - toujours affichée */}
           <div className="image-section">
             <div className="image-wrapper">
               <img
                 src={announce.all_images[currentImage]}
-                alt="Ski poles"
+                alt="Produit"
                 className="product-image"
               />
-
               <button
                 type="button"
                 onClick={prevImage}
                 className="nav-arrow nav-arrow-left"
+                aria-label="Image précédente"
               >
                 <ChevronLeft className="arrow-icon" />
               </button>
@@ -81,83 +88,102 @@ export default function ProductSheet() {
                 type="button"
                 onClick={nextImage}
                 className="nav-arrow nav-arrow-right"
+                aria-label="Image suivante"
               >
                 <ChevronRight className="arrow-icon" />
               </button>
             </div>
+
+            {/* Miniatures - toujours affichées sous la grande image */}
+            <div className="tiny-img">
+              {announce.all_images.map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt={`Miniature ${idx + 1}`}
+                  className={`product-image ${currentImage === idx ? 'active' : ''}`}
+                  onClick={() => setCurrentImage(idx)}
+                  style={{ cursor: 'pointer', opacity: currentImage === idx ? 1 : 0.6 }}
+                />
+              ))}
+            </div>
           </div>
 
+          {/* Section info - mode lecture ou édition */}
           <div className="info-section">
-            <h1 className="product-title">{announce.title}</h1>
+            {isEditing ? (
+              <EditAnnonce
+                announce={announce}
+                onCancel={() => setIsEditing(false)}
+                onSave={handleSave}
+              />
+            ) : (
+              <>
+                <h1 className="product-title">{announce.title}</h1>
 
-            <div className="action-buttons">
-              <button type="button">
-                {/* <ButtonDelete annonceId={announce.id} /> */}
-              </button>
-              <button type="button">
-                <EditAnnonce annonceId={announce.id} />
-              </button>
-            </div>
-
-            <div className="info-fields">
-              <div className="info-field">
-                <p className="info-label">Location</p>
-                <p className="info-value">{announce.location}</p>
-              </div>
-
-              <div className="info-field">
-                <p className="info-label">Caution</p>
-                <p className="info-value">{announce.amount_deposit}€</p>
-              </div>
-
-              <div className="info-field">
-                <p className="info-label">Disponibility</p>
-                <p className="info-value">
-                  {DateStartshort} - {DateEndShort}
-                </p>
-              </div>
-
-              <div className="info-field">
-                <p className="info-label">Global state</p>
-                <p className="info-value">{announce.state_of_product}</p>
-              </div>
-
-              <div className="info-field">
-                <p className="info-label">Posted by</p>
-                <p className="info-value">{announce.name}</p>
-              </div>
-
-              <div className="info-field">
-                <p className="info-label">Favourites</p>
-                <div className="favourites">
-                  <span className="info-value">12</span>
-                  <Heart className="heart-icon" />
+                <div className="action-buttons">
+                  <button 
+                    type="button" 
+                    className="btn btn-modify"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Éditer
+                  </button>
                 </div>
-              </div>
-            </div>
 
-            <button type="button" className="btn btn-contact">
-              Contact the borrower
-            </button>
+                <div className="info-fields">
+                  <div className="info-field">
+                    <p className="info-label">Location</p>
+                    <p className="info-value">{announce.location}</p>
+                  </div>
+
+                  <div className="info-field">
+                    <p className="info-label">Caution</p>
+                    <p className="info-value">{announce.amount_deposit}€</p>
+                  </div>
+
+                  <div className="info-field">
+                    <p className="info-label">Disponibilité</p>
+                    <p className="info-value">
+                      {DateStartshort} - {DateEndShort}
+                    </p>
+                  </div>
+
+                  <div className="info-field">
+                    <p className="info-label">État global</p>
+                    <p className="info-value">{announce.state_of_product}</p>
+                  </div>
+
+                  <div className="info-field">
+                    <p className="info-label">Publié par</p>
+                    <p className="info-value">{announce.name}</p>
+                  </div>
+
+                  <div className="info-field">
+                    <p className="info-label">Favoris</p>
+                    <div className="favourites">
+                      <span className="info-value">{announce.favourites || 0}</span>
+                      <Heart className="heart-icon" />
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" className="btn btn-contact">
+                  Contacter l'emprunteur
+                </button>
+              </>
+            )}
           </div>
         </div>
-        <div className="tiny-img">
-          <img
-            src={announce.all_images[currentImage]}
-            alt="Files"
-            className="product-image"
-          />
-          <img
-            src={announce.all_images[currentImage]}
-            alt="Files"
-            className="product-image"
-          />
-        </div>
-        <div className="description">
-          <p className={announce.description.length > 300 ? "long-text" : ""}>
-            {announce.description}
-          </p>
-        </div>
+
+        {/* Description - toujours affichée en mode lecture */}
+        {!isEditing && (
+          <div className="description">
+            <p className={announce.description.length > 300 ? "long-text" : ""}>
+              {announce.description}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
