@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./CreateAnnonce.css";
 
 function CreateAnnonce() {
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -31,10 +33,14 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     });
   }
 };
+  // UI ONLY → ouvre la pop-in
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      setShowConfirm(true);
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  // BUSINESS LOGIC ONLY → envoi API
+    const submitAnnonce = async () => {
     const formDataToSend = new FormData();
 
     formDataToSend.append("title", formData.title);
@@ -196,6 +202,36 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       <button type="submit" className="cta">Create Ad</button>
     </form>
   </div>
+  {/* MODAL CONFIRMATION */}
+      {showConfirm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Confirm creation</h2>
+            <p>Do you really want to create this ad?</p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn-confirm"
+                onClick={() => {
+                  submitAnnonce();
+                  setShowConfirm(false);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 </div>
 
 
