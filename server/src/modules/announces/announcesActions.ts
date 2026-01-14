@@ -1,5 +1,4 @@
-import type { Announces } from "./announcesRepository";
-import type { CreateAnnounceResult } from "./announcesRepository";
+import type { CreateAnnounceInput } from "./announcesRepository";
 import type { RequestHandler } from "express";
 
 import announcesRepository from "./announcesRepository";
@@ -28,7 +27,8 @@ const browseFiltered: RequestHandler = async (_req, res, next) => {
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
-    const files = req.files as Express.Multer.File[] | undefined;
+    const files = (req.files as Express.Multer.File[]) ?? [];
+
     const {
       title,
       description,
@@ -40,6 +40,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       owner_id,
       state_of_product,
     } = req.body;
+
     if (
       !title ||
       !description ||
@@ -51,11 +52,14 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       !owner_id ||
       !state_of_product
     ) {
-      res
-        .status(400)
-        .json({ success: false, error: "Missing required fields" });
+      res.status(400).json({
+        success: false,
+        error: "Missing required fields",
+      });
+      return;
     }
-    const payload: Announces = {
+
+    const payload: CreateAnnounceInput = {
       title: String(title),
       description: String(description),
       amount_deposit: Number(amount_deposit),
@@ -66,39 +70,16 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       owner_id: Number(owner_id),
       state_of_product: String(state_of_product),
     };
-    let result: CreateAnnounceResult;
-    try {
-      result = await announcesRepository.sendCreateAnnounce(
-        payload,
-        files ?? [],
-      );
-    } catch (err) {
-      // remove uploaded files if any, because DB failed
-      if (files && files.length > 0) {
-        try {
-          const fs = await import("node:fs/promises");
-          const path = await import("node:path");
-          for (const f of files) {
-            const full = path.join(
-              process.cwd(),
-              "public/assets/images",
-              f.filename,
-            );
-            try {
-              await fs.unlink(full);
-            } catch (_err) {}
-          }
-        } catch (_err) {}
-      }
-      throw err;
-    }
+
+    const announceId = await announcesRepository.sendCreateAnnounce(
+      payload,
+      files,
+    );
 
     res.status(201).json({
       success: true,
       message: "Successful listing!",
-      announceId: result.announceId,
-      imagesUploaded: result.imagesCount,
-      imagePaths: result.imagePaths,
+      announceId,
       title: payload.title,
     });
   } catch (err) {

@@ -2,10 +2,16 @@ import type { ResultSetHeader } from "mysql2";
 import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
 
-export type CreateAnnounceResult = {
-  announceId: number;
-  imagesCount: number;
-  imagePaths: string[];
+export type CreateAnnounceInput = {
+  title: string;
+  description: string;
+  amount_deposit: number;
+  start_borrow_date: string;
+  end_borrow_date: string;
+  location: string;
+  categorie_id: number;
+  owner_id: number;
+  state_of_product: string;
 };
 
 export type Announces = {
@@ -67,74 +73,69 @@ class AnnouncesRepository {
   }
 
   async sendCreateAnnounce(
-    form: Announces,
+    form: CreateAnnounceInput,
     files: Express.Multer.File[],
-  ): Promise<CreateAnnounceResult> {
-    const insertAnnounceQuery = `
-    INSERT INTO announces
-    (title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, categorie_id, owner_id, state_of_product)
-    VALUES (?, ?, ?, NOW(), NULL, ?, ?, ?, ?, ?, ?)
-  `;
-    const announceValues = [
-      form.title,
-      form.description,
-      form.amount_deposit,
-      form.start_borrow_date,
-      form.end_borrow_date,
-      form.location,
-      form.categorie_id,
-      form.owner_id,
-      form.state_of_product,
-    ];
+  ): Promise<number> {
+    const connection = await databaseClient.getConnection();
 
-    const [result] = await databaseClient.query<ResultSetHeader>(
-      insertAnnounceQuery,
-      announceValues,
-    );
-    const insertId = result.insertId as number;
-    const imagePaths: string[] = [];
+    try {
+      await connection.beginTransaction();
 
-    if (files.length > 0) {
-      const rows = files.map((f) => {
-        const rel = `assets/images/${f.filename}`;
-        imagePaths.push(rel);
-        return [rel, insertId];
-      });
+      const [result] = await connection.query<ResultSetHeader>(
+        `
+      INSERT INTO announces
+      (title, description, amount_deposit, creation_date, start_borrow_date, end_borrow_date, location, categorie_id, owner_id, state_of_product)
+      VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)
+      `,
+        [
+          form.title,
+          form.description,
+          form.amount_deposit,
+          form.start_borrow_date,
+          form.end_borrow_date,
+          form.location,
+          form.categorie_id,
+          form.owner_id,
+          form.state_of_product,
+        ],
+      );
 
-      const insertImagesQuery =
-        "INSERT INTO announces_images (url, announce_id) VALUES ?";
-      try {
-        await databaseClient.query(insertImagesQuery, [rows]);
-      } catch (err) {
-        try {
-          const fs = await import("node:fs/promises");
-          const path = await import("node:path");
-          for (const f of files) {
-            const full = path.join(
-              process.cwd(),
-              "public/assets/images",
-              f.filename,
-            );
-            try {
-              await fs.unlink(full);
-            } catch (_err) {}
-          }
-        } catch (_err) {}
-        try {
-          await databaseClient.query("DELETE FROM announces WHERE id = ?", [
-            insertId,
-          ]);
-        } catch (_err) {}
-        throw err;
+      const announceId = result.insertId;
+
+      if (files.length > 0) {
+        const rows = files.map((f) => [f.filename, announceId]);
+
+        await connection.query(
+          "INSERT INTO announces_images (url, announce_id) VALUES ?",
+          [rows],
+        );
       }
-    }
 
-    return {
-      announceId: insertId,
-      imagesCount: files.length,
-      imagePaths,
-    };
+      await connection.commit();
+      return announceId;
+    } catch (err) {
+      await connection.rollback();
+
+      // cleanup fichiers
+      const fs = await import("node:fs/promises");
+      const path = await import("node:path");
+
+      await Promise.all(
+        files.map((f) =>
+          fs
+            .unlink(
+              path.join(process.cwd(), "public/assets/images", f.filename),
+            )
+            .catch(() => {}),
+        ),
+      );
+
+      throw err;
+    } finally {
+      connection.release();
+    }
   }
+
   // Update listing
   async sendUpdateAnnounce(
     id: number,
