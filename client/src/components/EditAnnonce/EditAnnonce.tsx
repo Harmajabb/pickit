@@ -1,9 +1,25 @@
 import { useState } from "react";
+import type { AnnounceDetail } from "../../types/Announce";
+
+// interface Announce {
+//   id: number;
+//   title: string;
+//   description: string;
+//   location: string;
+//   owner_id: number;
+//   all_images: string[];
+//   start_borrow_date: Date;
+//   end_borrow_date: Date;
+//   amount_deposit: number;
+//   state_of_product: string;
+//   name: string;
+//   categorie_id: number;
+// }
 
 type EditAnnonceProps = {
-  announce: any;
+  announce: AnnounceDetail;
   onCancel: () => void;
-  onSave: (updatedAnnounce: any) => void;
+  onSave: (updatedAnnounce: AnnounceDetail) => void;
 };
 
 function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
@@ -28,7 +44,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       const file = e.target.files[0];
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
@@ -80,7 +96,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         throw new Error("Erreur lors de la modification");
       }
 
-      const updatedData = await res.json();
+      await res.json();
       onSave({
         ...formData,
         all_images: imagePreview
@@ -179,7 +195,6 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
       </div>
 
-      {/* Édition de l'image */}
       <div className="edit-image-mini-wrapper">
         <label htmlFor="image-upload" className="edit-image-btn">
           Modifier l'image
@@ -196,7 +211,6 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         />
       </div>
 
-      {/* Description */}
       <div className="description" style={{ marginTop: "2rem" }}>
         <p
           className="info-label"
@@ -214,7 +228,6 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         />
       </div>
 
-      {/* Boutons d'action à la fin */}
       <div className="action-buttons">
         <button
           type="button"
@@ -223,7 +236,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         >
           Enregistrer
         </button>
-        <button className="btn btn-cancel" onClick={onCancel}>
+        <button type="button" className="btn btn-cancel" onClick={onCancel}>
           Annuler
         </button>
       </div>

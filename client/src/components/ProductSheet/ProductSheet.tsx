@@ -2,27 +2,29 @@ import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import "./ProductSheet.css";
+import type { AnnounceDetail } from "../../types/Announce";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 
-interface Announce {
-  id: number;
-  title: string;
-  description: string;
-  location: string;
-  state: string;
-  owner_id: number;
-  all_images: string[];
-  favourites?: number;
-  start_borrow_date: Date;
-  end_borrow_date: Date;
-  amount_deposit: number;
-  state_of_product: string;
-  name: string;
-}
+// interface Announce {
+//   id: number;
+//   title: string;
+//   description: string;
+//   location: string;
+//   state: string;
+//   owner_id: number;
+//   categorie_id: number;
+//   all_images: string[];
+//   favourites?: number;
+//   start_borrow_date: Date;
+//   end_borrow_date: Date;
+//   amount_deposit: number;
+//   state_of_product: string;
+//   name: string;
+// }
 
 export default function ProductSheet() {
   const { announceId } = useParams();
-  const [announce, setAnnounce] = useState<Announce | null>(null);
+  const [announce, setAnnounce] = useState<AnnounceDetail | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -52,14 +54,14 @@ export default function ProductSheet() {
   const prevImage = () => {
     setCurrentImage(
       (prev) =>
-        (prev - 1 + announce.all_images.length) % announce.all_images.length
+        (prev - 1 + announce.all_images.length) % announce.all_images.length,
     );
   };
 
   const DateStartshort = announce.start_borrow_date.toLocaleDateString("fr-FR");
   const DateEndShort = announce.end_borrow_date.toLocaleDateString("fr-FR");
 
-  const handleSave = (updatedAnnounce: Announce) => {
+  const handleSave = (updatedAnnounce: AnnounceDetail) => {
     setAnnounce(updatedAnnounce);
     setIsEditing(false);
   };
@@ -95,14 +97,19 @@ export default function ProductSheet() {
 
             <div className="tiny-img">
               {announce.all_images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Miniature ${idx + 1}`}
-                  className={`product-image ${currentImage === idx ? 'active' : ''}`}
+                <button
+                  key={img}
+                  type="button"
                   onClick={() => setCurrentImage(idx)}
-                  style={{ cursor: 'pointer', opacity: currentImage === idx ? 1 : 0.6 }}
-                />
+                  className="tiny-img-button"
+                >
+                  <img
+                    src={img}
+                    alt={`Miniature ${idx + 1}`}
+                    className={`product-image ${currentImage === idx ? "active" : ""}`}
+                    style={{ opacity: currentImage === idx ? 1 : 0.6 }}
+                  />
+                </button>
               ))}
             </div>
           </div>
@@ -119,8 +126,8 @@ export default function ProductSheet() {
                 <h1 className="product-title">{announce.title}</h1>
 
                 <div className="action-buttons">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className="btn btn-modify"
                     onClick={() => setIsEditing(true)}
                   >
@@ -159,7 +166,9 @@ export default function ProductSheet() {
                   <div className="info-field">
                     <p className="info-label">Favoris</p>
                     <div className="favourites">
-                      <span className="info-value">{announce.favourites || 0}</span>
+                      <span className="info-value">
+                        {announce.favourites || 0}
+                      </span>
                       <Heart className="heart-icon" />
                     </div>
                   </div>

@@ -5,8 +5,12 @@ import announcesRepository from "./announcesRepository";
 const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
-      location: req.query.location,
-      category_id: req.query.category_id
+      zipcode:
+        typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
+      category_id:
+        typeof req.query.category_id === "string"
+          ? Number(req.query.category_id)
+          : undefined,
     };
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
@@ -19,16 +23,18 @@ const browse: RequestHandler = async (req, res, next) => {
   }
 };
 
-const browseFiltered: RequestHandler = async (req, res, next) => {
+const browseFiltered: RequestHandler = async (_req, res, next) => {
   try {
     // Sends the whole object rez.query to the repository
-    const readFiltered = await announcesRepository.readFiltered(req.query);
+    const readFiltered =
+      await announcesRepository.readFiltered(
+        // req.query
+      );
     res.json(readFiltered);
   } catch (err) {
     next(err);
   }
 };
-
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
@@ -70,7 +76,11 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       owner_id: Number(owner_id),
       state: String(state),
     };
-    let result: any;
+    let result: {
+      announceId: number;
+      imagesCount: number;
+      imagePaths: string[];
+    };
     try {
       result = await announcesRepository.sendCreateAnnounce(
         payload,
@@ -103,7 +113,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       announceId: result.announceId,
       imagesUploaded: result.imagesCount,
       imagePaths: result.imagePaths,
-      title: result.title,
+      title: payload.title,
     });
   } catch (err) {
     next(err);
