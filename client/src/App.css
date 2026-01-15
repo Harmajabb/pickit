@@ -205,8 +205,8 @@ button:focus-visible {
 .secondary.uncorrect:focus-visible {
   animation: uncorrect 0.5s linear both;
   border: solid 1px red !important;
-  outline:none !important;
-  
+  outline: solid 2px red !important;
+
   color: var(--color-primary-text);
   background: var(--color-bg);
   &:focus,
