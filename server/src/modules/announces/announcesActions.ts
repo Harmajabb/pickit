@@ -1,12 +1,23 @@
 import type { RequestHandler } from "express";
-import type { Announces } from "./announcesRepository";
+import type { CreateAnnounceInput } from "./announcesRepository";
+
 import announcesRepository from "./announcesRepository";
 
-const browse: RequestHandler = async (_renpmq, res, next) => {
+const browse: RequestHandler = async (req, res, next) => {
   try {
-    const announcesFromDB = await announcesRepository.readAll();
+    const filters = {
+      zipcode:
+        typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
+      category_id:
+        typeof req.query.category_id === "number"
+          ? req.query.category_id
+          : undefined,
+    };
+    console.log(filters);
+
+    const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
-      ...announce,
+      ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
     res.json(formattedAnnounces);
@@ -17,6 +28,7 @@ const browse: RequestHandler = async (_renpmq, res, next) => {
 
 const browseFiltered: RequestHandler = async (_req, res, next) => {
   try {
+    // Sends the whole object res.query to the repository
     const readFiltered = await announcesRepository.readFiltered();
     res.json(readFiltered);
   } catch (err) {
@@ -26,7 +38,8 @@ const browseFiltered: RequestHandler = async (_req, res, next) => {
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
-    const files = req.files as Express.Multer.File[] | undefined;
+    const files = (req.files as Express.Multer.File[]) ?? [];
+
     const {
       title,
       description,
@@ -34,10 +47,11 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       start_borrow_date,
       end_borrow_date,
       location,
-      state,
       categorie_id,
       owner_id,
+      state_of_product,
     } = req.body;
+
     if (
       !title ||
       !description ||
@@ -45,15 +59,18 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       !start_borrow_date ||
       !end_borrow_date ||
       !location ||
-      !state ||
       !categorie_id ||
-      !owner_id
+      !owner_id ||
+      !state_of_product
     ) {
-      res
-        .status(400)
-        .json({ success: false, error: "Missing required fields" });
+      res.status(400).json({
+        success: false,
+        error: "Missing required fields",
+      });
+      return;
     }
-    const payload: Announces = {
+
+    const payload: CreateAnnounceInput = {
       title: String(title),
       description: String(description),
       amount_deposit: Number(amount_deposit),
@@ -62,53 +79,30 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       location: String(location),
       categorie_id: Number(categorie_id),
       owner_id: Number(owner_id),
-      state: String(state),
+      state_of_product: String(state_of_product),
     };
-    let result: any;
-    try {
-      result = await announcesRepository.sendCreateAnnounce(
-        payload,
-        files ?? [],
-      );
-    } catch (err) {
-      // remove uploaded files if any, because DB failed
-      if (files && files.length > 0) {
-        try {
-          const fs = await import("node:fs/promises");
-          const path = await import("node:path");
-          for (const f of files) {
-            const full = path.join(
-              process.cwd(),
-              "public/assets/images",
-              f.filename,
-            );
-            try {
-              await fs.unlink(full);
-            } catch (_err) {}
-          }
-        } catch (_err) {}
-      }
-      throw err;
-    }
+
+    const announceId = await announcesRepository.sendCreateAnnounce(
+      payload,
+      files,
+    );
 
     res.status(201).json({
       success: true,
       message: "Successful listing!",
-      announceId: result.announceId,
-      imagesUploaded: result.imagesCount,
-      imagePaths: result.imagePaths,
-      title: result.title,
+      announceId,
+      title: payload.title,
     });
   } catch (err) {
     next(err);
   }
 };
 
-// Lire une annonce spécifique
+// Read a specific announcement
 const readOne: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const announce = await announcesRepository.readOne(Number(id));
+    const announce = await announcesRepository.getOne(Number(id));
 
     if (!announce) {
       res.status(404).json({ error: "Annonce non trouvée" });
@@ -125,7 +119,7 @@ const readOne: RequestHandler = async (req, res, next) => {
   }
 };
 
-// Mettre à jour une annonce
+// Update an announcement
 const updateAnnounce: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;

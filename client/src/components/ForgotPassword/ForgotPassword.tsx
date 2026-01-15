@@ -19,7 +19,7 @@ function ForgotPassword() {
       setMessage(
         "If an account with that email exists, a reset link has been sent.",
       );
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to initiate password reset. Please try again later.");
     }
   };
@@ -27,16 +27,25 @@ function ForgotPassword() {
   return (
     <div className="forgot-password-container">
       <h2>Forgot Password</h2>
-      <form className="forgot-password-form" onSubmit={handleSubmit}>
+      <form
+        aria-label="Forgot password form"
+        className="forgot-password-form"
+        onSubmit={handleSubmit}
+      >
         <label htmlFor="email">Email:</label>
         <input
+          aria-label="Email address"
           type="email"
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button className="primary btnreset" type="submit">
+        <button
+          aria-label="Reset password button"
+          className="primary btnreset"
+          type="submit"
+        >
           Reset Password
         </button>
       </form>

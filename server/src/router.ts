@@ -6,7 +6,6 @@ const router = express.Router();
 /* ************************************************************************* */
 // Define Your API Routes Here
 /* ************************************************************************* */
-
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
 
@@ -25,6 +24,7 @@ router.get("/api/announces/:id", announcesActions.readOne);
 router.put("/api/announces/:id", announcesActions.updateAnnounce);
 router.post(
   "/api/create_announce",
+  authActions.checkAuth,
   upload.array("images", 10),
   announcesActions.createAnnounce,
 );
