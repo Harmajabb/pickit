@@ -1,55 +1,197 @@
-.create-annonce-page {
-  padding-top: 90px;
-  padding-left: 20px;
-  padding-right: 20px;
+/* Supprimer les flèches sur input type number */
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-.create-annonce-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fafafa;
+.create-annonce-page {
+  padding-top: 130px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 235px;
 
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  align-items: center;
 }
 
-/* Champs */
-.create-annonce-form input,
-.create-annonce-form textarea,
-.create-annonce-form select {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.create-annonce-title {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
   width: 100%;
+  max-width: 900px;
+}
+
+.image-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-preview-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.image-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border: 1px solid var(--color-primary-text);
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.image-preview img:hover {
+  transform: scale(1.02);
+}
+
+.create-annonce-form {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: Helvetica, Arial, sans-serif;
+  border-radius: 10px;
+}
+
+.main-info-container,
+.small-inputs-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.auto-width-input {
+  flex: 1 1 auto;
+  min-width: 50px;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid var(--color-primary-text);
+  border-radius: 10px;
+  background-color: transparent;
+  text-align: center;
+}
+
+.auto-width-input:focus {
+  box-shadow: 0 0 0 2px var(--color-btn);
+  border: solid 1px var(--color-btn);
+  outline: none;
+  background: transparent;
 }
 
 .create-annonce-form textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 90px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--color-primary-text);
+  border-radius: 10px;
+  font-size: 15px;
 }
 
-.create-annonce-form input::placeholder,
-.create-annonce-form textarea::placeholder {
-  color: #999;
+.image-preview img {
+  width: 200px;
+  max-height: 200px;
+  object-fit: cover;
+  border: 1px solid var(--color-primary-text);
+  border-radius: 10px;
 }
-
-/* Bouton */
-.create-annonce-form button {
-  padding: 12px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  border-radius: 4px;
+.create-annonce-form select {
+  color: var(--color-primary-text);
+  border: 1px solid var(--color-primary-text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 15px;
+  appearance: none;
   cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+  text-align: center;
 }
 
-.create-annonce-form button:hover {
-  background-color: #0056b3;
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.field-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary-text);
+}
+
+/* Bouton Create Ad spécifique au formulaire */
+.create-annonce-form button.cta {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
+}
+@media (max-width: 768px) {
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .image-column {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .image-preview img {
+    width: 45%;
+    max-width: 200px;
+    height: auto;
+  }
+
+  .create-annonce-form {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .main-info-container,
+  .small-inputs-container {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .main-info-container > .field-group,
+  .small-inputs-container > .field-group {
+    flex: 1 1 calc(33.333% - 8px);
+  }
+
+  .field-group textarea {
+    flex: 1 1 100%;
+  }
 }
