@@ -11,6 +11,7 @@
 }
 .formProgress > * {
   stroke: var(--color-primary-text);
+  stroke-width: 2px;
 }
 .doneStep-indicator {
   fill: var(--color-primary-text);
