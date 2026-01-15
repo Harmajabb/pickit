@@ -21,6 +21,7 @@ interface Announce {
 }
 
 export default function ProductSheet() {
+  const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const { announceId } = useParams();
   const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
@@ -65,7 +66,7 @@ export default function ProductSheet() {
           <div className="image-section">
             <div className="image-wrapper">
               <img
-                src={announce.all_images[currentImage]}
+                src={BASE_URL + announce.all_images[currentImage]}
                 alt="Ski poles"
                 className="product-image"
               />
@@ -143,12 +144,12 @@ export default function ProductSheet() {
         </div>
         <div className="tiny-img">
           <img
-            src={announce.all_images[currentImage]}
+            src={BASE_URL + announce.all_images[currentImage]}
             alt="Files"
             className="product-image"
           />
           <img
-            src={announce.all_images[currentImage]}
+            src={BASE_URL + announce.all_images[currentImage]}
             alt="Files"
             className="product-image"
           />
