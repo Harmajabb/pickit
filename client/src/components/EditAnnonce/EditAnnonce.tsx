@@ -42,22 +42,46 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
     e.preventDefault();
     
     try {
+      // Fonction pour formater les dates au format YYYY-MM-DD
+      const formatDateForDB = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
+      // Préparer les données avec les dates au bon format
+      const dataToSend = {
+        title: formData.title,
+        description: formData.description,
+        amount_deposit: Number(formData.amount_deposit),
+        location: formData.location,
+        state_of_product: formData.state_of_product,
+        start_borrow_date: formatDateForDB(formData.start_borrow_date),
+        end_borrow_date: formatDateForDB(formData.end_borrow_date),
+        owner_id: formData.owner_id,
+        categorie_id: formData.categorie_id, // Ajout du champ manquant
+        all_images: imagePreview 
+          ? [imagePreview, ...formData.all_images.slice(1)]
+          : formData.all_images
+      };
+
+      console.log("Données envoyées:", dataToSend);
+
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/announces/${announce.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...formData,
-            // Si une nouvelle image a été sélectionnée, l'ajouter
-            all_images: imagePreview 
-              ? [imagePreview, ...formData.all_images.slice(1)]
-              : formData.all_images
-          }),
+          body: JSON.stringify(dataToSend),
         }
       );
 
-      if (!res.ok) throw new Error("Erreur lors de la modification");
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Erreur serveur:", errorText);
+        throw new Error("Erreur lors de la modification");
+      }
       
       const updatedData = await res.json();
       onSave({
