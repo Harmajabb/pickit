@@ -33,8 +33,6 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
       
-      // TODO: Upload réel vers le serveur
-      // Pour l'instant, on garde juste la preview
     }
   };
 
@@ -60,7 +58,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         start_borrow_date: formatDateForDB(formData.start_borrow_date),
         end_borrow_date: formatDateForDB(formData.end_borrow_date),
         owner_id: formData.owner_id,
-        categorie_id: formData.categorie_id, // Ajout du champ manquant
+        categorie_id: formData.categorie_id,
         all_images: imagePreview 
           ? [imagePreview, ...formData.all_images.slice(1)]
           : formData.all_images

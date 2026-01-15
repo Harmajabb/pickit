@@ -68,7 +68,6 @@ export default function ProductSheet() {
     <div className="product-sheet">
       <div className="product-container">
         <div className="product-content">
-          {/* Section image - toujours affichée */}
           <div className="image-section">
             <div className="image-wrapper">
               <img
@@ -94,7 +93,6 @@ export default function ProductSheet() {
               </button>
             </div>
 
-            {/* Miniatures - toujours affichées sous la grande image */}
             <div className="tiny-img">
               {announce.all_images.map((img, idx) => (
                 <img
@@ -109,7 +107,6 @@ export default function ProductSheet() {
             </div>
           </div>
 
-          {/* Section info - mode lecture ou édition */}
           <div className="info-section">
             {isEditing ? (
               <EditAnnonce
@@ -176,7 +173,6 @@ export default function ProductSheet() {
           </div>
         </div>
 
-        {/* Description - toujours affichée en mode lecture */}
         {!isEditing && (
           <div className="description">
             <p className={announce.description.length > 300 ? "long-text" : ""}>

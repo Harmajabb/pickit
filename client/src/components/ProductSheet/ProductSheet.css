@@ -89,7 +89,6 @@
   transition: opacity 0.2s;
 }
 
-/* Force les miniatures à rester dans image-section */
 .image-section .tiny-img {
   width: 100%;
 }
