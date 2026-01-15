@@ -42,7 +42,7 @@ function ButtonDelete({ annonceId }: buttonDeleteProps) {
 
         setStatus("An error has occured");
       }
-    } catch (err) {}
+    } catch {}
   };
 
   return (
