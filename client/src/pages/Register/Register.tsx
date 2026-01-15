@@ -1,20 +1,24 @@
 import "./Register.css";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 type FormData = {
-  firstName?: string;
-  lastName?: string;
-  city?: string;
-  zipcode?: number;
-  adress?: string;
-  email?: string;
-  password?: string;
+  firstName: string | undefined;
+  lastName: string | undefined;
+  city: string | undefined;
+  zipcode: number | undefined;
+  adress: string | undefined;
+  email: string | undefined;
+  password: string | undefined;
 };
 function Register() {
-  const [uncorrect, setUncorrect] = useState<Boolean>(false);
-  const [formStatus, setFormStatus] = useState<String>("");
-  const [seePassword, setSeePassword] = useState<Boolean>(false);
-  const [step, setStep] = useState<Number>(1);
+  const navigate = useNavigate();
+  const [uncorrect, setUncorrect] = useState<boolean>(false);
+  const [formStatus, setFormStatus] = useState<string>("");
+  const [seePassword, setSeePassword] = useState<boolean>(false);
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [currentStep, setCurrentStep] = useState<number>(1);
+
   const [formData, setFormData] = useState<FormData>({
     firstName: undefined,
     lastName: undefined,
@@ -24,7 +28,6 @@ function Register() {
     email: undefined,
     password: undefined,
   });
-  const handleSubmit = () => {};
   const validateStepOne = () => {
     if (
       !formData.firstName ||
@@ -33,60 +36,195 @@ function Register() {
       !formData.city ||
       !formData.zipcode
     ) {
-      setFormStatus("please fill all fields.");
+      setFormStatus("Please fill all fields.");
       setUncorrect(true);
       return;
     }
+    setTimeout(() => {
+      setCurrentStep(2);
+      setFormStatus("");
+    }, 1000);
+  };
+  const handleSubmit = () => {
+    if (!formData.email || !formData.password || !confirmPassword) {
+      setUncorrect(true);
+      setFormStatus("Please fill all fields");
+      return;
+    }
+    if (confirmPassword !== formData.password) {
+      setUncorrect(true);
+      setFormStatus("Passwords don't match");
+      return;
+    }
+    setFormData({ ...formData, email: "", password: "" });
+    setConfirmPassword("");
+    setFormStatus("Welcome !");
+    setTimeout(() => {
+      navigate("/");
+    }, 1500);
   };
   return (
     <div className="register-pageContainer">
-      <form className="stepOne register">
-        <div data-text="First Name">
-          <input
-            type="text"
-            value={formData.firstName}
-            onChange={(e) => {
-              setFormData({ ...formData, firstName: e.target.value });
+      <h1>{currentStep === 1 ? "Profile Info" : "Registration"}</h1>
+      <svg
+        width="128"
+        height="15"
+        viewBox="0 0 128 12"
+        fill="none"
+        className="formProgress"
+      >
+        <circle
+          cx="30"
+          cy="6"
+          r="5.5"
+          className={currentStep === 2 ? "doneStep-indicator" : ""}
+        />
+        <line x1="44" y1="5.5" x2="84" y2="5.5" />
+        <circle cx="98" cy="6" r="6" />
+      </svg>
+
+      <div className="register-formContainer">
+        <form
+          className={`stepOne register ${currentStep === 2 && "otherStep"}`}
+        >
+          <div
+            data-text="First Name"
+            className={formData.firstName ? "filledInput" : ""}
+          >
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, firstName: e.target.value });
+              }}
+            />
+          </div>
+          <div
+            data-text="Last Name"
+            className={formData.lastName ? "filledInput" : ""}
+          >
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, lastName: e.target.value });
+              }}
+            />
+          </div>
+          <div
+            data-text="Adress"
+            className={formData.adress ? "filledInput" : ""}
+          >
+            <input
+              type="text"
+              value={formData.adress}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, adress: e.target.value });
+              }}
+            />
+          </div>
+          <div data-text="City" className={formData.city ? "filledInput" : ""}>
+            <input
+              type="text"
+              value={formData.city}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, city: e.target.value });
+              }}
+            />
+          </div>
+          <div
+            data-text="Zipcode"
+            className={formData.zipcode ? "filledInput" : ""}
+          >
+            <input
+              type="number"
+              value={formData.zipcode}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, zipcode: Number(e.target.value) });
+              }}
+            />
+          </div>
+          <button
+            type="submit"
+            className={`primary ${uncorrect && "uncorrect"}`}
+            onClick={(e) => {
+              e.preventDefault();
+              validateStepOne();
             }}
-          />
-        </div>
-        <div data-text="Last Name">
-          <input
-            type="text"
-            value={formData.lastName}
-            onChange={(e) => {
-              setFormData({ ...formData, lastName: e.target.value });
+          >
+            Next step
+          </button>
+          <span>{formStatus}</span>
+        </form>
+        <form
+          className={`stepTwo register ${currentStep === 1 && "otherStep"}`}
+        >
+          <div
+            data-text="Email"
+            className={formData.email ? "filledInput" : ""}
+          >
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, email: e.target.value });
+              }}
+            />
+          </div>
+          <div
+            data-text="Password"
+            className={formData.password ? "filledInput" : ""}
+          >
+            <input
+              type={seePassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => {
+                setUncorrect(false);
+                setFormData({ ...formData, password: e.target.value });
+              }}
+            />
+          </div>
+          <div
+            data-text="Verify password"
+            className={confirmPassword ? "filledInput" : ""}
+          >
+            <input
+              type={seePassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => {
+                setUncorrect(false);
+                setConfirmPassword(e.target.value);
+              }}
+            />
+          </div>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              setSeePassword((prev) => !prev);
             }}
-          />
-        </div>
-        <div data-text="Adress">
-          <input
-            type="text"
-            value={formData.adress}
-            onChange={(e) => {
-              setFormData({ ...formData, adress: e.target.value });
+          >
+            {seePassword ? "Hide password" : "Show password"}
+          </button>
+          <button
+            type="submit"
+            className={`primary ${uncorrect && "uncorrect"}`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleSubmit();
             }}
-          />
-        </div>
-        <div data-text="City">
-          <input
-            type="text"
-            value={formData.city}
-            onChange={(e) => {
-              setFormData({ ...formData, city: e.target.value });
-            }}
-          />
-        </div>
-        {/* <div data-text="Zipcode">
-          <input
-            type="text"
-            value={formData.zipcode}
-            onChange={(e) => {
-              setFormData({ ...formData, zipcode: e.target.value });
-            }}
-          />
-        </div> */}
-      </form>
+          >
+            Register
+          </button>
+          <span>{formStatus}</span>
+        </form>
+      </div>
     </div>
   );
 }

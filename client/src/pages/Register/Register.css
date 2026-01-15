@@ -1,21 +1,35 @@
-.register {
-  margin: 100px auto 0 auto;
+.register-formContainer {
+  display: grid;
+  grid-template-areas: "stack";
 }
 .register-pageContainer {
-  display: grid;
-  place-items: center;
-  height: 80vh;
+  display: flex;
+  margin: 130px auto 0 auto;
+  gap: 3rem;
+  flex-direction: column;
+  align-items: center;
 }
-/* .register input {
-} */
-.stepOne {
+.formProgress > * {
+  stroke: var(--color-primary-text);
+}
+.doneStep-indicator {
+  fill: var(--color-primary-text);
+}
+.register {
+  grid-area: stack;
   display: flex;
   flex-direction: column;
-  gap: 4em;
+  align-items: center;
+  gap: 2em;
+}
+.register.otherStep {
+  transform: translateX(400%);
+  opacity: 0;
+  pointer-events: none;
 }
 .register div {
   position: relative;
-  width: fit-content;
+  width: 250px;
   border-bottom: 2px solid var(--color-card);
 }
 
@@ -41,7 +55,8 @@
   background-color: var(--color-btn);
   display: inline-block;
 }
-.register div:has(input:focus)::before {
+.register div:has(input:focus)::before,
+.register div.filledInput::before {
   top: -20%;
   color: color-mix(in srgb, var(--color-primary-text) 50%, transparent);
 }
