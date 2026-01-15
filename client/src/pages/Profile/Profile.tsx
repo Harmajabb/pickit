@@ -28,7 +28,7 @@ function Profile({ mode }: { mode: "me" | "member" }) {
         ? `${API_URL}/api/profile/me` // private profile
         : `${API_URL}/api/profile/${id}`; // public profile
 
-        //fetch profile data
+    //fetch profile data
     (async () => {
       setLoading(true);
       const res = await fetch(endpoint, { credentials: "include" });
@@ -42,7 +42,7 @@ function Profile({ mode }: { mode: "me" | "member" }) {
       setData(json);
       setLoading(false);
     })();
-  }, [mode, id, authUser, navigate, API_URL]);
+  }, [mode, id, authUser, navigate]);
 
   if (loading) return <p>Loading...</p>;
   if (!data) return null;

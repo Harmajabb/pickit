@@ -1,11 +1,11 @@
-import ItemCard from "../ItemCard/ItemCard";
+import { Link } from "react-router";
 import type {
   ProfileFavorite,
   ProfileItem,
   UserPrivate,
   UserPublic,
 } from "../../types/User";
-import { Link } from "react-router";
+import ItemCard from "../ItemCard/ItemCard";
 import "./ProfileView.css";
 
 //discriminated union for profilView props.
@@ -28,7 +28,7 @@ function ProfileView(props: ProfileViewProps) {
     ? `${API_URL}${props.user.profil_picture}`
     : `${API_URL}/assets/images/avatar-default.png`;
 
-    // private profile (me mode)
+  // private profile (me mode)
   if (props.mode === "me") {
     const user = props.user;
 
@@ -106,40 +106,40 @@ function ProfileView(props: ProfileViewProps) {
           <p>No announcement has been published</p>
         ) : (
           <ul className="profile-items-grid">
-  {items.map((item) => (
-    <Link key={item.id} to={`/announce/${item.id}`}>
-      <ItemCard
-        id={item.id}
-        title={item.title}
-        location={item.location}
-        all_images={item.image_url ?? undefined}
-      />
-    </Link>
-  ))}
-</ul>
+            {items.map((item) => (
+              <Link key={item.id} to={`/announce/${item.id}`}>
+                <ItemCard
+                  id={item.id}
+                  title={item.title}
+                  location={item.location}
+                  all_images={item.image_url ?? undefined}
+                />
+              </Link>
+            ))}
+          </ul>
         )}
       </section>
 
       <section>
-  <h2>His favorites ({favorites.length})</h2>
+        <h2>His favorites ({favorites.length})</h2>
 
-  {favorites.length === 0 ? (
-    <p>No favorite for the moment</p>
-  ) : (
-    <ul className="profile-items-grid">
-      {favorites.map((fav) => (
-        <Link key={fav.id} to={`/announce/${fav.id}`}>
-          <ItemCard
-            id={fav.id}
-            title={fav.title}
-            location={fav.location}
-            all_images={fav.image_url ?? undefined}
-          />
-        </Link>
-      ))}
-    </ul>
-  )}
-</section>
+        {favorites.length === 0 ? (
+          <p>No favorite for the moment</p>
+        ) : (
+          <ul className="profile-items-grid">
+            {favorites.map((fav) => (
+              <Link key={fav.id} to={`/announce/${fav.id}`}>
+                <ItemCard
+                  id={fav.id}
+                  title={fav.title}
+                  location={fav.location}
+                  all_images={fav.image_url ?? undefined}
+                />
+              </Link>
+            ))}
+          </ul>
+        )}
+      </section>
     </section>
   );
 }
