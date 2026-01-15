@@ -16,9 +16,12 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
+    "cookie-parser": "^1.4.7",
+    "js-cookies": "^1.0.4",
     "mysql2": "^3.14.0",
-    "nodemailer": "^7.0.12",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "lucide-react": "^0.562.0",
+    "nodemailer": "^7.0.12"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",

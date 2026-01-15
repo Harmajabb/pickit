@@ -10,9 +10,9 @@ function Footer() {
       </div>
       {/* Center */}
       <div className="footer-center">
-        <a href="/mentions-legales">Mentions légales</a>
-        <a href="/conditions-generales">Conditions générales</a>
-        <a href="/politique-confidentialite">Politique de confidentialité</a>
+        <a href="/mentions-legales">Legal notice</a>
+        <a href="/conditions-generales">General conditions</a>
+        <a href="/politique-confidentialite">Privacy Policy</a>
       </div>
 
       {/* Right */}
