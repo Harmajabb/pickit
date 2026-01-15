@@ -18,7 +18,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -32,19 +32,18 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
       const file = e.target.files[0];
       const preview = URL.createObjectURL(file);
       setImagePreview(preview);
-      
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       // Fonction pour formater les dates au format YYYY-MM-DD
       const formatDateForDB = (date: Date) => {
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
         return `${year}-${month}-${day}`;
       };
 
@@ -59,9 +58,9 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         end_borrow_date: formatDateForDB(formData.end_borrow_date),
         owner_id: formData.owner_id,
         categorie_id: formData.categorie_id,
-        all_images: imagePreview 
+        all_images: imagePreview
           ? [imagePreview, ...formData.all_images.slice(1)]
-          : formData.all_images
+          : formData.all_images,
       };
 
       console.log("Données envoyées:", dataToSend);
@@ -72,7 +71,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dataToSend),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -80,13 +79,13 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         console.error("Erreur serveur:", errorText);
         throw new Error("Erreur lors de la modification");
       }
-      
+
       const updatedData = await res.json();
       onSave({
         ...formData,
-        all_images: imagePreview 
+        all_images: imagePreview
           ? [imagePreview, ...formData.all_images.slice(1)]
-          : formData.all_images
+          : formData.all_images,
       });
     } catch (err) {
       console.error("Erreur lors de la modification", err);
@@ -96,7 +95,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
 
   // Format pour input date (YYYY-MM-DD)
   const formatDateForInput = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   const currentImage = imagePreview || formData.all_images[0];
@@ -139,7 +138,9 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           <input
             type="date"
             value={formatDateForInput(formData.start_borrow_date)}
-            onChange={(e) => handleDateChange('start_borrow_date', e.target.value)}
+            onChange={(e) =>
+              handleDateChange("start_borrow_date", e.target.value)
+            }
             className="info-value"
           />
         </div>
@@ -149,7 +150,9 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           <input
             type="date"
             value={formatDateForInput(formData.end_borrow_date)}
-            onChange={(e) => handleDateChange('end_borrow_date', e.target.value)}
+            onChange={(e) =>
+              handleDateChange("end_borrow_date", e.target.value)
+            }
             className="info-value"
           />
         </div>
@@ -181,12 +184,8 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         <label htmlFor="image-upload" className="edit-image-btn">
           Modifier l'image
         </label>
-        
-        <img
-          src={currentImage}
-          alt="Produit"
-          className="edit-image-mini"
-        />
+
+        <img src={currentImage} alt="Produit" className="edit-image-mini" />
 
         <input
           id="image-upload"
@@ -198,10 +197,14 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
       </div>
 
       {/* Description */}
-      <div className="description" style={{ marginTop: '2rem' }}>
-        <p className="info-label" style={{ textAlign: 'left', marginBottom: '0.5rem' }}>
+      <div className="description" style={{ marginTop: "2rem" }}>
+        <p
+          className="info-label"
+          style={{ textAlign: "left", marginBottom: "0.5rem" }}
+        >
           Description
         </p>
+
         <textarea
           name="description"
           value={formData.description}
@@ -213,10 +216,14 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
 
       {/* Boutons d'action à la fin */}
       <div className="action-buttons">
-        <button type="button" className="btn btn-contact" onClick={handleSubmit}>
+        <button
+          type="button"
+          className="btn btn-contact"
+          onClick={handleSubmit}
+        >
           Enregistrer
         </button>
-        <button type="button" className="btn btn-cancel" onClick={onCancel}>
+        <button className="btn btn-cancel" onClick={onCancel}>
           Annuler
         </button>
       </div>
