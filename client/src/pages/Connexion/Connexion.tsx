@@ -71,7 +71,7 @@ function Login() {
           <Link aria-label="Forgot password link" to="/forgot-password" className="forgot-password-link">
             Oops i forgot my password
           </Link>
-          <Link aria-label="Register link" to="" className="register-link">
+          <Link aria-label="Register link" to="/register" className="register-link">
             Not registered ?
           </Link>
           <button aria-label="Login button" className="primary loginbtn" type="submit">

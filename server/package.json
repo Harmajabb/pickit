@@ -20,7 +20,7 @@
     "cookie-parser": "^1.4.7",
     "js-cookies": "^1.0.4",
     "mysql2": "^3.14.0",
-    "lucide-react": "^0.562.0",
+
     "nodemailer": "^7.0.12"
   },
   "devDependencies": {
@@ -31,6 +31,9 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/supertest": "^6.0.3",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/js-cookie": "^3.0.6",
+    "@types/nodemailer": "^7.0.5",
     "jest": "^29.7.0",
     "supertest": "^7.1.0",
     "ts-jest": "^29.3.0",
