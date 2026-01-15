@@ -1,5 +1,6 @@
 import express from "express";
 import { upload } from "./config/multer";
+
 const router = express.Router();
 
 /* ************************************************************************* */
@@ -8,13 +9,16 @@ const router = express.Router();
 
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
+
 router.post("/auth/login", authActions.login);
 router.post("/auth/logout", authActions.logout);
 router.get("/auth/check", authActions.checkAuth, authActions.check);
 router.post("/auth/reset-password", authActions.resetPassword);
 router.post("/auth/init-reset-password", authActions.initResetPassword);
+
 // Define Announced-related routes
 import announcesActions from "./modules/announces/announcesActions";
+
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
 router.get("/api/announces/:id", announcesActions.readOne);

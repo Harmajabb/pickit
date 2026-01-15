@@ -12,6 +12,7 @@ import Catalog from "./pages/Catalog/Catalog";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile/Profile";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,9 @@ const router = createBrowserRouter([
       { path: "/catalog/:id", element: <Login /> }, // add your page Teddy here
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
       { path: "/reset-password/:token", element: <ResetPassword /> },
-      { path: "/forgot-password", element: <ForgotPassword />},
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/profile/me", element: <Profile mode="me" /> },
+      { path: "/profile/:id", element: <Profile mode="member" /> },
     ],
   },
 ]);
