@@ -1,7 +1,7 @@
 // Import necessary modules from React and React Router
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
 import App from "./App";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
@@ -11,6 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
+import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import Home from "./pages/Home";
 
 const router = createBrowserRouter([
@@ -23,7 +24,8 @@ const router = createBrowserRouter([
       { path: "/catalog/:id", element: <Login /> }, // add your page Teddy here
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
       { path: "/reset-password/:token", element: <ResetPassword /> },
-      { path: "/forgot-password", element: <ForgotPassword />},
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/ad-dashboard", element: <Dashboard_Admin /> },
     ],
   },
 ]);

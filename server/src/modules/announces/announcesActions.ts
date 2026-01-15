@@ -6,7 +6,7 @@ const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
       location: req.query.location,
-      category_id: req.query.category_id
+      category_id: req.query.category_id,
     };
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
@@ -22,13 +22,12 @@ const browse: RequestHandler = async (req, res, next) => {
 const browseFiltered: RequestHandler = async (req, res, next) => {
   try {
     // Sends the whole object rez.query to the repository
-    const readFiltered = await announcesRepository.readFiltered(req.query);
+    const readFiltered = await announcesRepository.readFiltered();
     res.json(readFiltered);
   } catch (err) {
     next(err);
   }
 };
-
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {

@@ -1,6 +1,6 @@
 import {
-  type ReactNode,
   createContext,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,
@@ -11,6 +11,7 @@ interface User {
   email: string;
   name: string;
   role: number;
+  firstname: string;
 }
 
 const Base_URL = import.meta.env.VITE_API_URL;
@@ -24,7 +25,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType>({
-      user: null,
+  user: null,
   login: () => {},
   logout: () => {},
   initResetPassword: async () => {},
@@ -103,7 +104,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [login]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, initResetPassword, resetPassword }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, initResetPassword, resetPassword }}
+    >
       {children}
     </AuthContext.Provider>
   );
