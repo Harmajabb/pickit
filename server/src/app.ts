@@ -1,6 +1,7 @@
 // biome-ignore assist/source/organizeImports: <!-- Organize imports manually for clarity in this template -->
-import express from "express";
 import cookieParser from "cookie-parser";
+import express from "express";
+
 // Load the express module to create a web application
 
 const app = express();

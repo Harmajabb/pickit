@@ -9,6 +9,9 @@ import {
 interface User {
   id: number;
   email: string;
+  name: string;
+  role: number;
+  firstname: string;
 }
 
 const Base_URL = import.meta.env.VITE_API_URL;

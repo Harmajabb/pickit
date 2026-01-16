@@ -6,6 +6,17 @@ const router = express.Router();
 /* ************************************************************************* */
 // Define Your API Routes Here
 /* ************************************************************************* */
+
+// Define Admin-related routes
+import adminActions from "./modules/admin/adminActions";
+
+router.get(
+  "/api/admin/stats",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  adminActions.getDashboardStats,
+);
+
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
 

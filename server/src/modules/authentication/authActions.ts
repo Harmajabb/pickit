@@ -8,7 +8,7 @@ import authRepository from "./authRepository";
 declare global {
   namespace Express {
     interface Request {
-      auth?: string | jwt.JwtPayload;
+      auth?: jwt.JwtPayload & { role: number } & { firstname: string };
     }
   }
 }
@@ -16,7 +16,6 @@ declare global {
 const login: RequestHandler = async (req, res, next) => {
   try {
     const user = await authRepository.readByEmail(req.body.email);
-    console.log(user);
     if (
       user == null ||
       !(await argon2.verify(user.password, req.body.password))
@@ -25,16 +24,25 @@ const login: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const token = jwt.sign({ sub: user.id }, process.env.APP_SECRET as string, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { sub: user.id, role: user.role, firstname: user.firstname },
+      process.env.APP_SECRET as string,
+      {
+        expiresIn: "1h",
+      },
+    );
 
     res
       .cookie("access_token", token, { httpOnly: true, secure: false })
       .status(200)
       .json({
         message: "Login success !",
-        user: { id: user.id, email: user.email },
+        user: {
+          id: user.id,
+          email: user.email,
+          firstname: user.firstname,
+          role: user.role,
+        },
       });
   } catch (err) {
     next(err);
@@ -60,7 +68,11 @@ const checkAuth: RequestHandler = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.APP_SECRET as string);
 
-    req.auth = decoded;
+    if (typeof decoded === "object" && decoded !== null && "role" in decoded) {
+      req.auth = decoded as jwt.JwtPayload & { role: number } & {
+        firstname: string;
+      };
+    }
 
     next();
   } catch (err) {
@@ -69,6 +81,18 @@ const checkAuth: RequestHandler = (req, res, next) => {
   }
 };
 
+const verifyAdmin: RequestHandler = (req, res, next) => {
+  try {
+    if (req.auth?.role !== 1) {
+      res.sendStatus(403);
+      return;
+    }
+    next();
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(403);
+  }
+};
 const initResetPassword: RequestHandler = async (req, res, next) => {
   // Use the Upstream version: Real email sending logic
   const transporter = nodemailer.createTransport({
@@ -175,4 +199,5 @@ export default {
   check,
   initResetPassword,
   resetPassword,
+  verifyAdmin,
 };

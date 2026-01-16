@@ -37,7 +37,6 @@ function Login() {
       login(res.user);
       navigate("/");
       setResponse(res.message);
-      console.log("user logged :", res.user);
     } catch (error) {
       console.error("Error during login:", error);
       setResponse("Login failed");
