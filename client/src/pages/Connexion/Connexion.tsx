@@ -45,42 +45,53 @@ function Login() {
   }
 
   return (
-      <div className="background-connexion">
-        <div className="title-connexion">
-          <h1>CONNEXION</h1>
-          <p>Welcome back</p>
-        </div>
-        <form className="form-connexion" onSubmit={Submit}>
-          <p>Mail</p>
-          <input
-            aria-label="Email address"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-          />
-          <p>Password</p>
-          <input
-          aria-label="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="password"
-          />
-          <Link aria-label="Forgot password link" to="/forgot-password" className="forgot-password-link">
-            Oops i forgot my password
-          </Link>
-          <Link aria-label="Register link" to="/register" className="register-link">
-            Not registered ?
-          </Link>
-          <button aria-label="Login button" className="primary loginbtn" type="submit">
-            Login
-          </button>
-        </form>
-
-        {response && <p>{response}</p>}
+    <div className="background-connexion">
+      <div className="title-connexion">
+        <h1>CONNEXION</h1>
+        <p>Welcome back</p>
       </div>
+      <form className="form-connexion" onSubmit={Submit}>
+        <p>Mail</p>
+        <input
+          aria-label="Email address"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+        />
+        <p>Password</p>
+        <input
+          aria-label="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="password"
+        />
+        <Link
+          aria-label="Forgot password link"
+          to="/forgot-password"
+          className="forgot-password-link"
+        >
+          Oops i forgot my password
+        </Link>
+        <Link
+          aria-label="Register link"
+          to="/register"
+          className="register-link"
+        >
+          Not registered ?
+        </Link>
+        <button
+          aria-label="Login button"
+          className="primary loginbtn"
+          type="submit"
+        >
+          Login
+        </button>
+      </form>
 
+      {response && <p>{response}</p>}
+    </div>
   );
 }
 
