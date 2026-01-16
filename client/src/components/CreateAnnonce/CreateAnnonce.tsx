@@ -4,6 +4,8 @@ import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
 
 function CreateAnnonce() {
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -35,19 +37,23 @@ function CreateAnnonce() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      setFormData({
-        ...formData,
-        files: [...formData.files, ...Array.from(files)],
-      });
-    }
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (files) {
+    setFormData({
+      ...formData,
+      files: [...formData.files, ...Array.from(files)],
+    });
+  }
+};
+  // UI ONLY → ouvre la pop-in
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      setShowConfirm(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  // BUSINESS LOGIC ONLY → envoi API
+    const submitAnnonce = async () => {
     const formDataToSend = new FormData();
 
     formDataToSend.append("title", formData.title);
@@ -218,7 +224,39 @@ function CreateAnnonce() {
           </button>
         </form>
       </div>
-    </div>
+  {/* MODAL CONFIRMATION */}
+      {showConfirm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Confirm creation</h2>
+            <p>Do you really want to create this ad?</p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn-confirm"
+                onClick={() => {
+                  submitAnnonce();
+                  setShowConfirm(false);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+</div>
+
+
   );
 }
 
