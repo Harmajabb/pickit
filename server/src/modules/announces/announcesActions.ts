@@ -6,14 +6,18 @@ import announcesRepository from "./announcesRepository";
 const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
-      zipcode: req.query.zipcode ? Number(req.query.zipcode) : undefined,
-      category_id: req.query.category_id
-        ? Number(req.query.category_id)
-        : undefined,
+      zipcode:
+        typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
+      category_id:
+        typeof req.query.category_id === "number"
+          ? req.query.category_id
+          : undefined,
     };
+    console.log(filters);
+
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
-      ...announce,
+      ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
     res.json(formattedAnnounces);

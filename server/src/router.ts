@@ -46,7 +46,12 @@ router.get("/api/searchFullAnnounces", searchActions.searchFullAnnounces);
 // Define user-related routes
 import userAction from "./modules/user/userActions";
 
-router.get("/api/users/:id/profile", userAction.readProfileById);
+router.get("/api/profile/me", authActions.checkAuth, userAction.readMyProfile);
+router.get(
+  "/api/profile/:id",
+  authActions.checkAuth,
+  userAction.readProfileById,
+);
 
 /* ************************************************************************* */
 

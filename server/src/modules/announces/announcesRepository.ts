@@ -31,8 +31,15 @@ export type Announces = {
   state_of_product?: string;
 };
 
+export type Favorite = {
+  id: number;
+  title: string;
+  location: string;
+  image_url: string | null;
+};
+
 type AnnouncesFilter = {
-  zipcode?: number;
+  zipcode?: string;
   categorie_id?: number;
 };
 
@@ -87,10 +94,20 @@ class AnnouncesRepository {
   // Announce by owner ID.
   async readByOwnerId(ownerId: number) {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS image_url FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
       [ownerId],
     );
     return rows as Announces[];
+  }
+
+  //Favorite by user id.
+  async readFavoritesByUserId(userId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT a.id, a.title, a.location, MIN(ai.url) AS image_url FROM favorites f JOIN announces a ON a.id = f.announces_id LEFT JOIN announces_images ai ON ai.announce_id = a.id WHERE f.user_id = ? AND f.is_favorite = 1 AND a.status = 'active' GROUP BY a.id",
+      [userId],
+    );
+
+    return rows as Favorite[];
   }
 
   // Récupérer une seule annonce par son ID

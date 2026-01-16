@@ -16,7 +16,7 @@ function CreateAnnonce() {
     start_borrow_date: "",
     end_borrow_date: "",
     categorie_id: "1",
-    owner_id: 1,
+    owner_id: "1",
     files: [] as File[],
   });
 
