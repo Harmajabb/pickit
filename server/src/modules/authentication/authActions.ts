@@ -49,9 +49,10 @@ const logout: RequestHandler = (_req, res) => {
 };
 
 const checkAuth: RequestHandler = (req, res, next) => {
+  // console.log("req cookie", req.cookies);
+  // console.log("req header.cookie", req.header.cookie);
   try {
     const token = req.cookies.access_token;
-
     if (!token) {
       res.sendStatus(401);
       return;

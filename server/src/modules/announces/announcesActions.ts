@@ -1,5 +1,6 @@
 import type { RequestHandler } from "express";
-import type { Announces } from "./announcesRepository";
+import type { CreateAnnounceInput } from "./announcesRepository";
+
 import announcesRepository from "./announcesRepository";
 
 const browse: RequestHandler = async (req, res, next) => {
@@ -25,6 +26,23 @@ const browse: RequestHandler = async (req, res, next) => {
   }
 };
 
+const destroy: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.query.id);
+
+    const resultDelete = await announcesRepository.delete(id);
+    console.log(resultDelete);
+    if (resultDelete.affectedRows === 0) {
+      res.status(404).json({ message: "Annonce non trouvée" });
+      return;
+    }
+
+    res.json({ message: "La suppression s'est bien passée" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const browseFiltered: RequestHandler = async (_req, res, next) => {
   try {
     // Sends the whole object res.query to the repository
@@ -37,7 +55,8 @@ const browseFiltered: RequestHandler = async (_req, res, next) => {
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
-    const files = req.files as Express.Multer.File[] | undefined;
+    const files = (req.files as Express.Multer.File[]) ?? [];
+
     const {
       title,
       description,
@@ -45,10 +64,11 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       start_borrow_date,
       end_borrow_date,
       location,
-      state,
       categorie_id,
       owner_id,
+      state_of_product,
     } = req.body;
+
     if (
       !title ||
       !description ||
@@ -56,15 +76,18 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       !start_borrow_date ||
       !end_borrow_date ||
       !location ||
-      !state ||
       !categorie_id ||
-      !owner_id
+      !owner_id ||
+      !state_of_product
     ) {
-      res
-        .status(400)
-        .json({ success: false, error: "Missing required fields" });
+      res.status(400).json({
+        success: false,
+        error: "Missing required fields",
+      });
+      return;
     }
-    const payload: Announces = {
+
+    const payload: CreateAnnounceInput = {
       title: String(title),
       description: String(description),
       amount_deposit: Number(amount_deposit),
@@ -73,43 +96,19 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       location: String(location),
       categorie_id: Number(categorie_id),
       owner_id: Number(owner_id),
-      state: String(state),
+      state_of_product: String(state_of_product),
     };
-    // biome-ignore lint/suspicious/noExplicitAny: <result as any>
-    let result: any;
-    try {
-      result = await announcesRepository.sendCreateAnnounce(
-        payload,
-        files ?? [],
-      );
-    } catch (err) {
-      // remove uploaded files if any, because DB failed
-      if (files && files.length > 0) {
-        try {
-          const fs = await import("node:fs/promises");
-          const path = await import("node:path");
-          for (const f of files) {
-            const full = path.join(
-              process.cwd(),
-              "public/assets/images",
-              f.filename,
-            );
-            try {
-              await fs.unlink(full);
-            } catch (_err) {}
-          }
-        } catch (_err) {}
-      }
-      throw err;
-    }
+
+    const announceId = await announcesRepository.sendCreateAnnounce(
+      payload,
+      files,
+    );
 
     res.status(201).json({
       success: true,
       message: "Successful listing!",
-      announceId: result.announceId,
-      imagesUploaded: result.imagesCount,
-      imagePaths: result.imagePaths,
-      title: result.title,
+      announceId,
+      title: payload.title,
     });
   } catch (err) {
     next(err);
@@ -157,4 +156,5 @@ export default {
   createAnnounce,
   readOne,
   updateAnnounce,
+  destroy,
 };

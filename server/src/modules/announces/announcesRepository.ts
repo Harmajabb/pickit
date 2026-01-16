@@ -2,6 +2,18 @@ import type { ResultSetHeader } from "mysql2";
 import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
 
+export type CreateAnnounceInput = {
+  title: string;
+  description: string;
+  amount_deposit: number;
+  start_borrow_date: string;
+  end_borrow_date: string;
+  location: string;
+  categorie_id: number;
+  owner_id: number;
+  state_of_product: string;
+};
+
 export type Announces = {
   id?: number;
   title?: string;
@@ -13,10 +25,17 @@ export type Announces = {
   end_borrow_date?: string;
   location?: string;
   status?: string;
-  state?: string;
   all_images?: string | null;
   categorie_id?: number;
   owner_id?: number;
+  state_of_product?: string;
+};
+
+export type Favorite = {
+  id: number;
+  title: string;
+  location: string;
+  image_url: string | null;
 };
 type AnnouncesFilter = {
   zipcode?: string;
@@ -63,25 +82,41 @@ class AnnouncesRepository {
     );
     return rows as Announces[];
   }
-
+  async delete(id: number) {
+    const [ResultSetHeader] = await databaseClient.query<ResultSetHeader>(
+      "DELETE FROM announces WHERE id = ?",
+      [id],
+    );
+    return ResultSetHeader;
+  }
   // Get just one announcement with its ID
   // Announce by owner ID.
   async readByOwnerId(ownerId: number) {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS image_url FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
       [ownerId],
     );
     return rows as Announces[];
+  }
+
+  //Favorite by user id.
+  async readFavoritesByUserId(userId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT a.id, a.title, a.location, MIN(ai.url) AS image_url FROM favorites f JOIN announces a ON a.id = f.announces_id LEFT JOIN announces_images ai ON ai.announce_id = a.id WHERE f.user_id = ? AND f.is_favorite = 1 AND a.status = 'active' GROUP BY a.id",
+      [userId],
+    );
+
+    return rows as Favorite[];
   }
 
   // Récupérer une seule annonce par son ID
   async getOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
-      SELECT announces.*, users.zipcode, users.lastname, users.fistname, COUNT(DISTINCT is.favorite) AS total_likes GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
+      SELECT announces.*, users.zipcode, users.lastname, users.firstname, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
       FROM announces
       LEFT JOIN announces_images ON announces.id = announces_images.announce_id
-      LEFT JOIN users ON owner.id = users.id
+      LEFT JOIN users ON owner_id = users.id
       LEFT JOIN favorites ON announces.id = favorites.announces_id
       WHERE announces.id = ?
       GROUP BY announces.id
@@ -92,74 +127,71 @@ class AnnouncesRepository {
     return rows[0] as Announces | undefined;
   }
 
-  async sendCreateAnnounce(form: Announces, files: Express.Multer.File[]) {
-    const insertAnnounceQuery = `
-    INSERT INTO announces
-    (title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, state, categorie_id, owner_id)
-    VALUES (?, ?, ?, NOW(), NULL, ?, ?, ?, ?, ?, ?)
-  `;
-    const announceValues = [
-      form.title,
-      form.description,
-      form.amount_deposit,
-      form.start_borrow_date,
-      form.end_borrow_date,
-      form.location,
-      form.state ?? "active",
-      form.categorie_id,
-      form.owner_id,
-    ];
+  async sendCreateAnnounce(
+    form: CreateAnnounceInput,
+    files: Express.Multer.File[],
+  ): Promise<number> {
+    const connection = await databaseClient.getConnection();
 
-    const [result] = await databaseClient.query<ResultSetHeader>(
-      insertAnnounceQuery,
-      announceValues,
-    );
-    // biome-ignore lint/suspicious/noExplicitAny: <result as any>
-    const insertId = (result as any).insertId as number;
-    const imagePaths: string[] = [];
+    try {
+      await connection.beginTransaction();
 
-    if (files.length > 0) {
-      const rows = files.map((f) => {
-        const rel = `assets/images/${f.filename}`;
-        imagePaths.push(rel);
-        return [rel, insertId];
-      });
+      const [result] = await connection.query<ResultSetHeader>(
+        `
+      INSERT INTO announces
+      (title, description, amount_deposit, creation_date, start_borrow_date, end_borrow_date, location, categorie_id, owner_id, state_of_product)
+      VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)
+      `,
+        [
+          form.title,
+          form.description,
+          form.amount_deposit,
+          form.start_borrow_date,
+          form.end_borrow_date,
+          form.location,
+          form.categorie_id,
+          form.owner_id,
+          form.state_of_product,
+        ],
+      );
 
-      const insertImagesQuery =
-        "INSERT INTO announces_images (url, announce_id) VALUES ?";
-      try {
-        await databaseClient.query(insertImagesQuery, [rows]);
-      } catch (err) {
-        try {
-          const fs = await import("node:fs/promises");
-          const path = await import("node:path");
-          for (const f of files) {
-            const full = path.join(
-              process.cwd(),
-              "public/assets/images",
-              f.filename,
-            );
-            try {
-              await fs.unlink(full);
-            } catch (_err) {}
-          }
-        } catch (_err) {}
-        try {
-          await databaseClient.query("DELETE FROM announces WHERE id = ?", [
-            insertId,
-          ]);
-        } catch (_err) {}
-        throw err;
+      const announceId = result.insertId;
+
+      if (files.length > 0) {
+        const rows = files.map((f) => [f.filename, announceId]);
+
+        await connection.query(
+          "INSERT INTO announces_images (url, announce_id) VALUES ?",
+          [rows],
+        );
       }
-    }
 
-    return {
-      announceId: insertId,
-      imagesCount: files.length,
-      imagePaths,
-    };
+      await connection.commit();
+      return announceId;
+    } catch (err) {
+      await connection.rollback();
+
+      // cleanup fichiers
+      const fs = await import("node:fs/promises");
+      const path = await import("node:path");
+
+      await Promise.all(
+        files.map((f) =>
+          fs
+            .unlink(
+              path.join(process.cwd(), "public/assets/images", f.filename),
+            )
+            .catch(() => {}),
+        ),
+      );
+
+      throw err;
+    } finally {
+      connection.release();
+    }
   }
-  // Mettre à jour une annonce existante
+
+  // Update listing
   async sendUpdateAnnounce(
     id: number,
     form: Partial<

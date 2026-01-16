@@ -1,0 +1,76 @@
+.register-formContainer {
+  display: grid;
+  grid-template-areas: "stack";
+}
+.register-pageContainer {
+  display: flex;
+  margin: 130px auto 50px auto;
+  gap: 3rem;
+  flex-direction: column;
+  align-items: center;
+}
+.formProgress > * {
+  stroke: var(--color-primary-text);
+  stroke-width: 2px;
+}
+.doneStep-indicator {
+  fill: var(--color-primary-text);
+}
+.register {
+  grid-area: stack;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+}
+.register.otherStep {
+  transform: translateX(400%);
+  opacity: 0;
+  pointer-events: none;
+}
+.register div {
+  position: relative;
+  width: 250px;
+  border-bottom: 2px solid var(--color-card);
+}
+
+.register div::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  width: 100%;
+  pointer-events: none;
+  display: inline-block;
+  font-style: italic;
+}
+.register div::after {
+  content: "";
+  position: absolute;
+  width: 0px;
+  height: 3px;
+  bottom: 0%;
+  left: 50%;
+  background-color: var(--color-btn);
+  display: inline-block;
+}
+.register div:has(input:focus)::before,
+.register div.filledInput::before {
+  top: -20%;
+  color: color-mix(in srgb, var(--color-primary-text) 50%, transparent);
+}
+.register div:has(input:focus)::after {
+  left: 0%;
+  width: 100%;
+}
+.register div:has(input:focus) {
+  border-bottom: 2px solid transparent;
+}
+.register input {
+  background-color: transparent;
+  position: relative;
+  border: none;
+  box-shadow: none;
+}
