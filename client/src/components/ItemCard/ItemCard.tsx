@@ -16,7 +16,7 @@ function ItemCard({ id, title, location, all_images }: Props) {
           src={`${BASE_URL}${all_images}`}
           alt={`${title}-${all_images}`}
         />
-        <button type="button" className="like-button">
+        <button className="like-button">
           🤍 12
         </button>
       </div>

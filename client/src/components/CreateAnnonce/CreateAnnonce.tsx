@@ -4,6 +4,8 @@ import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
 
 function CreateAnnonce() {
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const { user } = useContext(AuthContext);
 
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ function CreateAnnonce() {
     start_borrow_date: "",
     end_borrow_date: "",
     categorie_id: "1",
-    owner_id: user?.id,
+    owner_id: "1",
     files: [] as File[],
   });
 
@@ -35,16 +37,22 @@ function CreateAnnonce() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      setFormData({
-        ...formData,
-        files: [...formData.files, ...Array.from(files)],
-      });
-    }
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (files) {
+    setFormData({
+      ...formData,
+      files: [...formData.files, ...Array.from(files)],
+    });
+  }
+};
+  // UI ONLY → ouvre la pop-in
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      setShowConfirm(true);
   };
 
+<<<<<<< HEAD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -53,6 +61,10 @@ function CreateAnnonce() {
       return;
     }
 
+=======
+  // BUSINESS LOGIC ONLY → envoi API
+    const submitAnnonce = async () => {
+>>>>>>> dev
     const formDataToSend = new FormData();
 
     formDataToSend.append("title", formData.title);
@@ -63,7 +75,7 @@ function CreateAnnonce() {
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
     formDataToSend.append("categorie_id", formData.categorie_id);
-    formDataToSend.append("owner_id", user.id.toString());
+    formDataToSend.append("owner_id", formData.owner_id.toString());
 
     for (const file of formData.files) {
       formDataToSend.append("images", file);
@@ -223,7 +235,39 @@ function CreateAnnonce() {
           </button>
         </form>
       </div>
-    </div>
+  {/* MODAL CONFIRMATION */}
+      {showConfirm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Confirm creation</h2>
+            <p>Do you really want to create this ad?</p>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn-confirm"
+                onClick={() => {
+                  submitAnnonce();
+                  setShowConfirm(false);
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+</div>
+
+
   );
 }
 

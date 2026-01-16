@@ -73,7 +73,7 @@ function Register() {
         fill="none"
         className="formProgress"
       >
-        <title>Registration form progress indicator</title>
+        <title>a title</title>
         <circle
           cx="30"
           cy="6"

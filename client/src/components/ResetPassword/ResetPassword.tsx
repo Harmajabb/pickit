@@ -24,7 +24,7 @@ function ResetPassword() {
     try {
       await resetPassword(token, newPassword);
       setMessage("Password has been reset successfully.");
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to reset password. Please try again later.");
     }
   };

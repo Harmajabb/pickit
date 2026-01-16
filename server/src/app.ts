@@ -1,7 +1,8 @@
-// Load the express module to create a web application
-
+// biome-ignore assist/source/organizeImports: <!-- Organize imports manually for clarity in this template -->
 import cookieParser from "cookie-parser";
 import express from "express";
+
+// Load the express module to create a web application
 
 const app = express();
 

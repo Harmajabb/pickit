@@ -1,92 +1,247 @@
-import { useEffect, useState} from "react";
+import { useState } from "react";
+import type { AnnounceDetail } from "../../types/Announce";
+
+// interface Announce {
+//   id: number;
+//   title: string;
+//   description: string;
+//   location: string;
+//   owner_id: number;
+//   all_images: string[];
+//   start_borrow_date: Date;
+//   end_borrow_date: Date;
+//   amount_deposit: number;
+//   state_of_product: string;
+//   name: string;
+//   categorie_id: number;
+// }
 
 type EditAnnonceProps = {
-  annonceId: number;
+  announce: AnnounceDetail;
+  onCancel: () => void;
+  onSave: (updatedAnnounce: AnnounceDetail) => void;
 };
 
-function EditAnnonce({ annonceId }: EditAnnonceProps) {
+function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
   const [formData, setFormData] = useState({
-   title: "",
-    description: "",
-    amount_deposit: "",
-    location: "",
-    state: "good",
-    start_borrow_date: "",
-    end_borrow_date: "",
-    categorie_id: "1",
-    owner_id: 1,
+    ...announce,
+    start_borrow_date: new Date(announce.start_borrow_date),
+    end_borrow_date: new Date(announce.end_borrow_date),
   });
 
-   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAnnonce = async () => {
-      try {
-        const res = await fetch(`/api/announces/${annonceId}`);
-        const data = await res.json();
-
-        setFormData({
-          title: data.title,
-          description: data.description,
-          amount_deposit: String(data.amount_caution),
-          start_borrow_date: data.start_borrow_date,
-          end_borrow_date: data.end_borrow_date,
-          location: data.location,
-          categorie_id: String(data.categorie_id),
-          state: data.state,
-          owner_id: data.owner_id,
-        });
-        setLoading(false);
-      } catch (err) {
-        console.error("Erreur lors du chargement de l'annonce", err);
-      }
-    };
-
-    fetchAnnonce();
-  }, [annonceId]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleDateChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: new Date(value) });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      const file = e.target.files[0];
+      const preview = URL.createObjectURL(file);
+      setImagePreview(preview);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const res = await fetch(`/api/announces/${annonceId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // Fonction pour formater les dates au format YYYY-MM-DD
+      const formatDateForDB = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
 
-      const result = await res.json();
-      alert(result.message || result.error);
+      // Préparer les données avec les dates au bon format
+      const dataToSend = {
+        title: formData.title,
+        description: formData.description,
+        amount_deposit: Number(formData.amount_deposit),
+        location: formData.location,
+        state_of_product: formData.state_of_product,
+        start_borrow_date: formatDateForDB(formData.start_borrow_date),
+        end_borrow_date: formatDateForDB(formData.end_borrow_date),
+        owner_id: formData.owner_id,
+        categorie_id: formData.categorie_id,
+        all_images: imagePreview
+          ? [imagePreview, ...formData.all_images.slice(1)]
+          : formData.all_images,
+      };
+
+      console.log("Données envoyées:", dataToSend);
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/announces/${announce.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSend),
+        },
+      );
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Erreur serveur:", errorText);
+        throw new Error("Erreur lors de la modification");
+      }
+
+      await res.json();
+      onSave({
+        ...formData,
+        all_images: imagePreview
+          ? [imagePreview, ...formData.all_images.slice(1)]
+          : formData.all_images,
+      });
     } catch (err) {
       console.error("Erreur lors de la modification", err);
+      alert("Erreur lors de la modification de l'annonce");
     }
   };
 
-  if (loading) return <p>Chargement de l'annonce...</p>;
-  
-  return (
-  <form onSubmit={handleSubmit}>
-    <input type="text" name="title" placeholder="Titre de l'annonce" value={formData.title} onChange={handleChange} required />
-    <textarea name="description" placeholder="Description de l'annonce" value={formData.description} onChange={handleChange} required />
-    <input type="number" name="amount_deposit" placeholder="Montant de la caution" value={formData.amount_deposit} onChange={handleChange} required />
-    <input type="date" name="start_borrow_date" placeholder="Date de début" value={formData.start_borrow_date} onChange={handleChange} required />
-    <input type="date" name="end_borrow_date" placeholder="Date de fin" value={formData.end_borrow_date} onChange={handleChange} required />
-    <input type="text" name="location" placeholder="Lieu de l'annonce" value={formData.location} onChange={handleChange} required />
-    <select name="categorie_id" value={formData.categorie_id} onChange={handleChange} required>
-      <option value="1">Categorie 1</option>
-      <option value="2">Categorie 2</option>
-      <option value="3">Categorie 3</option>
-    </select>
-    <button type="submit">Modifier l'annonce</button>
-  </form>
-);
+  // Format pour input date (YYYY-MM-DD)
+  const formatDateForInput = (date: Date) => {
+    return date.toISOString().split("T")[0];
+  };
 
+  const currentImage = imagePreview || formData.all_images[0];
+
+  return (
+    <>
+      <h1 className="product-title">
+        <textarea
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          rows={2}
+        />
+      </h1>
+
+      <div className="info-fields">
+        <div className="info-field">
+          <p className="info-label">Location</p>
+          <input
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="info-value"
+          />
+        </div>
+
+        <div className="info-field">
+          <p className="info-label">Caution</p>
+          <input
+            type="number"
+            name="amount_deposit"
+            value={formData.amount_deposit}
+            onChange={handleChange}
+            className="info-value"
+          />
+        </div>
+
+        <div className="info-field">
+          <p className="info-label">Date de début</p>
+          <input
+            type="date"
+            value={formatDateForInput(formData.start_borrow_date)}
+            onChange={(e) =>
+              handleDateChange("start_borrow_date", e.target.value)
+            }
+            className="info-value"
+          />
+        </div>
+
+        <div className="info-field">
+          <p className="info-label">Date de fin</p>
+          <input
+            type="date"
+            value={formatDateForInput(formData.end_borrow_date)}
+            onChange={(e) =>
+              handleDateChange("end_borrow_date", e.target.value)
+            }
+            className="info-value"
+          />
+        </div>
+
+        <div className="info-field">
+          <p className="info-label">État global</p>
+          <select
+            name="state_of_product"
+            value={formData.state_of_product}
+            onChange={handleChange}
+            className="info-value"
+          >
+            <option value="new">New</option>
+            <option value="excellent">Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+          </select>
+        </div>
+
+        <div className="info-field">
+          <p className="info-label">Publié par</p>
+          <p className="info-value">{formData.name}</p>
+        </div>
+      </div>
+
+      <div className="edit-image-mini-wrapper">
+        <label htmlFor="image-upload" className="edit-image-btn">
+          Modifier l'image
+        </label>
+
+        <img src={currentImage} alt="Produit" className="edit-image-mini" />
+
+        <input
+          id="image-upload"
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleImageChange}
+        />
+      </div>
+
+      <div className="description" style={{ marginTop: "2rem" }}>
+        <p
+          className="info-label"
+          style={{ textAlign: "left", marginBottom: "0.5rem" }}
+        >
+          Description
+        </p>
+
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          rows={6}
+          className="info-value"
+        />
+      </div>
+
+      <div className="action-buttons">
+        <button
+          type="button"
+          className="btn btn-contact"
+          onClick={handleSubmit}
+        >
+          Enregistrer
+        </button>
+        <button type="button" className="btn btn-cancel" onClick={onCancel}>
+          Annuler
+        </button>
+      </div>
+    </>
+  );
 }
 
 export default EditAnnonce;

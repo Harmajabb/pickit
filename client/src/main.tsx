@@ -2,7 +2,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
-
 import App from "./App";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
@@ -14,6 +13,7 @@ import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
 
 const router = createBrowserRouter([
@@ -30,6 +30,8 @@ const router = createBrowserRouter([
       { path: "/reset-password/:token", element: <ResetPassword /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
+      { path: "/profile/me", element: <Profile mode="me" /> },
+      { path: "/profile/:id", element: <Profile mode="member" /> },
     ],
   },
 ]);

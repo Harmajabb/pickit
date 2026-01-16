@@ -6,19 +6,38 @@ import announcesRepository from "./announcesRepository";
 const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
-      location:
-        typeof req.query.location === "string" ? req.query.location : undefined,
-      categorie_id:
-        typeof req.query.categorie_id === "string"
-          ? Number(req.query.categorie_id)
+      zipcode:
+        typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
+      category_id:
+        typeof req.query.category_id === "number"
+          ? req.query.category_id
           : undefined,
     };
+    console.log(filters);
+
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
-      ...announce,
+      ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
     res.json(formattedAnnounces);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const destroy: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.query.id);
+
+    const resultDelete = await announcesRepository.delete(id);
+    console.log(resultDelete);
+    if (resultDelete.affectedRows === 0) {
+      res.status(404).json({ message: "Annonce non trouvée" });
+      return;
+    }
+
+    res.json({ message: "La suppression s'est bien passée" });
   } catch (err) {
     next(err);
   }
@@ -137,4 +156,5 @@ export default {
   createAnnounce,
   readOne,
   updateAnnounce,
+  destroy,
 };
