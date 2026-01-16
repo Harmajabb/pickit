@@ -1,6 +1,6 @@
 import {
-  type ReactNode,
   createContext,
+  type ReactNode,
   useCallback,
   useEffect,
   useState,
@@ -101,7 +101,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [login]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, initResetPassword, resetPassword }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, initResetPassword, resetPassword }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -5,24 +5,9 @@ import "./ProductSheet.css";
 import type { AnnounceDetail } from "../../types/Announce";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 
-// interface Announce {
-//   id: number;
-//   title: string;
-//   description: string;
-//   location: string;
-//   state: string;
-//   owner_id: number;
-//   categorie_id: number;
-//   all_images: string[];
-//   favourites?: number;
-//   start_borrow_date: Date;
-//   end_borrow_date: Date;
-//   amount_deposit: number;
-//   state_of_product: string;
-//   name: string;
-// }
 
 export default function ProductSheet() {
+  const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const { announceId } = useParams();
   const [announce, setAnnounce] = useState<AnnounceDetail | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
@@ -73,8 +58,8 @@ export default function ProductSheet() {
           <div className="image-section">
             <div className="image-wrapper">
               <img
-                src={announce.all_images[currentImage]}
-                alt="Produit"
+                src={BASE_URL + announce.all_images[currentImage]}
+                alt="Ski poles"
                 className="product-image"
               />
               <button
@@ -181,14 +166,23 @@ export default function ProductSheet() {
             )}
           </div>
         </div>
-
-        {!isEditing && (
-          <div className="description">
-            <p className={announce.description.length > 300 ? "long-text" : ""}>
-              {announce.description}
-            </p>
-          </div>
-        )}
+        <div className="tiny-img">
+          <img
+            src={BASE_URL + announce.all_images[currentImage]}
+            alt="Files"
+            className="product-image"
+          />
+          <img
+            src={BASE_URL + announce.all_images[currentImage]}
+            alt="Files"
+            className="product-image"
+          />
+        </div>
+        <div className="description">
+          <p className={announce.description.length > 300 ? "long-text" : ""}>
+            {announce.description}
+          </p>
+        </div>
       </div>
     </div>
   );

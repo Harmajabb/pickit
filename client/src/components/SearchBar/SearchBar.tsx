@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { searchApi } from "../../services/ServiceSearchApi";
 import type { Announce } from "../../types/Announce";
 import type { SearchResult, Tab } from "../../types/Search";
-import type { User } from "../../types/User";
+import type { UserPublic } from "../../types/User";
 import "./SearchBar.css";
 
 interface Props {
@@ -44,7 +44,7 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
                 type: "announces",
                 item,
               }))
-            : (data as User[]).slice(0, 6).map((item) => ({
+            : (data as UserPublic[]).slice(0, 6).map((item) => ({
                 // limit to 6 results
                 type: "users",
                 item,

@@ -1,6 +1,6 @@
 import path from "node:path";
 import argon2 from "argon2";
-import type { Request, RequestHandler } from "express";
+import type { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import authRepository from "./authRepository";
@@ -41,7 +41,7 @@ const login: RequestHandler = async (req, res, next) => {
   }
 };
 
-const logout: RequestHandler = (req, res) => {
+const logout: RequestHandler = (_req, res) => {
   res
     .clearCookie("access_token")
     .status(200)
@@ -49,9 +49,10 @@ const logout: RequestHandler = (req, res) => {
 };
 
 const checkAuth: RequestHandler = (req, res, next) => {
+  // console.log("req cookie", req.cookies);
+  // console.log("req header.cookie", req.header.cookie);
   try {
     const token = req.cookies.access_token;
-
     if (!token) {
       res.sendStatus(401);
       return;

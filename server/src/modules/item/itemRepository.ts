@@ -42,8 +42,6 @@ class ItemRepository {
     return rows as Item[];
   }
 
-  
-
   // The U of CRUD - Update operation
   // TODO: Implement the update operation to modify an existing item
 
