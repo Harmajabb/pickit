@@ -1,6 +1,8 @@
 // Load the express module to create a web application
-import express from "express";
+
 import cookieParser from "cookie-parser";
+import express from "express";
+
 const app = express();
 
 // Configure it

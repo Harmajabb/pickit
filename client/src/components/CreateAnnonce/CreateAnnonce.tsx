@@ -16,7 +16,7 @@ function CreateAnnonce() {
     start_borrow_date: "",
     end_borrow_date: "",
     categorie_id: "1",
-    owner_id: user?.id,
+    owner_id: "1",
     files: [] as File[],
   });
 
@@ -58,7 +58,7 @@ function CreateAnnonce() {
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
     formDataToSend.append("categorie_id", formData.categorie_id);
-    formDataToSend.append("owner_id", user.id.toString());
+    formDataToSend.append("owner_id", formData.owner_id.toString());
 
     for (const file of formData.files) {
       formDataToSend.append("images", file);

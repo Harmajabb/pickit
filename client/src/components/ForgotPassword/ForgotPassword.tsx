@@ -19,7 +19,7 @@ function ForgotPassword() {
       setMessage(
         "If an account with that email exists, a reset link has been sent.",
       );
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to initiate password reset. Please try again later.");
     }
   };
