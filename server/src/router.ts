@@ -20,11 +20,12 @@ import announcesActions from "./modules/announces/announcesActions";
 
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
+router.delete("/api/announcesDelete", announcesActions.destroy);
 router.get("/api/announces/:id", announcesActions.readOne);
 router.put("/api/announces/:id", announcesActions.updateAnnounce);
 router.post(
   "/api/create_announce",
-  authActions.checkAuth,
+  // authActions.checkAuth,
   upload.array("images", 10),
   announcesActions.createAnnounce,
 );

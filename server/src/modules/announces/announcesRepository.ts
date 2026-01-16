@@ -83,7 +83,13 @@ class AnnouncesRepository {
     );
     return rows as Announces[];
   }
-
+  async delete(id: number) {
+    const [ResultSetHeader] = await databaseClient.query<ResultSetHeader>(
+      "DELETE FROM announces WHERE id = ?",
+      [id],
+    );
+    return ResultSetHeader;
+  }
   // Get just one announcement with its ID
   // Announce by owner ID.
   async readByOwnerId(ownerId: number) {
