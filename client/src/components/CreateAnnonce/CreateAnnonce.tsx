@@ -37,34 +37,27 @@ function CreateAnnonce() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const files = e.target.files;
-  if (files) {
-    setFormData({
-      ...formData,
-      files: [...formData.files, ...Array.from(files)],
-    });
-  }
-};
-  // UI ONLY → ouvre la pop-in
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      setShowConfirm(true);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      setFormData({
+        ...formData,
+        files: [...formData.files, ...Array.from(files)],
+      });
+    }
   };
-
-<<<<<<< HEAD
+  // UI ONLY → ouvre la pop-in
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setShowConfirm(true);
     if (!user) {
       alert("User not found");
       return;
     }
+  };
 
-=======
   // BUSINESS LOGIC ONLY → envoi API
-    const submitAnnonce = async () => {
->>>>>>> dev
+  const submitAnnonce = async () => {
     const formDataToSend = new FormData();
 
     formDataToSend.append("title", formData.title);
@@ -235,7 +228,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           </button>
         </form>
       </div>
-  {/* MODAL CONFIRMATION */}
+      {/* MODAL CONFIRMATION */}
       {showConfirm && (
         <div className="modal-overlay">
           <div className="modal">
@@ -265,9 +258,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           </div>
         </div>
       )}
-</div>
-
-
+    </div>
   );
 }
 
