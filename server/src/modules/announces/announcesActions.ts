@@ -5,10 +5,14 @@ import announcesRepository from "./announcesRepository";
 const browse: RequestHandler = async (req, res, next) => {
   try {
     const filters = {
-      zipcode: req.query.zipcode,
-      category_id: req.query.category_id
+      zipcode:
+        typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
+      category_id:
+        typeof req.query.category_id === "number"
+          ? req.query.category_id
+          : undefined,
     };
-    console.log(filters)
+    console.log(filters);
 
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
@@ -21,7 +25,7 @@ const browse: RequestHandler = async (req, res, next) => {
   }
 };
 
-const browseFiltered: RequestHandler = async (req, res, next) => {
+const browseFiltered: RequestHandler = async (_req, res, next) => {
   try {
     // Sends the whole object res.query to the repository
     const readFiltered = await announcesRepository.readFiltered();
@@ -30,7 +34,6 @@ const browseFiltered: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-
 
 const createAnnounce: RequestHandler = async (req, res, next) => {
   try {
@@ -72,6 +75,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       owner_id: Number(owner_id),
       state: String(state),
     };
+    // biome-ignore lint/suspicious/noExplicitAny: <result as any>
     let result: any;
     try {
       result = await announcesRepository.sendCreateAnnounce(

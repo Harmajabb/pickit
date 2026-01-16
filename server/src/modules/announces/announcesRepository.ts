@@ -18,23 +18,22 @@ export type Announces = {
   categorie_id?: number;
   owner_id?: number;
 };
-
 type AnnouncesFilter = {
-  zipcode?: number;
+  zipcode?: string;
   categorie_id?: number;
 };
 
 // DISTINCT to avoid carthesian products (= similar entries)
 class AnnouncesRepository {
   async readAll(filters: AnnouncesFilter = {}) {
-    let sql = `SELECT announces.*, users.zipcode, COUNT(DISTINCT is.favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
+    let sql = `SELECT announces.*, users.zipcode, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id
-    LEFT JOIN users ON owner.id = users.id
+    LEFT JOIN users ON owner_id = users.id
     LEFT JOIN favorites ON announces.id = favorites.announces_id`;
 
     console.log(filters);
-    const sqlValues: any[] = [];
+    const sqlValues: (string | number)[] = [];
     const conditions: string[] = [];
 
     if (filters.zipcode) {
@@ -115,7 +114,7 @@ class AnnouncesRepository {
       insertAnnounceQuery,
       announceValues,
     );
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: <result as any>
     const insertId = (result as any).insertId as number;
     const imagePaths: string[] = [];
 
