@@ -37,7 +37,6 @@ export type Favorite = {
   location: string;
   image_url: string | null;
 };
-
 type AnnouncesFilter = {
   zipcode?: string;
   categorie_id?: number;
