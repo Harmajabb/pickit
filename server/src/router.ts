@@ -25,6 +25,7 @@ router.post("/auth/logout", authActions.logout);
 router.get("/auth/check", authActions.checkAuth, authActions.check);
 router.post("/auth/reset-password", authActions.resetPassword);
 router.post("/auth/init-reset-password", authActions.initResetPassword);
+router.post("/auth/register", authActions.register, authActions.login);
 
 // Define Announced-related routes
 import announcesActions from "./modules/announces/announcesActions";

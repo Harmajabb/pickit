@@ -1,5 +1,6 @@
-import databaseClient from "../../../database/client";
 import type { Rows } from "../../../database/client";
+import databaseClient from "../../../database/client";
+import type { TypesRegister } from "./authTypes";
 
 class AuthRepository {
   async readByEmail(email: string) {
@@ -16,6 +17,21 @@ class AuthRepository {
       newPassword,
       id,
     ]);
+  }
+  async createUser(form: TypesRegister, hashedPassword: string) {
+    await databaseClient.query(
+      "INSERT INTO users (firstname, lastname, zipcode, city, address, email, password, create_date, update_date, role) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW(), ?)",
+      [
+        form.firstName,
+        form.lastName,
+        form.zipcode,
+        form.city,
+        form.adress,
+        form.email,
+        hashedPassword,
+        0,
+      ],
+    );
   }
 }
 export default new AuthRepository();

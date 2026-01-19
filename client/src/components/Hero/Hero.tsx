@@ -16,12 +16,12 @@ function Hero() {
     title: "Sport is meant to be shared.",
     subtitle: "Lend your gear. Enjoy you sport.",
     ctaLabel: "View listing",
-    ctaTo: "/listing",
+    ctaTo: "/catalog",
     illustrationSrc: "People sharing sport gear illustration",
     illustrationAlt: "People sharing sport gear illustration",
   };
   return (
-    <header className="hero" aria-labelledby="Pickit hero section">
+    <header className="hero">
       <div className="hero-container">
         <div
           className="hero-illustration-wrap hero-anim hero-anim--image"
