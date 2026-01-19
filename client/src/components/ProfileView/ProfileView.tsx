@@ -1,3 +1,4 @@
+import { Heart, Package } from "lucide-react";
 import { Link } from "react-router";
 import type {
   ProfileFavorite,
@@ -33,10 +34,16 @@ function ProfileView(props: ProfileViewProps) {
     const user = props.user;
 
     return (
-      <section className="profile profile">
+      <section
+        className="profile profile--me"
+        aria-labelledby="profile-header-title"
+      >
+        {" "}
         <header className="profile-header">
-          <h1>My account</h1>
-          <p>Everything you need to manage your account</p>
+          <h1 id="profile-header-title">My account</h1>
+          <p className="profile-subtitle">
+            Everything you need to manage your account
+          </p>
 
           <img
             src={avatarSrc}
@@ -47,32 +54,63 @@ function ProfileView(props: ProfileViewProps) {
           <h2 className="profile-name">
             {user.firstname} {user.lastname}
           </h2>
+
+          <button type="button" className="cta">
+            Edit profile
+          </button>
         </header>
+        <section className="profile-info" aria-labelledby="personal-info-title">
+          <h3 id="personal-info-title" className="sr-only">
+            Personal Information
+          </h3>
 
-        <section>
-          <span>Email:</span>
-          <span>{user.email}</span>
+          <dl className="profile-info-grid">
+            <div className="profile-info-item">
+              <dt>Email:</dt>
+              <dd>{user.email}</dd>
+            </div>
 
-          <span>Address:</span>
-          <span>{user.address}</span>
+            <div className="profile-info-item">
+              <dt>Address:</dt>
+              <dd>{user.address}</dd>
+            </div>
 
-          <span>City:</span>
-          <span>{user.city}</span>
+            <div className="profile-info-item">
+              <dt>City:</dt>
+              <dd>{user.city}</dd>
+            </div>
 
-          <span>ZipCode:</span>
-          <span>{user.zipcode}</span>
+            <div className="profile-info-item">
+              <dt>Zipcode:</dt>
+              <dd>{user.zipcode}</dd>
+            </div>
+          </dl>
         </section>
+        <section
+          className="profile-actions"
+          aria-labelledby="account-actions-title"
+        >
+          <h3 id="account-actions-title" className="sr-only">
+            Quick Actions
+          </h3>
 
-        <section>
-          <Link to="/my-announces">
-            <span>My Announcement</span>
-            <p>Manage your items</p>
-          </Link>
+          <div className="profile-actions-grid">
+            <Link to="/my-announces" className="profile-action-card">
+              <div className="profile-action-icon">
+                <Package size={40} strokeWidth={1.5} />
+              </div>
+              <h4>My Announcements</h4>
+              <p>Manage your items</p>
+            </Link>
 
-          <Link to="/my-favorites">
-            <span>My favorites</span>
-            <p>Find your favorites</p>
-          </Link>
+            <Link to="/my-favorites" className="profile-action-card">
+              <div className="profile-action-icon">
+                <Heart size={40} strokeWidth={1.5} />
+              </div>
+              <h4>My Favorites</h4>
+              <p>Find your favorites</p>
+            </Link>
+          </div>
         </section>
       </section>
     );
@@ -82,60 +120,72 @@ function ProfileView(props: ProfileViewProps) {
   const { user, items, favorites } = props;
 
   return (
-    <section className="profile">
+    <section
+      className="profile profile--member"
+      aria-labelledby="profile-header-title"
+    >
+      {" "}
       <header className="profile-header">
+        <h1 id="profile-header-title">Profile information</h1>
         <img
           src={avatarSrc}
           alt={`${user.firstname} ${user.lastname}`}
           className="profile-avatar"
         />
 
-        <h1 className="profile-name">
+        <h2 className="profile-name">
           {user.firstname} {user.lastname}
-        </h1>
+        </h2>
 
         <p className="profile-location">
           {user.city} ({user.zipcode})
         </p>
       </header>
-
-      <section>
-        <h2>His announcement ({items.length})</h2>
+      <section
+        className="profile-section"
+        aria-labelledby="announcements-title"
+      >
+        <h2 id="announcements-title">Announcement ({items.length})</h2>
 
         {items.length === 0 ? (
-          <p>No announcement has been published</p>
+          <p className="profile-empty">No announcement has been published</p>
         ) : (
           <ul className="profile-items-grid">
             {items.map((item) => (
-              <Link key={item.id} to={`/announce/${item.id}`}>
-                <ItemCard
-                  id={item.id}
-                  title={item.title}
-                  location={item.location}
-                  all_images={item.image_url ?? undefined}
-                />
-              </Link>
+              <li key={item.id}>
+                {" "}
+                <Link to={`/announce/${item.id}`}>
+                  <ItemCard
+                    id={item.id}
+                    title={item.title}
+                    location={item.location}
+                    all_images={item.image_url ?? undefined}
+                  />
+                </Link>
+              </li>
             ))}
           </ul>
         )}
       </section>
-
-      <section>
-        <h2>His favorites ({favorites.length})</h2>
+      <section className="profile-section" aria-labelledby="favorites-title">
+        <h2 id="favorites-title">His favorites ({favorites.length})</h2>
 
         {favorites.length === 0 ? (
-          <p>No favorite for the moment</p>
+          <p className="profile-empty">No favorite for the moment</p>
         ) : (
           <ul className="profile-items-grid">
             {favorites.map((fav) => (
-              <Link key={fav.id} to={`/announce/${fav.id}`}>
-                <ItemCard
-                  id={fav.id}
-                  title={fav.title}
-                  location={fav.location}
-                  all_images={fav.image_url ?? undefined}
-                />
-              </Link>
+              <li key={fav.id}>
+                {" "}
+                <Link to={`/announce/${fav.id}`}>
+                  <ItemCard
+                    id={fav.id}
+                    title={fav.title}
+                    location={fav.location}
+                    all_images={fav.image_url ?? undefined}
+                  />
+                </Link>
+              </li>
             ))}
           </ul>
         )}
