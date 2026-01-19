@@ -23,8 +23,13 @@
   align-items: center;
   gap: 2em;
 }
-.register.otherStep {
-  transform: translateX(400%);
+.stepOne.otherStep {
+  transform: translateX(-300%);
+  opacity: 0;
+  pointer-events: none;
+}
+.stepTwo.otherStep {
+  transform: translateX(300%);
   opacity: 0;
   pointer-events: none;
 }

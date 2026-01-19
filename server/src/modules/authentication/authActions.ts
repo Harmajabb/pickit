@@ -48,7 +48,38 @@ const login: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-
+const register: RequestHandler = async (req, res, next) => {
+  const { firstName, lastName, city, zipcode, adress, email, password } =
+    req.body;
+  try {
+    if (
+      !firstName ||
+      !lastName ||
+      !city ||
+      !zipcode ||
+      !adress ||
+      !email ||
+      !password
+    ) {
+      res.status(400).json({
+        success: false,
+        error: "Missing required fields",
+      });
+    }
+    const check = await authRepository.readByEmail(req.body.email);
+    if (check) {
+      res
+        .status(422)
+        .json({ message: "You already have an account, try loggin in." });
+      return;
+    }
+    const hashedPassword = await argon2.hash(req.body.password);
+    await authRepository.createUser(req.body, hashedPassword);
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
 const logout: RequestHandler = (_req, res) => {
   res
     .clearCookie("access_token")
@@ -200,4 +231,5 @@ export default {
   initResetPassword,
   resetPassword,
   verifyAdmin,
+  register,
 };
