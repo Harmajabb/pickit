@@ -1,51 +1,225 @@
 .profile {
-  padding: 1.5rem;
+  padding: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  padding: 4rem 2rem 2.5rem;
+  border-bottom: 1px solid var(--color-card);
 }
 
 .profile-avatar {
-  width: 96px;
-  height: 96px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid var(--color-btn);
 }
 
 .profile-name {
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: 1.75rem;
 }
 
 .profile-location {
-  color: black;
-  /* for test */
+  opacity: 0.7;
 }
 
-.profile-items {
+.profile--me {
+  max-width: 1200px;
+}
+
+.profile--me .profile-subtitle {
+  text-align: center;
+  opacity: 0.7;
+}
+
+.profile-info {
   margin-top: 2rem;
+  padding: 3rem clamp(2.5rem, 7vw, 4rem);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.profile-info-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.profile-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-btn);
+}
+
+.profile-info-item dt {
+  font-weight: 400;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.profile-info-item dd {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.profile-actions {
+  margin-top: 2rem;
+}
+
+.profile-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.profile-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  background: var(--color-bg);
+  border: 2px solid var(--color-card);
+  border-radius: var(--b-radius);
+  text-align: center;
+  transition: all 0.3s ease;
+  color: var(--color-primary-text);
+}
+
+.profile-action-card:hover,
+.profile-action-card:focus-visible {
+  border-color: var(--color-btn);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.profile-action-icon {
+  color: var(--color-title);
+  line-height: 1;
+}
+
+.profile-action-card p {
+  opacity: 0.7;
+}
+
+.profile--member .profile-header {
+  padding-bottom: 3rem;
+}
+
+.profile-section {
+  margin-top: 2rem;
+}
+
+.profile-section h2 {
+  margin: 1rem 0;
+}
+
+.profile-empty {
+  opacity: 0.6;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 0;
 }
 
 .profile-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  list-style: none;
+  padding: 0;
 }
 
-.profile-item-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.profile-items-grid li {
+  list-style: none;
 }
 
-.profile-item-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
+.profile-items-grid a {
   display: block;
-  border-radius: 12px;
+  color: var(--color-title);
+}
+
+/* tablet */
+@media (max-width: 1199px) {
+  .profile-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* mobile */
+@media (max-width: 767px) {
+  .profile {
+    padding: 1.5rem;
+  }
+
+  .profile-header {
+    padding: 5rem 2rem;
+  }
+
+  .profile-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .profile--me {
+    padding: 1.5rem;
+  }
+
+  .profile--me .profile-header {
+    padding: 5rem 2rem;
+  }
+
+  .profile--me .profile-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .profile-info {
+    padding: 3rem;
+    max-width: 100%;
+    margin: 2rem 0 0;
+  }
+
+  .profile-info-grid {
+    gap: 1.5rem;
+  }
+
+  .profile-info-item {
+    padding-bottom: 1rem;
+  }
+
+  .profile-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .profile-action-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .profile--member {
+    padding: 1.5rem;
+  }
+
+  .profile--member .profile-header {
+    padding-bottom: 1.5rem;
+  }
+
+  .profile--member .profile-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .profile-items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
 }

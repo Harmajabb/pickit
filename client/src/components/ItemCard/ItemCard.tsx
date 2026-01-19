@@ -1,3 +1,4 @@
+import { Heart, MapPin } from "lucide-react";
 import "./ItemCard.css";
 interface Props {
   id: number;
@@ -16,14 +17,15 @@ function ItemCard({ id, title, location, all_images }: Props) {
           src={`${BASE_URL}${all_images}`}
           alt={`${title}-${all_images}`}
         />
-        <button className="like-button">
-          🤍 12
+        <button type="button" className="like-button">
+          <Heart size={16} strokeWidth={2} />
+          <span>12</span>
         </button>
       </div>
       <div className="itemCard-info" key={id}>
-        <h3>{title}</h3>
+        <h3 className="itemCard-title">{title}</h3>
         <p>
-          <span>📍</span>
+          <MapPin size={14} strokeWidth={2} />
           {location}
         </p>
       </div>
