@@ -34,10 +34,13 @@ function ProfileView(props: ProfileViewProps) {
     const user = props.user;
 
     return (
-      <section className="profile profile--me">
+      <section
+        className="profile profile--me"
+        aria-labelledby="profile-header-title"
+      >
         {" "}
         <header className="profile-header">
-          <h1>My account</h1>
+          <h1 id="profile-header-title">My account</h1>
           <p className="profile-subtitle">
             Everything you need to manage your account
           </p>
@@ -56,8 +59,10 @@ function ProfileView(props: ProfileViewProps) {
             Edit profile
           </button>
         </header>
-        <section className="profile-info">
-          <h3 className="sr-only">Personal Information</h3>
+        <section className="profile-info" aria-labelledby="personal-info-title">
+          <h3 id="personal-info-title" className="sr-only">
+            Personal Information
+          </h3>
 
           <dl className="profile-info-grid">
             <div className="profile-info-item">
@@ -81,8 +86,13 @@ function ProfileView(props: ProfileViewProps) {
             </div>
           </dl>
         </section>
-        <section className="profile-actions">
-          <h3 className="sr-only">Quick Actions</h3>
+        <section
+          className="profile-actions"
+          aria-labelledby="account-actions-title"
+        >
+          <h3 id="account-actions-title" className="sr-only">
+            Quick Actions
+          </h3>
 
           <div className="profile-actions-grid">
             <Link to="/my-announces" className="profile-action-card">
@@ -110,9 +120,13 @@ function ProfileView(props: ProfileViewProps) {
   const { user, items, favorites } = props;
 
   return (
-    <section className="profile profile--member">
+    <section
+      className="profile profile--member"
+      aria-labelledby="profile-header-title"
+    >
       {" "}
       <header className="profile-header">
+        <h1 id="profile-header-title">Profile information</h1>
         <img
           src={avatarSrc}
           alt={`${user.firstname} ${user.lastname}`}
@@ -127,8 +141,11 @@ function ProfileView(props: ProfileViewProps) {
           {user.city} ({user.zipcode})
         </p>
       </header>
-      <section className="profile-section">
-        <h2>His announcement ({items.length})</h2>
+      <section
+        className="profile-section"
+        aria-labelledby="announcements-title"
+      >
+        <h2 id="announcements-title">Announcement ({items.length})</h2>
 
         {items.length === 0 ? (
           <p className="profile-empty">No announcement has been published</p>
@@ -150,8 +167,8 @@ function ProfileView(props: ProfileViewProps) {
           </ul>
         )}
       </section>
-      <section className="profile-section">
-        <h2>His favorites ({favorites.length})</h2>
+      <section className="profile-section" aria-labelledby="favorites-title">
+        <h2 id="favorites-title">His favorites ({favorites.length})</h2>
 
         {favorites.length === 0 ? (
           <p className="profile-empty">No favorite for the moment</p>
