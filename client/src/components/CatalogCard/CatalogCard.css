@@ -1,9 +1,13 @@
-.CatalogCard-section {
+.catalogCard-section {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   text-decoration: none;
   color: var(--color-primary-text);
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: translateY(-4px);
+  }
 }
 
 .catalogCard-image-container {
@@ -26,17 +30,26 @@
 }
 
 .like-button {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
   border: none;
-  padding: 4px 8px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.like-button:hover {
+  background: white;
+  transform: scale(1.05);
+}
+
+.like-button svg {
+  flex-shrink: 0; /* it help to not compress the icon */
 }
 
 .catalogCard-info {
@@ -56,4 +69,17 @@
 .catalogCard-title {
   text-align: center;
   margin: 8em 0 0 0;
+}
+
+.catalogCard-info p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.catalogCard-info p svg {
+  flex-shrink: 0; /* it help to not compress the icon */
+  opacity: 0.7;
 }
