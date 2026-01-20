@@ -25,13 +25,19 @@ function CategoryItem({ category, onDelete, onEdit }: CategoryItemProps) {
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
             />
-            <button type="button" onClick={saveEdit}>Save</button>
-            <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+            <button type="button" onClick={saveEdit}>
+              Save
+            </button>
+            <button type="button" onClick={() => setIsEditing(false)}>
+              Cancel
+            </button>
           </>
         ) : (
           <>
             <span>{category.category}</span>
-            <button type="button" onClick={() => setIsEditing(true)}>Edit</button>
+            <button type="button" onClick={() => setIsEditing(true)}>
+              Edit
+            </button>
           </>
         )}
       </div>

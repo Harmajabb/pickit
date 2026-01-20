@@ -1,5 +1,5 @@
-import categoryRepository from "../../modules/categories/categoryRepository";
 import type { RequestHandler } from "express";
+import categoryRepository from "../../modules/categories/categoryRepository";
 
 export interface CategoryTree {
   id: number;
@@ -9,7 +9,7 @@ export interface CategoryTree {
 }
 
 class CategoryAction {
-  browse: RequestHandler = async (req, res, next) => {
+  browse: RequestHandler = async (_req, res, next) => {
     try {
       const categories = await categoryRepository.readAll();
       const categoryMap = new Map<number, CategoryTree>();
@@ -60,14 +60,14 @@ class CategoryAction {
       next(err);
     }
   };
-    delete: RequestHandler = async (req, res, next) => {
+  delete: RequestHandler = async (req, res, next) => {
     try {
       const categoryId = Number(req.params.id);
       const affectedRows = await categoryRepository.delete(categoryId);
       res.json({ affectedRows });
     } catch (err) {
       next(err);
-    } 
-    };
+    }
+  };
 }
 export default new CategoryAction();

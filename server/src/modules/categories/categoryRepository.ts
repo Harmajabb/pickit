@@ -1,11 +1,10 @@
 import type { Result, Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
 
-
 export type Category = {
   id: number;
   category: string;
-  parent_id: number | null; 
+  parent_id: number | null;
 };
 
 class CategoryRepository {

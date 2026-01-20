@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { type JSX, useCallback, useEffect, useState } from "react";
 import CategoryItem from "../CategoryItem/CategoryItem";
 
 export interface CategoryTree {
@@ -17,7 +17,7 @@ function CategoryManager() {
   const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch(`${base_url}/api/categories`, {
-        credentials: "include"
+        credentials: "include",
       });
       const data = await response.json();
       setCategories(data);
@@ -109,7 +109,9 @@ function CategoryManager() {
           onChange={(e) => setNewCategory(e.target.value)}
           placeholder="New category name"
         />
-        <button type="button" onClick={handleAdd}>Add Category</button>
+        <button type="button" onClick={handleAdd}>
+          Add Category
+        </button>
       </div>
 
       <ul>
