@@ -9,6 +9,7 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
+import CategoryManager from "./components/CategoryManager/CategoryManager";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
       { path: "/profile/me", element: <Profile mode="me" /> },
       { path: "/profile/:id", element: <Profile mode="member" /> },
+      { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
     ],
   },
 ]);

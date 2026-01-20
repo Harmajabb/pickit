@@ -42,10 +42,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    categorie VARCHAR(50) NOT NULL,
+    category VARCHAR(50) NOT NULL,
     parent_id INT DEFAULT NULL,
     
-    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL,
+    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE CASCADE,
     INDEX idx_parent (parent_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -274,7 +274,7 @@ INSERT IGNORE INTO users (id, lastname, firstname, zipcode, city, address, email
 (4, 'Fourdin', 'Pierre', 59000, 'Lille', '1 Admin Street', 'fourdin.pfmg@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', 1);
 
 -- Categories (7 hierarchical categories)
-INSERT IGNORE INTO categories (id, categorie, parent_id) VALUES
+INSERT IGNORE INTO categories (id, category, parent_id) VALUES
 (1, 'Winter Sports', NULL),
 (2, 'Water Sports', NULL),
 (3, 'Cycling', NULL),
