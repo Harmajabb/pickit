@@ -2,6 +2,8 @@ import "./Register.css";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
+const Base_URL = import.meta.env.VITE_API_URL;
+
 type FormData = {
   firstName: string | undefined;
   lastName: string | undefined;
@@ -45,7 +47,7 @@ function Register() {
       setFormStatus("");
     }, 1000);
   };
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.email || !formData.password || !confirmPassword) {
       setUncorrect(true);
       setFormStatus("Please fill all fields");
@@ -56,6 +58,21 @@ function Register() {
       setFormStatus("Passwords don't match");
       return;
     }
+    try {
+      const res = await fetch(`${Base_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        const resjson = await res.json();
+        setFormStatus(resjson.message || "Registration failed");
+        return;
+      }
+    } catch (_err) {}
     setFormData({ ...formData, email: "", password: "" });
     setConfirmPassword("");
     setFormStatus("Welcome !");
@@ -99,6 +116,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, firstName: e.target.value });
               }}
+              aria-label="First Name"
             />
           </div>
           <div
@@ -112,6 +130,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, lastName: e.target.value });
               }}
+              aria-label="Last Name"
             />
           </div>
           <div
@@ -125,6 +144,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, adress: e.target.value });
               }}
+              aria-label="Adress"
             />
           </div>
           <div data-text="City" className={formData.city ? "filledInput" : ""}>
@@ -135,6 +155,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, city: e.target.value });
               }}
+              aria-label="City"
             />
           </div>
           <div
@@ -148,6 +169,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, zipcode: Number(e.target.value) });
               }}
+              aria-label="Zipcode"
             />
           </div>
           <button
@@ -176,6 +198,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, email: e.target.value });
               }}
+              aria-label="Email"
             />
           </div>
           <div
@@ -189,6 +212,7 @@ function Register() {
                 setUncorrect(false);
                 setFormData({ ...formData, password: e.target.value });
               }}
+              aria-label="Password"
             />
           </div>
           <div
@@ -202,6 +226,7 @@ function Register() {
                 setUncorrect(false);
                 setConfirmPassword(e.target.value);
               }}
+              aria-label="Confirm Password"
             />
           </div>
           <button
