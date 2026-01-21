@@ -1,11 +1,11 @@
 import { Heart, MapPin } from "lucide-react";
 import { Link } from "react-router";
-import type { Announces } from "../ItemHighlight/Ts-ItemHighlight.ts";
+import type { Announce } from "../../types/Announce";
 import "./CatalogCard.css";
 const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
 
 interface CatalogCardProps {
-  data: Announces;
+  data: Announce;
 }
 
 function CatalogCard({ data }: CatalogCardProps) {
@@ -24,7 +24,7 @@ function CatalogCard({ data }: CatalogCardProps) {
           />
           <button type="button" className="like-button">
             <Heart size={16} strokeWidth={2} />
-            <span>12</span>
+            <span>{data.total_likes}</span>
           </button>
         </div>
         <div className="catalogCard-info" key={data.id}>

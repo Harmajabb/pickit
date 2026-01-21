@@ -5,7 +5,6 @@ import "./ProductSheet.css";
 import type { AnnounceDetail } from "../../types/Announce";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 
-
 export default function ProductSheet() {
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const { announceId } = useParams();
@@ -151,9 +150,7 @@ export default function ProductSheet() {
                   <div className="info-field">
                     <p className="info-label">Favoris</p>
                     <div className="favourites">
-                      <span className="info-value">
-                        {announce.favourites || 0}
-                      </span>
+                      <span className="info-value">{announce.total_likes}</span>
                       <Heart className="heart-icon" />
                     </div>
                   </div>

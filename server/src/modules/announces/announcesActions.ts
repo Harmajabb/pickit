@@ -20,6 +20,7 @@ const browse: RequestHandler = async (req, res, next) => {
       ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
+
     res.json(formattedAnnounces);
   } catch (err) {
     next(err);

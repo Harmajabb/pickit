@@ -29,6 +29,7 @@ export type Announces = {
   categorie_id?: number;
   owner_id?: number;
   state_of_product?: string;
+  total_favorites?: number;
 };
 
 export type Favorite = {
@@ -45,13 +46,14 @@ type AnnouncesFilter = {
 // DISTINCT to avoid carthesian products (= similar entries)
 class AnnouncesRepository {
   async readAll(filters: AnnouncesFilter = {}) {
-    let sql = `SELECT announces.*, users.zipcode, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
+    let sql = `SELECT announces.*, users.zipcode, COUNT(favorites.id) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id
     LEFT JOIN users ON owner_id = users.id
     LEFT JOIN favorites ON announces.id = favorites.announces_id`;
 
     console.log(filters);
+
     const sqlValues: (string | number)[] = [];
     const conditions: string[] = [];
 
