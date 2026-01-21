@@ -26,7 +26,7 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
   };
 
   return (
-    <li className="category-item">
+    <ul className="category-item">
       <div className="category-content">
         {isEditing ? (
           <div className="edit-zone">
@@ -37,6 +37,7 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
             />
             <button
               type="button"
+              aria-label="Save button"
               className="secondary btn-save"
               onClick={handleSave}
             >
@@ -44,6 +45,7 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
             </button>
             <button
               type="button"
+              aria-label="Cancel button"
               className="secondary uncorrect btn-cancel"
               onClick={handleCancel}
             >
@@ -56,6 +58,7 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
             <div className="actions">
               <button
                 type="button"
+                aria-label="Delete Category"
                 className="secondary uncorrect btn-delete"
                 onClick={() => onDelete(category.id)}
               >
@@ -63,6 +66,7 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
               </button>
               <button
                 type="button"
+                aria-label="Edit Category"
                 className="secondary btn-edit"
                 onClick={() => setIsEditing(true)}
               >
@@ -74,7 +78,7 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
       </div>
 
       {category.children && category.children.length > 0 && (
-        <ul className="subcategory-list">
+        <li className="subcategory-list">
           {category.children.map((child) => (
             <CategoryItem
               key={child.id}
@@ -83,9 +87,9 @@ function CategoryItem({ category, onDelete, onEdit }: Props) {
               onEdit={onEdit}
             />
           ))}
-        </ul>
+        </li>
       )}
-    </li>
+    </ul>
   );
 }
 
