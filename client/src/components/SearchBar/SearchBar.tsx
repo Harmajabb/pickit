@@ -85,8 +85,13 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
     // console.log("SUBMIT", { query, tab });
     if (query.length < 2) return;
 
+    //For Members mode with results: select first result (goes to /profile/:id)
     if (tab === "users" && results.length > 0) {
-      handlePick(results[0]); // will go to /profile/:id via onSelect
+      handlePick(results[0]);
+      return;
+    }
+    // For Members mode without results: do nothing
+    if (tab === "users" && results.length === 0) {
       return;
     }
 
@@ -125,11 +130,11 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log("keydown", e.key, {
-      open,
-      results: results.length,
-      activeIndex,
-    });
+    // console.log("keydown", e.key, {
+    //   open,
+    //   results: results.length,
+    //   activeIndex,
+    // });
 
     // open the dropdown when user starts navigating
     if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
@@ -137,19 +142,31 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
       return;
     }
 
+    // if closed dropdown no reason to deal with arrowDown and ArrowUp
     if (!open) return;
 
-    if (e.key === "ArrowDown") {
+    // direction: 1 for down (ArrowDown), -1 for up (ArrowUp)
+    const navigateResults = (direction: 1 | -1) => {
       e.preventDefault();
       if (results.length === 0) return;
-      setActiveIndex((prev) => (prev < results.length - 1 ? prev + 1 : 0));
+
+      setActiveIndex((prev) => {
+        if (direction === 1) {
+          // Navigation down: if not at end, +1, else loop to start
+          return prev < results.length - 1 ? prev + 1 : 0;
+        }
+        // Navigation up: if not at start, -1, else loop to end
+        return prev > 0 ? prev - 1 : results.length - 1;
+      });
+    };
+
+    if (e.key === "ArrowDown") {
+      navigateResults(1);
       return;
     }
 
     if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (results.length === 0) return;
-      setActiveIndex((prev) => (prev > 0 ? prev - 1 : results.length - 1));
+      navigateResults(-1);
       return;
     }
 
@@ -197,9 +214,9 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
             onKeyDown={handleKeyDown}
             role="combobox" //biome asked me to add it so...
             aria-label="Search"
-            aria-expanded={open}
-            aria-controls={listboxId}
-            aria-autocomplete="list"
+            aria-expanded={open} // state of dropdown
+            aria-controls={listboxId} // id of the element list
+            aria-autocomplete="list" // autocompletion
           />
           <button
             type="button"
@@ -251,6 +268,7 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
                 <li key={key}>
                   <button
                     type="button"
+                    aria-label="result"
                     className={`searchbar-dropdown-btn ${isActive ? "is-active" : ""}`}
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => handlePick(result)}
