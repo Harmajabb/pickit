@@ -52,6 +52,7 @@ class UserRepository {
     return rows[0] as UserPrivate;
   }
 
+  //security: verify if this email already exist
   async checkExistEmail(
     email: string,
     excludeUserId: number,
@@ -63,6 +64,7 @@ class UserRepository {
     return rows.length > 0;
   }
 
+  // update private profile
   async update(id: number, data: UserUpdateData): Promise<UserPrivate | null> {
     const fields: string[] = [];
     const values: (string | number | null)[] = [];
@@ -90,6 +92,10 @@ class UserRepository {
     if (data.zipcode !== undefined) {
       fields.push("zipcode = ?");
       values.push(data.zipcode);
+    }
+    if (data.profil_picture !== undefined) {
+      fields.push("profil_picture = ?");
+      values.push(data.profil_picture);
     }
 
     if (fields.length === 0) {
