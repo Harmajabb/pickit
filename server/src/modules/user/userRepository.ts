@@ -15,6 +15,16 @@ export type UserPrivate = UserMember & {
   address: string;
 };
 
+export type UserUpdateData = {
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  zipcode?: number;
+  profil_picture?: string | null;
+};
+
 class UserRepository {
   //public member
   async readById(id: number): Promise<UserMember | null> {
@@ -40,6 +50,59 @@ class UserRepository {
       return null;
     }
     return rows[0] as UserPrivate;
+  }
+
+  async checkExistEmail(
+    email: string,
+    excludeUserId: number,
+  ): Promise<boolean> {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT id FROM users WHERE email = ? AND id != ?",
+      [email, excludeUserId],
+    );
+    return rows.length > 0;
+  }
+
+  async update(id: number, data: UserUpdateData): Promise<UserPrivate | null> {
+    const fields: string[] = [];
+    const values: (string | number | null)[] = [];
+
+    if (data.firstname !== undefined) {
+      fields.push("firstname = ?");
+      values.push(data.firstname);
+    }
+    if (data.lastname !== undefined) {
+      fields.push("lastname = ?");
+      values.push(data.lastname);
+    }
+    if (data.email !== undefined) {
+      fields.push("email = ?");
+      values.push(data.email);
+    }
+    if (data.address !== undefined) {
+      fields.push("address = ?");
+      values.push(data.address);
+    }
+    if (data.city !== undefined) {
+      fields.push("city = ?");
+      values.push(data.city);
+    }
+    if (data.zipcode !== undefined) {
+      fields.push("zipcode = ?");
+      values.push(data.zipcode);
+    }
+
+    if (fields.length === 0) {
+      return this.readPrivateById(id);
+    }
+    values.push(id);
+
+    await databaseClient.query(
+      `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,
+      values,
+    );
+
+    return this.readPrivateById(id);
   }
 }
 
