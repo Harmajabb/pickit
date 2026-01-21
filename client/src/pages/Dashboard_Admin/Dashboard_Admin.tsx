@@ -1,19 +1,17 @@
-import { 
-  useContext,
-  useEffect, 
-  useState 
-} from "react";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
 import "./Dashboard_Admin.css";
-import type { Stats } from "./TS-Dashboard_Admin";
 import {
-  User,
-  FlagTriangleRight,
   ChartBarStacked,
+  FlagTriangleRight,
   MessageCircle,
+  User,
 } from "lucide-react";
+import type { Stats } from "./TS-Dashboard_Admin";
 
 const Dashboard_Admin = () => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [stats, setStats] = useState<Stats | null>(null);
 
@@ -71,7 +69,11 @@ const Dashboard_Admin = () => {
             <FlagTriangleRight size={32} strokeWidth={2} />
             Manage Reports
           </button>
-          <button className="secondary btnusers" type="button">
+          <button
+            onClick={() => navigate("/ad-dashboard/categories")}
+            className="secondary btnusers"
+            type="button"
+          >
             <ChartBarStacked size={32} strokeWidth={2} />
             Manage Category
           </button>
