@@ -68,15 +68,7 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const {
-      firstname,
-      lastname,
-      email,
-      address,
-      city,
-      zipcode,
-      //profil_picture,
-    } = req.body;
+    const { firstname, lastname, email, address, city, zipcode } = req.body;
 
     if (!firstname?.trim() || !lastname?.trim() || !email?.trim()) {
       res.status(400).json({
@@ -110,14 +102,22 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
     const zipcodeNumber = Number(zipcode);
     if (
       !Number.isInteger(zipcodeNumber) ||
-      zipcodeNumber < 10000 ||
+      zipcodeNumber < 9999 ||
       zipcodeNumber > 99999
     ) {
       res.status(400).json({ message: "Invalid zipcode format" });
       return;
     }
 
-    const updateData = {
+    const updateData: {
+      firstname: string;
+      lastname: string;
+      email: string;
+      address: string;
+      city: string;
+      zipcode: number;
+      profil_picture?: string;
+    } = {
       firstname: firstname.trim(),
       lastname: lastname.trim(),
       email: email.trim(),
@@ -125,6 +125,11 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
       city: city.trim(),
       zipcode: zipcodeNumber,
     };
+
+    // Handle uploaded profile picture
+    if (req.file) {
+      updateData.profil_picture = `/assets/images/${req.file.filename}`;
+    }
 
     const updatedUser = await userRepository.update(userId, updateData);
     if (!updatedUser) {

@@ -67,6 +67,7 @@ router.get(
 router.put(
   "/api/profile/me",
   authActions.checkAuth,
+  upload.single("profil_picture"),
   userAction.updateMyProfile,
 );
 
