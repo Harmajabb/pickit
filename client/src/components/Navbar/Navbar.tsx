@@ -19,6 +19,10 @@ function Navbar() {
     if (tab === "announces") {
       navigate(`/catalog?q=${encodeURIComponent(q)}`);
     }
+    if (tab === "users") {
+      navigate(`/members?q=${encodeURIComponent(q)}`);
+      return;
+    }
   };
 
   // Handle selection from search results
