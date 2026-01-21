@@ -263,7 +263,6 @@ input[type="number"] {
   object-fit: cover;
 }
 
-/* Bouton supprimer */
 .remove-image-btn {
   position: absolute;
   top: 4px;
