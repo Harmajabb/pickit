@@ -1,49 +1,80 @@
 import { useState } from "react";
 import type { CategoryTree } from "../CategoryManager/CategoryManager";
+import "./CategoryItem.css";
 
-interface CategoryItemProps {
+interface Props {
   category: CategoryTree;
   onDelete: (id: number) => void;
   onEdit: (id: number, newTitle: string) => void;
 }
 
-function CategoryItem({ category, onDelete, onEdit }: CategoryItemProps) {
+function CategoryItem({ category, onDelete, onEdit }: Props) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(category.category);
 
-  const saveEdit = () => {
-    onEdit(category.id, editTitle);
+  const [editValue, setEditValue] = useState(category.category);
+
+  const handleSave = () => {
+    if (editValue.trim() !== "") {
+      onEdit(category.id, editValue);
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditValue(category.category);
     setIsEditing(false);
   };
 
   return (
-    <li>
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+    <li className="category-item">
+      <div className="category-content">
         {isEditing ? (
-          <>
+          <div className="edit-zone">
             <input
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
+              type="text"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
             />
-            <button type="button" onClick={saveEdit}>
+            <button
+              type="button"
+              className="secondary btn-save"
+              onClick={handleSave}
+            >
               Save
             </button>
-            <button type="button" onClick={() => setIsEditing(false)}>
+            <button
+              type="button"
+              className="secondary uncorrect btn-cancel"
+              onClick={handleCancel}
+            >
               Cancel
             </button>
-          </>
+          </div>
         ) : (
           <>
             <span>{category.category}</span>
-            <button type="button" onClick={() => setIsEditing(true)}>
-              Edit
-            </button>
+            <div className="actions">
+              <button
+                type="button"
+                className="secondary uncorrect btn-delete"
+                onClick={() => onDelete(category.id)}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                className="secondary btn-edit"
+                onClick={() => setIsEditing(true)}
+              >
+                Update
+              </button>
+            </div>
           </>
         )}
       </div>
 
       {category.children && category.children.length > 0 && (
-        <ul>
+        <ul className="subcategory-list">
           {category.children.map((child) => (
             <CategoryItem
               key={child.id}

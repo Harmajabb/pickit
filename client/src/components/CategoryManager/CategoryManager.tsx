@@ -1,5 +1,6 @@
-import { type JSX, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CategoryItem from "../CategoryItem/CategoryItem";
+import "./CategoryManager.css";
 
 export interface CategoryTree {
   id: number;
@@ -19,8 +20,9 @@ function CategoryManager() {
       const response = await fetch(`${base_url}/api/categories`, {
         credentials: "include",
       });
+      if (!response.ok) throw new Error("Failed to fetch categories");
       const data = await response.json();
-      setCategories(data);
+      setCategories([...data]);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -30,7 +32,11 @@ function CategoryManager() {
     fetchCategories();
   }, [fetchCategories]);
 
-  const handleAdd = async () => {
+  const handleAdd = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if (!newCategory.trim()) return;
+
     try {
       const response = await fetch(`${base_url}/api/categories`, {
         method: "POST",
@@ -38,13 +44,14 @@ function CategoryManager() {
         credentials: "include",
         body: JSON.stringify({
           category: newCategory,
-          parent_id: selectedParent || null,
+          parent_id: selectedParent === "" ? null : Number(selectedParent),
         }),
       });
+
       if (response.ok) {
         setNewCategory("");
         setSelectedParent("");
-        fetchCategories();
+        await fetchCategories();
       }
     } catch (error) {
       console.error("Error adding category:", error);
@@ -52,7 +59,7 @@ function CategoryManager() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this category?"))
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?"))
       return;
     try {
       const response = await fetch(`${base_url}/api/categories/${id}`, {
@@ -60,7 +67,7 @@ function CategoryManager() {
         method: "DELETE",
       });
       if (response.ok) {
-        fetchCategories();
+        await fetchCategories();
       }
     } catch (error) {
       console.error("Error deleting category:", error);
@@ -76,45 +83,66 @@ function CategoryManager() {
         body: JSON.stringify({ category: newTitle }),
       });
       if (response.ok) {
-        fetchCategories();
+        await fetchCategories();
       }
     } catch (error) {
       console.error("Error updating category:", error);
     }
   };
 
-  const renderOptions = (cats: CategoryTree[], depth = 0): JSX.Element[] => {
+  // Fonction pour générer le menu déroulant (Options)
+  const renderOptions = (
+    cats: CategoryTree[],
+    depth = 0,
+  ): React.ReactNode[] => {
     return cats.flatMap((cat) => [
       <option key={cat.id} value={cat.id}>
-        {"-".repeat(depth)} {cat.category}
+        {"\u00A0".repeat(depth * 2)} {cat.category}
       </option>,
       ...renderOptions(cat.children, depth + 1),
     ]);
   };
 
   return (
-    <section>
+    <section className="category-manager">
       <h2>Category Manager</h2>
-      <div style={{ marginBottom: "20px" }}>
-        <select
-          value={selectedParent}
-          onChange={(e) => setSelectedParent(e.target.value)}
-        >
-          <option value="">-- No Parent (Root) --</option>
-          {renderOptions(categories)}
-        </select>
-        <input
-          type="text"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          placeholder="New category name"
-        />
-        <button type="button" onClick={handleAdd}>
+
+      <div className="category-form">
+        <div className="form-group">
+          <label htmlFor="parent-select">Parent Category</label>
+          <select
+            id="parent-select"
+            value={selectedParent}
+            onChange={(e) => setSelectedParent(e.target.value)}
+            className="category-select"
+          >
+            <option value="">-- None (Create as Root) --</option>
+            {renderOptions(categories)}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="category-name">Category Name</label>
+          <input
+            id="category-name"
+            type="text"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="e.g. Electronics, Shirts..."
+            className="category-input"
+          />
+        </div>
+
+        <button type="button" onClick={handleAdd} className="cta btn-add">
           Add Category
         </button>
       </div>
 
-      <ul>
+      <div className="list-header">
+        <h3>Existing Categories</h3>
+      </div>
+
+      <ul className="category-list">
         {categories.map((cat) => (
           <CategoryItem
             key={cat.id}
