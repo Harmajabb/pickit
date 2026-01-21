@@ -64,6 +64,11 @@ router.get(
   authActions.checkAuth,
   userAction.readProfileById,
 );
+router.put(
+  "/api/profile/me",
+  authActions.checkAuth,
+  userAction.updateMyProfile,
+);
 
 /* ************************************************************************* */
 

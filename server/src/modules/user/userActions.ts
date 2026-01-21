@@ -58,7 +58,90 @@ const readProfileById: RequestHandler = async (req, res, next) => {
   }
 };
 
+const updateMyProfile: RequestHandler = async (req, res, next) => {
+  try {
+    const userAuth = req.auth as JwtPayload;
+    const userId = Number(userAuth.sub);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+      res.status(401).json({ message: "Unauthorized user" });
+      return;
+    }
+
+    const {
+      firstname,
+      lastname,
+      email,
+      address,
+      city,
+      zipcode,
+      //profil_picture,
+    } = req.body;
+
+    if (!firstname?.trim() || !lastname?.trim() || !email?.trim()) {
+      res.status(400).json({
+        message: "Firstname, lastname and email are required",
+      });
+      return;
+    }
+    if (!address?.trim() || !city?.trim()) {
+      res.status(400).json({
+        message: "Address and city are required",
+      });
+      return;
+    }
+
+    //validation email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400).json({ message: "Invalid email format" });
+      return;
+    }
+    //verification if email is already used
+    const emailExists = await userRepository.checkExistEmail(
+      email.trim().toLowerCase(),
+      userId,
+    );
+    if (emailExists) {
+      res.status(409).json({ message: "Email already in use" });
+      return;
+    }
+
+    const zipcodeNumber = Number(zipcode);
+    if (
+      !Number.isInteger(zipcodeNumber) ||
+      zipcodeNumber < 10000 ||
+      zipcodeNumber > 99999
+    ) {
+      res.status(400).json({ message: "Invalid zipcode format" });
+      return;
+    }
+
+    const updateData = {
+      firstname: firstname.trim(),
+      lastname: lastname.trim(),
+      email: email.trim(),
+      address: address.trim(),
+      city: city.trim(),
+      zipcode: zipcodeNumber,
+    };
+
+    const updatedUser = await userRepository.update(userId, updateData);
+    if (!updatedUser) {
+      res.status(500).json({ message: "Failed to update the profile" });
+      return;
+    }
+    res.json({
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   readProfileById,
   readMyProfile,
+  updateMyProfile,
 };
