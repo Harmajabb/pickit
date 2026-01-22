@@ -39,7 +39,9 @@ function Navbar() {
   return (
     <>
       <nav className="desktop-nav">
-        <img src={logo} alt="logo PICKIT" />
+        <Link to="/">
+          <img src={logo} alt="logo PICKIT" />
+        </Link>
         <Link to="/create-annonce" className="cta">
           List an item
         </Link>

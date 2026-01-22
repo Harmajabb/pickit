@@ -7,6 +7,34 @@ const router = express.Router();
 // Define Your API Routes Here
 /* ************************************************************************* */
 
+// Define Category-related routes
+import categoryActions from "./modules/categories/categoryActions";
+
+router.get(
+  "/api/categories",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.browse,
+);
+router.post(
+  "/api/categories",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.add,
+);
+router.put(
+  "/api/categories/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.edit,
+);
+router.delete(
+  "/api/categories/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.delete,
+);
+
 // Define Admin-related routes
 import adminActions from "./modules/admin/adminActions";
 

@@ -28,4 +28,8 @@ export interface AnnounceDetail {
   amount_deposit: number;
   state_of_product: string;
   name: string;
+  total_likes: number;
+  lastname: string;
+  firstname: string;
+  zipcode: number;
 }
