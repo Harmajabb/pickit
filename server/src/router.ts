@@ -48,7 +48,11 @@ router.post(
 );
 
 router.get("/api/announces/:id", announcesActions.readOne);
-router.put("/api/announces/:id", announcesActions.updateAnnounce);
+router.put(
+  "/api/announces/:id",
+  upload.array("new_images", 10),
+  announcesActions.updateAnnounce,
+);
 router.delete(
   "/api/announces/:id",
   authActions.checkAuth,

@@ -140,7 +140,23 @@ const readOne: RequestHandler = async (req, res, next) => {
 const updateAnnounce: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await announcesRepository.sendUpdateAnnounce(Number(id), req.body);
+
+    const updateData = {
+      title: req.body.title,
+      description: req.body.description,
+      amount_deposit: Number(req.body.amount_deposit),
+      location: req.body.location,
+      start_borrow_date: req.body.start_borrow_date,
+      end_borrow_date: req.body.end_borrow_date,
+      categorie_id: Number(req.body.categorie_id),
+      state_of_product: req.body.state_of_product,
+    };
+
+    await announcesRepository.sendUpdateAnnounce(Number(id), updateData);
+
+    const newFiles = req.files as Express.Multer.File[] | undefined;
+    if (newFiles && newFiles.length > 0) {
+    }
 
     res.json({
       success: true,
