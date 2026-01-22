@@ -1,5 +1,5 @@
-import databaseClient from "../../../database/client";
 import type { Rows } from "../../../database/client";
+import databaseClient from "../../../database/client";
 
 export type SearchTab = "announces" | "users";
 
@@ -38,8 +38,16 @@ class SearchRepository {
   async searchAnnounces(q: string) {
     const likeQuery = `%${q}%`;
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.id, announces.title, announces.location FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
-      [likeQuery, likeQuery, likeQuery, likeQuery, likeQuery],
+      "SELECT announces.id, announces.title, announces.location FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? OR CONCAT(firstname, ' ', lastname) LIKE ? OR CONCAT(lastname, ' ', firstname) LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
+      [
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+      ],
     );
     return rows as SearchAnnounceRow[];
   }
@@ -47,8 +55,8 @@ class SearchRepository {
   async searchUsers(q: string) {
     const likeQuery = `%${q}%`;
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT id, firstname, lastname, city, profil_picture FROM users WHERE firstname LIKE ? OR lastname LIKE ? OR city LIKE ? ORDER BY lastname ASC LIMIT 20",
-      [likeQuery, likeQuery, likeQuery],
+      "SELECT id, firstname, lastname, city, profil_picture FROM users WHERE firstname LIKE ? OR lastname LIKE ? OR city LIKE ? OR CONCAT(firstname, ' ', lastname) LIKE ? OR CONCAT(lastname, ' ', firstname) LIKE ? ORDER BY lastname ASC LIMIT 20",
+      [likeQuery, likeQuery, likeQuery, likeQuery, likeQuery],
     );
     return rows as SearchUserRow[];
   }
@@ -56,8 +64,16 @@ class SearchRepository {
   async searchFullAnnounces(q: string) {
     const likeQuery = `%${q}%`;
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
-      [likeQuery, likeQuery, likeQuery, likeQuery, likeQuery],
+      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? OR CONCAT(firstname, ' ', lastname) LIKE ? OR CONCAT(lastname, ' ', firstname) LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
+      [
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+        likeQuery,
+      ],
     );
     return rows as FullAnnounceRow[];
   }

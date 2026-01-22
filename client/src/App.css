@@ -140,6 +140,17 @@ button:focus-visible {
     transform: translate(1.5px, 1.5px);
   }
 }
+.warning.btn-uncorrect {
+  border: 1px solid red;
+  box-shadow: 3px 3px 0 0 red;
+  background: var(--color-bg);
+  color: var(--color-primary-text);
+  &:active,
+  &:hover {
+    box-shadow: none;
+    transform: translate(1.5px, 1.5px);
+  }
+}
 
 @keyframes uncorrect-cta {
   from {
@@ -200,23 +211,23 @@ button:focus-visible {
   }
 }
 .primary.uncorrect,
-.secondary.uncorrect,
-.primary.uncorrect:focus-visible,
-.secondary.uncorrect:focus-visible {
+.secondary.uncorrect {
   animation: uncorrect 0.5s linear both;
-  border: solid 1px red !important;
-  outline: solid 2px red !important;
-
+  border: 1px solid red;
+  outline: 2px solid red;
   color: var(--color-primary-text);
   background: var(--color-bg);
-  &:focus,
-  &:hover {
-    box-shadow: 0 0 0 2px var(--color-btn);
-    border: solid 1px var(--color-btn);
-    outline: none;
-  }
+  transition: all 0.2s ease; /* Smoother transition for hover states */
 }
 
+.primary.uncorrect:hover,
+.secondary.uncorrect:hover,
+.primary.uncorrect:focus-visible,
+.secondary.uncorrect:focus-visible {
+  outline: none;
+  border-color: var(--color-btn);
+  box-shadow: 0 0 0 2px var(--color-btn);
+}
 /* Inputs */
 input {
   color: var(--color-primary-text);

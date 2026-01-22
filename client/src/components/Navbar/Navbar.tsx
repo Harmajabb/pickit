@@ -19,6 +19,10 @@ function Navbar() {
     if (tab === "announces") {
       navigate(`/catalog?q=${encodeURIComponent(q)}`);
     }
+    if (tab === "users") {
+      navigate(`/members?q=${encodeURIComponent(q)}`);
+      return;
+    }
   };
 
   // Handle selection from search results
@@ -35,7 +39,9 @@ function Navbar() {
   return (
     <>
       <nav className="desktop-nav">
-        <img src={logo} alt="logo PICKIT" />
+        <Link to="/">
+          <img src={logo} alt="logo PICKIT" />
+        </Link>
         <Link to="/create-annonce" className="cta">
           List an item
         </Link>

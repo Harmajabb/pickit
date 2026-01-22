@@ -52,6 +52,7 @@ function CreateAnnonce() {
       files: formData.files.filter((_, index) => index !== indexToRemove),
     });
   };
+
   // UI ONLY → ouvre la pop-in
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,10 +124,11 @@ function CreateAnnonce() {
                   />
                   <button
                     type="button"
-                    className="remove-image-btn"
                     onClick={() => handleRemoveFile(index)}
+                    className="remove-image-button"
                   >
-                    ✕
+                    {" "}
+                    X
                   </button>
                 </div>
               ))}
