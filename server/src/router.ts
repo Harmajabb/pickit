@@ -64,6 +64,36 @@ router.get(
   authActions.checkAuth,
   userAction.readProfileById,
 );
+router.post(
+  "/api/admin/ban-user",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.banUser,
+);
+router.post(
+  "/api/admin/delete-user",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.deleteUser,
+);
+router.post(
+  "/api/admin/change-user-role",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.changeUserRole,
+);
+router.get(
+  "/api/users",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.readAllUsers,
+);
+router.delete(
+  "/api/admin/unban-user",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.unbanUser,
+);
 
 /* ************************************************************************* */
 
