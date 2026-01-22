@@ -150,7 +150,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Date de début</p>
+          <p className="info-label">Start date</p>
           <input
             type="date"
             value={formatDateForInput(formData.start_borrow_date)}
@@ -162,7 +162,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Date de fin</p>
+          <p className="info-label">End date</p>
           <input
             type="date"
             value={formatDateForInput(formData.end_borrow_date)}
@@ -174,7 +174,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">État global</p>
+          <p className="info-label">Overall status</p>
           <select
             name="state_of_product"
             value={formData.state_of_product}
@@ -190,14 +190,14 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Publié par</p>
+          <p className="info-label">Published by</p>
           <p className="info-value">{formData.name}</p>
         </div>
       </div>
 
       <div className="edit-image-mini-wrapper">
         <label htmlFor="image-upload" className="edit-image-btn">
-          Modifier l'image
+          Edit image
         </label>
 
         <img src={currentImage} alt="Produit" className="edit-image-mini" />
@@ -234,10 +234,10 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           className="btn btn-contact"
           onClick={handleSubmit}
         >
-          Enregistrer
+          Save
         </button>
         <button type="button" className="btn btn-cancel" onClick={onCancel}>
-          Annuler
+          Cancel
         </button>
       </div>
     </>
