@@ -6,7 +6,7 @@ export type UserMember = {
   firstname: string;
   lastname: string;
   city: string;
-  zipcode: number;
+  zipcode: string;
   profil_picture: string | null;
 };
 
@@ -21,7 +21,7 @@ export type UserUpdateData = {
   email?: string;
   address?: string;
   city?: string;
-  zipcode?: number;
+  zipcode?: string;
   profil_picture?: string | null;
 };
 
@@ -67,7 +67,7 @@ class UserRepository {
   // update private profile
   async update(id: number, data: UserUpdateData): Promise<UserPrivate | null> {
     const fields: string[] = [];
-    const values: (string | number | null)[] = [];
+    const values: (string | null)[] = [];
 
     if (data.firstname !== undefined) {
       fields.push("firstname = ?");
@@ -101,7 +101,7 @@ class UserRepository {
     if (fields.length === 0) {
       return this.readPrivateById(id);
     }
-    values.push(id);
+    values.push(id.toString());
 
     await databaseClient.query(
       `UPDATE users SET ${fields.join(", ")} WHERE id = ?`,

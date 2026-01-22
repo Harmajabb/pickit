@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
 import type { JwtPayload } from "jsonwebtoken"; // allow to get the token from req.auth
 import announcesRepository from "../announces/announcesRepository";
-import userRepository from "./userRepository";
+import userRepository, { type UserUpdateData } from "./userRepository";
 
 // get my profile (only for authenticated user - private data only)
 const readMyProfile: RequestHandler = async (req, res, next) => {
@@ -60,6 +60,7 @@ const readProfileById: RequestHandler = async (req, res, next) => {
 
 const updateMyProfile: RequestHandler = async (req, res, next) => {
   try {
+    //extract user id from jwt
     const userAuth = req.auth as JwtPayload;
     const userId = Number(userAuth.sub);
 
@@ -68,8 +69,10 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
       return;
     }
 
+    // extractdata - field from request body
     const { firstname, lastname, email, address, city, zipcode } = req.body;
 
+    // valdation - required fields
     if (!firstname?.trim() || !lastname?.trim() || !email?.trim()) {
       res.status(400).json({
         message: "Firstname, lastname and email are required",
@@ -79,6 +82,22 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
     if (!address?.trim() || !city?.trim()) {
       res.status(400).json({
         message: "Address and city are required",
+      });
+      return;
+    }
+
+    if (!zipcode) {
+      res.status(400).json({ message: "Zipcode is required" });
+      return;
+    }
+
+    // zipcode validation (keep as string to preserve leading zeros)
+    const zipcodeRegex = /^\d{5}$/;
+    const zipcodeStr = String(zipcode).trim();
+
+    if (!zipcodeRegex.test(zipcodeStr)) {
+      res.status(400).json({
+        message: "Zipcode must be exactly 5 digits",
       });
       return;
     }
@@ -99,38 +118,20 @@ const updateMyProfile: RequestHandler = async (req, res, next) => {
       return;
     }
 
-    const zipcodeNumber = Number(zipcode);
-    if (
-      !Number.isInteger(zipcodeNumber) ||
-      zipcodeNumber < 9999 ||
-      zipcodeNumber > 99999
-    ) {
-      res.status(400).json({ message: "Invalid zipcode format" });
-      return;
-    }
-
-    const updateData: {
-      firstname: string;
-      lastname: string;
-      email: string;
-      address: string;
-      city: string;
-      zipcode: number;
-      profil_picture?: string;
-    } = {
+    //security: only authorized label
+    const updateData: UserUpdateData = {
       firstname: firstname.trim(),
       lastname: lastname.trim(),
-      email: email.trim(),
+      email: email.trim().toLowerCase(),
       address: address.trim(),
       city: city.trim(),
-      zipcode: zipcodeNumber,
+      zipcode: zipcodeStr.trim(),
+      ...(req.file && {
+        profil_picture: `/assets/images/${req.file.filename}`,
+      }),
     };
 
-    // Handle uploaded profile picture
-    if (req.file) {
-      updateData.profil_picture = `/assets/images/${req.file.filename}`;
-    }
-
+    // update database
     const updatedUser = await userRepository.update(userId, updateData);
     if (!updatedUser) {
       res.status(500).json({ message: "Failed to update the profile" });

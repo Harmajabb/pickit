@@ -4,7 +4,7 @@ export interface UserPublic {
   firstname: string;
   lastname: string;
   city: string;
-  zipcode: number;
+  zipcode: string;
   profil_picture: string | null;
 }
 
