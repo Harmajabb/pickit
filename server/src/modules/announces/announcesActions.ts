@@ -150,6 +150,24 @@ const updateAnnounce: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
+
+const readMyAnnounces: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = req.auth?.sub;
+
+    if (!userId) {
+      res.status(401).json({ error: "Non authentifié" });
+      return;
+    }
+
+    const announces = await announcesRepository.readMyAnnounces(Number(userId));
+
+    res.json(announces);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   browse,
   browseFiltered,
@@ -157,4 +175,5 @@ export default {
   readOne,
   updateAnnounce,
   destroy,
+  readMyAnnounces,
 };

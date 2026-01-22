@@ -15,6 +15,7 @@ import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
+import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       //{ path: "/product", element: <ProductSheet /> },
       { path: "/announce/:announceId", element: <ProductSheet /> }, // add your page Teddy here
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
+      { path: "/my-announces", element: <MyAnnouncesList /> },
       { path: "/register", element: <Register /> },
       { path: "/reset-password/:token", element: <ResetPassword /> },
       { path: "/forgot-password", element: <ForgotPassword /> },

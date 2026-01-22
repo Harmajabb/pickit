@@ -217,6 +217,28 @@ class AnnouncesRepository {
 
     await databaseClient.query<Rows>(query, values);
   }
+
+  async readMyAnnounces(ownerId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      `SELECT 
+      announces.id, 
+      announces.title, 
+      announces.description,
+      announces.location,
+      announces.start_borrow_date,
+      announces.end_borrow_date,
+      announces.creation_date,
+      announces.state_of_product,
+      MIN(announces_images.url) AS image_url
+    FROM announces 
+    LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+    WHERE announces.owner_id = ?
+    GROUP BY announces.id 
+    ORDER BY announces.creation_date DESC`,
+      [ownerId],
+    );
+    return rows as Announces[];
+  }
 }
 
 export default new AnnouncesRepository();
