@@ -1,15 +1,39 @@
 import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
-import "./ProductSheet.css";
+import { AuthContext } from "../../context/AuthContext";
 import type { AnnounceDetail } from "../../types/Announce";
+import ButtonDelete from "../Btn-Delete/ButtonDelete";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
+import "./ProductSheet.css";
 
+interface Announce {
+  id: number;
+  title: string;
+  description: string;
+  location: string;
+  state: string;
+  owner_id: number;
+  all_images: string[];
+  favourites?: number;
+  start_borrow_date: Date;
+  end_borrow_date: Date;
+  amount_deposit: number;
+  state_of_product: string;
+  name: string;
+  total_likes: number;
+  lastname: string;
+  firstname: string;
+  zipcode: number;
+  categorie_id: number;
+}
 
 export default function ProductSheet() {
+  const { user } = useContext(AuthContext);
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const { announceId } = useParams();
-  const [announce, setAnnounce] = useState<AnnounceDetail | null>(null);
+
+  const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -32,6 +56,13 @@ export default function ProductSheet() {
 
   if (!announce) return <p>Loading...</p>;
 
+  const isOwner = user?.id && Number(user.id) === Number(announce.owner_id);
+  const isAdmin = user?.role === 1;
+  const showActionButtons = isOwner || isAdmin;
+
+  const DateStartshort = announce.start_borrow_date.toLocaleDateString("fr-FR");
+  const DateEndShort = announce.end_borrow_date.toLocaleDateString("fr-FR");
+
   const nextImage = () => {
     setCurrentImage((prev) => (prev + 1) % announce.all_images.length);
   };
@@ -42,9 +73,6 @@ export default function ProductSheet() {
         (prev - 1 + announce.all_images.length) % announce.all_images.length,
     );
   };
-
-  const DateStartshort = announce.start_borrow_date.toLocaleDateString("fr-FR");
-  const DateEndShort = announce.end_borrow_date.toLocaleDateString("fr-FR");
 
   const handleSave = (updatedAnnounce: AnnounceDetail) => {
     setAnnounce(updatedAnnounce);
@@ -59,43 +87,49 @@ export default function ProductSheet() {
             <div className="image-wrapper">
               <img
                 src={BASE_URL + announce.all_images[currentImage]}
-                alt="Ski poles"
+                alt={announce.title}
                 className="product-image"
               />
-              <button
-                type="button"
-                onClick={prevImage}
-                className="nav-arrow nav-arrow-left"
-                aria-label="Image précédente"
-              >
-                <ChevronLeft className="arrow-icon" />
-              </button>
-              <button
-                type="button"
-                onClick={nextImage}
-                className="nav-arrow nav-arrow-right"
-                aria-label="Image suivante"
-              >
-                <ChevronRight className="arrow-icon" />
-              </button>
-            </div>
 
+              {announce.all_images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    className="nav-arrow nav-arrow-left"
+                  >
+                    <ChevronLeft className="arrow-icon" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextImage}
+                    className="nav-arrow nav-arrow-right"
+                  >
+                    <ChevronRight className="arrow-icon" />
+                  </button>
+                </>
+              )}
+            </div>
             <div className="tiny-img">
-              {announce.all_images.map((img, idx) => (
-                <button
-                  key={img}
-                  type="button"
-                  onClick={() => setCurrentImage(idx)}
-                  className="tiny-img-button"
-                >
-                  <img
-                    src={img}
-                    alt={`Miniature ${idx + 1}`}
-                    className={`product-image ${currentImage === idx ? "active" : ""}`}
-                    style={{ opacity: currentImage === idx ? 1 : 0.6 }}
-                  />
-                </button>
-              ))}
+              {announce.all_images.map((image, index) => {
+                const isSelected = currentImage === index;
+                return (
+                  <button
+                    key={image}
+                    type="button"
+                    className={`thumbnail-button ${isSelected ? "active" : ""}`}
+                    onClick={() => setCurrentImage(index)}
+                    aria-label={`Afficher l'image ${index + 1}`}
+                    aria-pressed={isSelected}
+                  >
+                    <img
+                      src={BASE_URL + image}
+                      alt={`Miniature ${index + 1}`}
+                      className="product-image"
+                    />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -110,20 +144,27 @@ export default function ProductSheet() {
               <>
                 <h1 className="product-title">{announce.title}</h1>
 
-                <div className="action-buttons">
-                  <button
-                    type="button"
-                    className="btn btn-modify"
-                    onClick={() => setIsEditing(true)}
-                  >
-                    Éditer
-                  </button>
-                </div>
+                {showActionButtons && (
+                  <div className="action-buttons">
+                    <ButtonDelete annonceId={Number(announceId)} />
+                    <div className="action-buttons">
+                      <button
+                        type="button"
+                        className="btn btn-modify"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="info-fields">
                   <div className="info-field">
                     <p className="info-label">Location</p>
-                    <p className="info-value">{announce.location}</p>
+                    <p className="info-value">
+                      {announce.zipcode} {announce.location}
+                    </p>
                   </div>
 
                   <div className="info-field">
@@ -132,52 +173,41 @@ export default function ProductSheet() {
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">Disponibilité</p>
+                    <p className="info-label">Disponibility</p>
                     <p className="info-value">
                       {DateStartshort} - {DateEndShort}
                     </p>
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">État global</p>
+                    <p className="info-label">Global state</p>
                     <p className="info-value">{announce.state_of_product}</p>
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">Publié par</p>
-                    <p className="info-value">{announce.name}</p>
+                    <p className="info-label">Posted by</p>
+                    <p className="info-value">
+                      {announce.firstname} {announce.lastname}
+                    </p>
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">Favoris</p>
+                    <p className="info-label">Favourites</p>
                     <div className="favourites">
-                      <span className="info-value">
-                        {announce.favourites || 0}
-                      </span>
+                      <span className="info-value">{announce.total_likes}</span>
                       <Heart className="heart-icon" />
                     </div>
                   </div>
                 </div>
 
                 <button type="button" className="btn btn-contact">
-                  Contacter l'emprunteur
+                  Contact the borrower
                 </button>
               </>
             )}
           </div>
         </div>
-        <div className="tiny-img">
-          <img
-            src={BASE_URL + announce.all_images[currentImage]}
-            alt="Files"
-            className="product-image"
-          />
-          <img
-            src={BASE_URL + announce.all_images[currentImage]}
-            alt="Files"
-            className="product-image"
-          />
-        </div>
+
         <div className="description">
           <p className={announce.description.length > 300 ? "long-text" : ""}>
             {announce.description}
