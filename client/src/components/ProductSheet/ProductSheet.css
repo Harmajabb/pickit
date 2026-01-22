@@ -1,5 +1,6 @@
 /* ================= LAYOUT PRINCIPAL ================= */
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 
@@ -508,13 +509,16 @@ input[type="date"].info-value {
 
   .product-sheet {
     padding-bottom: calc(
-      var(--bottom-navbar-height) + env(safe-area-inset-bottom) + 1rem
+      var(--bottom-navbar-height) +
+      env(safe-area-inset-bottom) +
+      1rem
     );
   }
 
   body {
     padding-bottom: calc(
-      var(--bottom-navbar-height) + env(safe-area-inset-bottom)
+      var(--bottom-navbar-height) +
+      env(safe-area-inset-bottom)
     );
   }
 }

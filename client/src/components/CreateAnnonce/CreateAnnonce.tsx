@@ -126,7 +126,9 @@ function CreateAnnonce() {
                     type="button"
                     onClick={() => handleRemoveFile(index)}
                     className="remove-image-button"
-                  > X
+                  >
+                    {" "}
+                    X
                   </button>
                 </div>
               ))}
