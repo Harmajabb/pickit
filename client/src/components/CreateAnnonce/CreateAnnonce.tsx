@@ -46,6 +46,13 @@ function CreateAnnonce() {
       });
     }
   };
+  const handleRemoveFile = (indexToRemove: number) => {
+    setFormData({
+      ...formData,
+      files: formData.files.filter((_, index) => index !== indexToRemove),
+    });
+  };
+
   // UI ONLY → ouvre la pop-in
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,12 +116,18 @@ function CreateAnnonce() {
           />
           {formData.files.length > 0 && (
             <div className="image-preview-container">
-              {formData.files.map((file) => (
+              {formData.files.map((file, index) => (
                 <div key={file.name} className="image-preview">
                   <img
                     src={URL.createObjectURL(file)}
                     alt={`Prévisualisation ${file.name}`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFile(index)}
+                    className="remove-image-button"
+                  > X
+                  </button>
                 </div>
               ))}
             </div>

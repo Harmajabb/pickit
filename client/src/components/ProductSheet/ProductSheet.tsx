@@ -1,9 +1,10 @@
 import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-
+import { useParams } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
-//import EditAnnonce from "../EditAnnonce/EditAnnonce";
+import type { AnnounceDetail } from "../../types/Announce";
+import ButtonDelete from "../Btn-Delete/ButtonDelete";
+import EditAnnonce from "../EditAnnonce/EditAnnonce";
 import "./ProductSheet.css";
 
 interface Announce {
@@ -24,16 +25,17 @@ interface Announce {
   lastname: string;
   firstname: string;
   zipcode: number;
+  categorie_id: number;
 }
 
 export default function ProductSheet() {
   const { user } = useContext(AuthContext);
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const { announceId } = useParams();
-  const navigate = useNavigate();
 
   const [announce, setAnnounce] = useState<Announce | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/announces/${announceId}`)
@@ -51,29 +53,6 @@ export default function ProductSheet() {
       })
       .catch((err) => console.error(err));
   }, [announceId]);
-
-  const handleDelete = async () => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cette annonce ?"))
-      return;
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/announces/${announceId}`,
-        {
-          method: "DELETE",
-        },
-      );
-
-      if (response.ok) {
-        alert("Annonce supprimée avec succès");
-        navigate("/");
-      } else {
-        alert("Erreur lors de la suppression");
-      }
-    } catch (error) {
-      console.error("Erreur:", error);
-    }
-  };
 
   if (!announce) return <p>Loading...</p>;
 
@@ -93,6 +72,11 @@ export default function ProductSheet() {
       (prev) =>
         (prev - 1 + announce.all_images.length) % announce.all_images.length,
     );
+  };
+
+  const handleSave = (updatedAnnounce: AnnounceDetail) => {
+    setAnnounce(updatedAnnounce);
+    setIsEditing(false);
   };
 
   return (
@@ -126,91 +110,102 @@ export default function ProductSheet() {
                 </>
               )}
             </div>
+            <div className="tiny-img">
+              {announce.all_images.map((image, index) => {
+                const isSelected = currentImage === index;
+                return (
+                  <button
+                    key={image}
+                    type="button"
+                    className={`thumbnail-button ${isSelected ? "active" : ""}`}
+                    onClick={() => setCurrentImage(index)}
+                    aria-label={`Afficher l'image ${index + 1}`}
+                    aria-pressed={isSelected}
+                  >
+                    <img
+                      src={BASE_URL + image}
+                      alt={`Miniature ${index + 1}`}
+                      className="product-image"
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="info-section">
-            <h1 className="product-title">{announce.title}</h1>
+            {isEditing ? (
+              <EditAnnonce
+                announce={announce}
+                onCancel={() => setIsEditing(false)}
+                onSave={handleSave}
+              />
+            ) : (
+              <>
+                <h1 className="product-title">{announce.title}</h1>
 
-            {showActionButtons && (
-              <div className="action-buttons">
-                <button
-                  type="button"
-                  className="btn-delete"
-                  onClick={handleDelete}
-                >
-                  Supprimer l'annonce
-                </button>
-                {/*<EditAnnonce annonceId={announce.id} />*/} {/*Pour maxime*/}
-              </div>
-            )}
+                {showActionButtons && (
+                  <div className="action-buttons">
+                    <ButtonDelete annonceId={Number(announceId)} />
+                    <div className="action-buttons">
+                      <button
+                        type="button"
+                        className="btn btn-modify"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-            <div className="info-fields">
-              <div className="info-field">
-                <p className="info-label">Location</p>
-                <p className="info-value">
-                  {announce.zipcode} {announce.location}
-                </p>
-              </div>
+                <div className="info-fields">
+                  <div className="info-field">
+                    <p className="info-label">Location</p>
+                    <p className="info-value">
+                      {announce.zipcode} {announce.location}
+                    </p>
+                  </div>
 
-              <div className="info-field">
-                <p className="info-label">Caution</p>
-                <p className="info-value">{announce.amount_deposit}€</p>
-              </div>
+                  <div className="info-field">
+                    <p className="info-label">Caution</p>
+                    <p className="info-value">{announce.amount_deposit}€</p>
+                  </div>
 
-              <div className="info-field">
-                <p className="info-label">Disponibility</p>
-                <p className="info-value">
-                  {DateStartshort} - {DateEndShort}
-                </p>
-              </div>
+                  <div className="info-field">
+                    <p className="info-label">Disponibility</p>
+                    <p className="info-value">
+                      {DateStartshort} - {DateEndShort}
+                    </p>
+                  </div>
 
-              <div className="info-field">
-                <p className="info-label">Global state</p>
-                <p className="info-value">{announce.state_of_product}</p>
-              </div>
+                  <div className="info-field">
+                    <p className="info-label">Global state</p>
+                    <p className="info-value">{announce.state_of_product}</p>
+                  </div>
 
-              <div className="info-field">
-                <p className="info-label">Posted by</p>
-                <p className="info-value">
-                  {announce.firstname} {announce.lastname}
-                </p>
-              </div>
+                  <div className="info-field">
+                    <p className="info-label">Posted by</p>
+                    <p className="info-value">
+                      {announce.firstname} {announce.lastname}
+                    </p>
+                  </div>
 
-              <div className="info-field">
-                <p className="info-label">Favourites</p>
-                <div className="favourites">
-                  <span className="info-value">{announce.total_likes}</span>
-                  <Heart className="heart-icon" />
+                  <div className="info-field">
+                    <p className="info-label">Favourites</p>
+                    <div className="favourites">
+                      <span className="info-value">{announce.total_likes}</span>
+                      <Heart className="heart-icon" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <button type="button" className="btn btn-contact">
-              Contact the borrower
-            </button>
+                <button type="button" className="btn btn-contact">
+                  Contact the borrower
+                </button>
+              </>
+            )}
           </div>
-        </div>
-
-        <div className="tiny-img">
-          {announce.all_images.map((image, index) => {
-            const isSelected = currentImage === index;
-            return (
-              <button
-                key={image}
-                type="button"
-                className={`thumbnail-button ${isSelected ? "active" : ""}`}
-                onClick={() => setCurrentImage(index)}
-                aria-label={`Afficher l'image ${index + 1}`}
-                aria-pressed={isSelected}
-              >
-                <img
-                  src={BASE_URL + image}
-                  alt={`Miniature ${index + 1}`}
-                  className="product-image"
-                />
-              </button>
-            );
-          })}
         </div>
 
         <div className="description">
