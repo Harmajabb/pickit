@@ -14,7 +14,7 @@ type ProfileEditProps = {
 function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // État du formulaire
+  // form state
   const [formData, setFormData] = useState({
     firstname: user.firstname,
     lastname: user.lastname,
@@ -34,8 +34,8 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
 
   const currentAvatarSrc = imagePreview
     ? imagePreview
-    : user.profil_picture
-      ? `${API_URL}${user.profil_picture}`
+    : user.profile_picture
+      ? `${API_URL}${user.profile_picture}`
       : `${API_URL}/assets/images/avatar-default.png`;
 
   // Changing input

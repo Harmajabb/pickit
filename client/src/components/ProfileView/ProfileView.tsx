@@ -9,7 +9,7 @@ import type {
 import ItemCard from "../ItemCard/ItemCard";
 import "./ProfileView.css";
 
-//discriminated union for profilView props.
+//discriminated union for profileView props.
 //If mode is "me": user must be UserPrivate (with email, address)
 //If mode is "member": user must be UserPublic + items + favorites
 type ProfileViewProps =
@@ -25,8 +25,8 @@ function ProfileView(props: ProfileViewProps) {
   const API_URL = import.meta.env.VITE_API_URL;
 
   // user avatar
-  const avatarSrc = props.user.profil_picture
-    ? `${API_URL}${props.user.profil_picture}`
+  const avatarSrc = props.user.profile_picture
+    ? `${API_URL}${props.user.profile_picture}`
     : `${API_URL}/assets/images/avatar-default.png`;
 
   // private profile (me mode)
