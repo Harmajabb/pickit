@@ -75,6 +75,12 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
         throw new Error("Address and city are required");
       }
 
+      // email with regex
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        throw new Error("Please enter a valid email address");
+      }
+
       // Zipcode with regex
       const zipcodeRegex = /^\d{5}$/;
       const zipcodeStr = formData.zipcode.trim();
@@ -171,6 +177,7 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
                   onChange={handleChange}
                   placeholder="First name"
                   className="profile-edit-input"
+                  title="Please enter a valid first name"
                   required
                 />
               </dd>
@@ -189,6 +196,7 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
                   onChange={handleChange}
                   placeholder="Last name"
                   className="profile-edit-input"
+                  title="Please enter a valid last name"
                   required
                 />
               </dd>
@@ -207,6 +215,9 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+                  title="Please enter a valid email address"
+                  placeholder="example@gmail.com"
                   className="profile-edit-input"
                 />
               </dd>
@@ -224,6 +235,8 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
+                  title="Please enter a valid address"
+                  placeholder="123 rue smallville"
                   required
                   className="profile-edit-input"
                 />
@@ -242,6 +255,8 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
+                  title="Please enter a valid email city"
+                  placeholder="Bourg-En-Bresse"
                   required
                   className="profile-edit-input"
                 />
