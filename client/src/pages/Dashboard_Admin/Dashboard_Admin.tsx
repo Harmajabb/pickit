@@ -7,6 +7,7 @@ import {
   FlagTriangleRight,
   MessageCircle,
   User,
+  UserCog,
 } from "lucide-react";
 import type { Stats } from "./TS-Dashboard_Admin";
 
@@ -61,7 +62,19 @@ const Dashboard_Admin = () => {
       <section>
         <h2 className="title-controls">Admin Controls</h2>
         <div className="list-btn">
-          <button className="secondary btnusers" type="button">
+          <button
+            onClick={() => navigate("/profile/me")}
+            className="secondary btnusers"
+            type="button"
+          >
+            <UserCog size={32} strokeWidth={2} />
+            Manage My Profile
+          </button>
+          <button
+            onClick={() => navigate("/ad-dashboard/users")}
+            className="secondary btnusers"
+            type="button"
+          >
             <User size={32} strokeWidth={2} />
             Manage Users
           </button>
