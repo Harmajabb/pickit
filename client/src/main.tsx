@@ -7,6 +7,7 @@ import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
+import UserManager from "./components/UserManager/UserManager";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
@@ -15,7 +16,6 @@ import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile/Profile";
-import UserManager from "./components/UserManager/UserManager";
 import Register from "./pages/Register/Register";
 
 const router = createBrowserRouter([

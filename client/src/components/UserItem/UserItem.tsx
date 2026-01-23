@@ -141,8 +141,8 @@ function UserItem({
           {editMode === null && (
             <div className="default-actions">
               <button
-              type="button"
-              Aria-label="role button"
+                type="button"
+                Aria-label="role button"
                 className="secondary"
                 onClick={() => setEditMode("role")}
                 disabled={isSelf}
@@ -151,8 +151,8 @@ function UserItem({
               </button>
               {user.is_banned === 0 ? (
                 <button
-                type="button"
-                aria-label="Ban button"
+                  type="button"
+                  aria-label="Ban button"
                   className="secondary"
                   onClick={() => setEditMode("ban")}
                   disabled={isSelf}
@@ -161,8 +161,8 @@ function UserItem({
                 </button>
               ) : (
                 <button
-                type="button"
-                aria-label="Unban button"
+                  type="button"
+                  aria-label="Unban button"
                   className="secondary btn-unban"
                   onClick={() => onUnban(user.id)}
                 >
@@ -170,8 +170,8 @@ function UserItem({
                 </button>
               )}
               <button
-              type="button"
-              aria-label="Delete button"
+                type="button"
+                aria-label="Delete button"
                 className="secondary uncorrect"
                 onClick={() => onDelete(user.id)}
                 disabled={isSelf}

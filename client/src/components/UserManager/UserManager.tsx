@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState, useContext } from "react";
-import UserItem from "../UserItem/UserItem";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import UserItem from "../UserItem/UserItem";
 import "./UserManager.css";
 
 export interface User {
@@ -45,7 +45,6 @@ function UserManager() {
           credentials: "include",
           body: JSON.stringify({ userId: id, newRole }),
         },
-        
       );
       if (response.ok) await fetchUsers();
       else alert("Error updating role");

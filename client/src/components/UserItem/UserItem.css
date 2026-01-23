@@ -34,7 +34,7 @@
 }
 
 /* --- Style Search Bar pour Inputs --- */
-.user-actions-wrapper select, 
+.user-actions-wrapper select,
 .user-actions-wrapper input {
   border: 1px solid #444;
   border-radius: 8px;
@@ -44,7 +44,7 @@
   width: 100%;
 }
 
-.user-actions-wrapper select:focus, 
+.user-actions-wrapper select:focus,
 .user-actions-wrapper input:focus {
   border-color: var(--color-btn);
 }
