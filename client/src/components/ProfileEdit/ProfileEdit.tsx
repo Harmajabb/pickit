@@ -121,12 +121,28 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
     }
   };
 
+  //when you cancel your modifications
+  const handleCancel = () => {
+    setFormData({
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      address: user.address,
+      city: user.city,
+      zipcode: user.zipcode,
+    });
+
+    setSelectedImage(null);
+    setImagePreview(null);
+    setError(null);
+    onCancel();
+  };
   return (
     <section
       className="profile profile--me profile--editing"
       aria-labelledby="edit-profile-title"
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} aria-describedby="form-error">
         <header className="profile-header">
           <h1 id="edit-profile-title">My account</h1>
           <p className="profile-subtitle">Update your personal information</p>
@@ -152,7 +168,7 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
 
         {/* Error message */}
         {error && (
-          <div className="cta uncorrect" role="alert">
+          <div id="form-error" className="cta uncorrect" role="alert">
             {error}
           </div>
         )}
@@ -295,7 +311,7 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
             <button
               type="button"
               className="secondary"
-              onClick={onCancel}
+              onClick={handleCancel}
               disabled={isLoading}
             >
               Cancel
