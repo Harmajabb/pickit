@@ -46,6 +46,12 @@
   margin-right: auto;
 }
 
+.profile-see-all {
+  color: var(--color-primary-text);
+  font-size: clamp(0.4rem, 0.9vw, 1.125rem);
+  text-decoration: underline;
+}
+
 .profile-info-grid {
   display: grid;
   gap: 2rem;

@@ -146,36 +146,44 @@ function ProfileView(props: ProfileViewProps) {
         className="profile-section"
         aria-labelledby="announcements-title"
       >
-        <h2 id="announcements-title">Announcement ({items.length})</h2>
+        <h2 id="announcements-title">
+          Announcement ({items.length}){" "}
+          <Link to="/" className="profile-see-all">
+            See all announcements
+          </Link>
+        </h2>
 
         {items.length === 0 ? (
           <p className="profile-empty">No announcement has been published</p>
         ) : (
           <ul className="profile-items-grid">
-            {items.map((item) => (
+            {items.slice(0, 6).map((item) => (
               <li key={item.id}>
                 {" "}
-                <Link to={`/announce/${item.id}`}>
-                  <ItemCard
-                    id={item.id}
-                    title={item.title}
-                    location={item.location}
-                    all_images={item.image_url ?? undefined}
-                  />
-                </Link>
+                <ItemCard
+                  id={item.id}
+                  title={item.title}
+                  location={item.location}
+                  all_images={item.image_url ?? undefined}
+                />
               </li>
             ))}
           </ul>
         )}
       </section>
       <section className="profile-section" aria-labelledby="favorites-title">
-        <h2 id="favorites-title">His favorites ({favorites.length})</h2>
+        <h2 id="favorites-title">
+          His favorites ({favorites.length})
+          <Link to="/" className="profile-see-all">
+            See all favorites
+          </Link>
+        </h2>
 
         {favorites.length === 0 ? (
           <p className="profile-empty">No favorite for the moment</p>
         ) : (
           <ul className="profile-items-grid">
-            {favorites.map((fav) => (
+            {favorites.slice(0, 6).map((fav) => (
               <li key={fav.id}>
                 {" "}
                 <Link to={`/announce/${fav.id}`}>
