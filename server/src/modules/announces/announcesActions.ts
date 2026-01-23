@@ -137,10 +137,14 @@ const readOne: RequestHandler = async (req, res, next) => {
 };
 
 // Update an announcement
+// Remplacer la fonction updateAnnounce dans announcesActions.ts
+
 const updateAnnounce: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const announceId = Number(id);
 
+    // Mettre à jour les données de l'annonce
     const updateData = {
       title: req.body.title,
       description: req.body.description,
@@ -152,15 +156,39 @@ const updateAnnounce: RequestHandler = async (req, res, next) => {
       state_of_product: req.body.state_of_product,
     };
 
-    await announcesRepository.sendUpdateAnnounce(Number(id), updateData);
+    await announcesRepository.sendUpdateAnnounce(announceId, updateData);
 
+    // Gérer la suppression des anciennes images
+    const imagesToDelete = req.body.deleted_images;
+    if (imagesToDelete) {
+      const images = Array.isArray(imagesToDelete)
+        ? imagesToDelete
+        : [imagesToDelete];
+      for (const imageUrl of images) {
+        await announcesRepository.deleteImage(imageUrl, announceId);
+      }
+    }
+
+    // Ajouter les nouvelles images
     const newFiles = req.files as Express.Multer.File[] | undefined;
     if (newFiles && newFiles.length > 0) {
+      await announcesRepository.addImages(announceId, newFiles);
     }
+
+    // Récupérer l'annonce mise à jour avec toutes ses images
+    const updatedAnnounce = await announcesRepository.getOne(announceId);
+
+    const formattedAnnounce = {
+      ...updatedAnnounce,
+      all_images: updatedAnnounce?.all_images
+        ? updatedAnnounce.all_images.split(",")
+        : [],
+    };
 
     res.json({
       success: true,
       message: "Annonce mise à jour !",
+      announce: formattedAnnounce,
     });
   } catch (err) {
     next(err);
