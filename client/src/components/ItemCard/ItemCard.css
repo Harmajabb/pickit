@@ -1,3 +1,8 @@
+.item-link {
+  text-transform: inherit;
+  color: var(--color-primary-text);
+}
+
 .itemCard-section {
   transition: transform 0.2s ease;
   &:hover {
@@ -60,6 +65,7 @@
   font-size: 0.85rem;
   opacity: 0.8;
 }
+
 .itemCard-title {
   margin: 0.5em 0;
   font-size: clamp(1.15rem, 1.8vw, 1.4rem);

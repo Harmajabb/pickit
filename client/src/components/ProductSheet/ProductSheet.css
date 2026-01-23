@@ -405,6 +405,15 @@ input[type="date"].info-value {
   direction: ltr;
 }
 
+.info-field option {
+  background: var(--color-card);
+}
+
+.info-field option:hover {
+  background: var(--color-btn);
+}
+
+/* Favoris */
 .favourites {
   display: flex;
   align-items: center;
