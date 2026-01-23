@@ -37,15 +37,13 @@ export default function MyAnnouncesList() {
             navigate("/login");
             return;
           }
-          throw new Error("Erreur lors de la récupération des annonces");
+          throw new Error("Error retrieving ad");
         }
 
         const data = await res.json();
         setAnnounces(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Une erreur est survenue",
-        );
+        setError(err instanceof Error ? err.message : "An error has occurred");
       } finally {
         setLoading(false);
       }
@@ -55,7 +53,7 @@ export default function MyAnnouncesList() {
   }, [navigate]);
 
   const handleDelete = async (id: number, title: string) => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer "${title}" ?`)) {
+    if (!window.confirm(`Are you sure you want to delete ? "${title}" ?`)) {
       return;
     }
 
@@ -69,16 +67,12 @@ export default function MyAnnouncesList() {
       );
 
       if (!res.ok) {
-        throw new Error("Erreur lors de la suppression");
+        throw new Error("Error during deletion");
       }
 
       setAnnounces(announces.filter((announce) => announce.id !== id));
     } catch (err) {
-      alert(
-        err instanceof Error
-          ? err.message
-          : "Erreur lors de la suppression de l'annonce",
-      );
+      alert(err instanceof Error ? err.message : "Error deleting ad");
     }
   };
 
@@ -93,7 +87,7 @@ export default function MyAnnouncesList() {
   if (loading) {
     return (
       <div className="my-announces-container">
-        <p>Chargement de vos annonces...</p>
+        <p>Loading your ads...</p>
       </div>
     );
   }
@@ -109,25 +103,25 @@ export default function MyAnnouncesList() {
   return (
     <div className="my-announces-container">
       <div className="my-announces-header">
-        <h1>Mes Annonces</h1>
+        <h1>My ads</h1>
         <button
           type="button"
           className="btn-create"
           onClick={() => navigate("/create-annonce")}
         >
-          Créer une annonce
+          Create an ad
         </button>
       </div>
 
       {announces.length === 0 ? (
         <div className="no-announces">
-          <p>Vous n'avez pas encore d'annonces publiées.</p>
+          <p>You have not published any ads yet.</p>
           <button
             type="button"
             className="btn-create-empty"
             onClick={() => navigate("/create-annonce")}
           >
-            Créer ma première annonce
+            Create your first ad
           </button>
         </div>
       ) : (
@@ -141,7 +135,7 @@ export default function MyAnnouncesList() {
                     alt={announce.title}
                   />
                 ) : (
-                  <div className="no-image">Aucune image</div>
+                  <div className="no-image">No image</div>
                 )}
               </div>
 
@@ -156,19 +150,19 @@ export default function MyAnnouncesList() {
 
                 <div className="announce-info">
                   <div className="info-row">
-                    <span className="info-label">État :</span>
+                    <span className="info-label">State :</span>
                     <span className="info-value">
                       {announce.state_of_product}
                     </span>
                   </div>
 
                   <div className="info-row">
-                    <span className="info-label">Lieu :</span>
+                    <span className="info-label">Location :</span>
                     <span className="info-value">{announce.location}</span>
                   </div>
 
                   <div className="info-row">
-                    <span className="info-label">Disponibilité :</span>
+                    <span className="info-label">Availability :</span>
                     <span className="info-value">
                       {formatDate(announce.start_borrow_date)} -{" "}
                       {formatDate(announce.end_borrow_date)}
@@ -176,7 +170,7 @@ export default function MyAnnouncesList() {
                   </div>
 
                   <div className="info-row">
-                    <span className="info-label">Créée le :</span>
+                    <span className="info-label">Created on :</span>
                     <span className="info-value">
                       {formatDate(announce.creation_date)}
                     </span>
@@ -190,7 +184,7 @@ export default function MyAnnouncesList() {
                     onClick={() => handleViewDetails(announce.id)}
                   >
                     <Eye size={18} />
-                    Voir / Modifier
+                    View / Edit
                   </button>
 
                   <button
@@ -199,7 +193,7 @@ export default function MyAnnouncesList() {
                     onClick={() => handleDelete(announce.id, announce.title)}
                   >
                     <Trash2 size={18} />
-                    Supprimer
+                    Delete
                   </button>
                 </div>
               </div>

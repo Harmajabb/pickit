@@ -271,7 +271,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           Save
         </button>
         <button type="button" className="btn btn-cancel" onClick={onCancel}>
-          Annuler
+          Cancel
         </button>
       </div>
     </>
