@@ -152,7 +152,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Caution</p>
+          <p className="info-label">Deposit (in €)</p>
           <input
             type="number"
             name="amount_deposit"
@@ -163,7 +163,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Date de début</p>
+          <p className="info-label">Start date</p>
           <input
             type="date"
             value={formatDateForInput(formData.start_borrow_date)}
@@ -175,7 +175,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Date de fin</p>
+          <p className="info-label">End date</p>
           <input
             type="date"
             value={formatDateForInput(formData.end_borrow_date)}
@@ -187,7 +187,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">État global</p>
+          <p className="info-label">Product condition</p>
           <select
             name="state_of_product"
             value={formData.state_of_product}
@@ -203,7 +203,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Publié par</p>
+          <p className="info-label">Publish by</p>
           <p className="info-value">{formData.name}</p>
         </div>
       </div>
