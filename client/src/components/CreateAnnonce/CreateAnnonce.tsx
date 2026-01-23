@@ -161,7 +161,7 @@ function CreateAnnonce() {
               />
             </div>
             <div className="field-group">
-              <label htmlFor="categorie_id">Category</label>
+              <label htmlFor="categorie_id">Categories</label>
               <select
                 name="categorie_id"
                 value={formData.categorie_id}
