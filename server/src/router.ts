@@ -122,6 +122,12 @@ router.post(
   authActions.verifyAdmin,
   userAction.unbanUser,
 );
+router.put(
+  "/api/profile/me",
+  authActions.checkAuth,
+  upload.single("profil_picture"),
+  userAction.updateMyProfile,
+);
 
 /* ************************************************************************* */
 

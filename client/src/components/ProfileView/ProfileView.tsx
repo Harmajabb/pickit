@@ -13,7 +13,7 @@ import "./ProfileView.css";
 //If mode is "me": user must be UserPrivate (with email, address)
 //If mode is "member": user must be UserPublic + items + favorites
 type ProfileViewProps =
-  | { mode: "me"; user: UserPrivate }
+  | { mode: "me"; user: UserPrivate; onEditClick?: () => void }
   | {
       mode: "member";
       user: UserPublic;
@@ -32,6 +32,7 @@ function ProfileView(props: ProfileViewProps) {
   // private profile (me mode)
   if (props.mode === "me") {
     const user = props.user;
+    const { onEditClick } = props;
 
     return (
       <section
@@ -55,7 +56,7 @@ function ProfileView(props: ProfileViewProps) {
             {user.firstname} {user.lastname}
           </h2>
 
-          <button type="button" className="cta">
+          <button type="button" className="cta" onClick={onEditClick}>
             Edit profile
           </button>
         </header>
