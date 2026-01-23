@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import ProfileEdit from "../../components/ProfileEdit/ProfileEdit";
 import ProfileView from "../../components/ProfileView/ProfileView";
 import { AuthContext } from "../../context/AuthContext";
 import type { ProfileData, UserPrivate } from "../../types/User";
@@ -11,6 +12,7 @@ function Profile({ mode }: { mode: "me" | "member" }) {
 
   const [data, setData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false); // for edition in "me" member
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -44,12 +46,43 @@ function Profile({ mode }: { mode: "me" | "member" }) {
     })();
   }, [mode, id, authUser, navigate]);
 
+  const handleSave = (updatedUser: UserPrivate) => {
+    setData((prevData) => {
+      if (!prevData) return null;
+      return {
+        ...prevData,
+        user: updatedUser,
+      };
+    });
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
   if (loading) return <p>Loading...</p>;
   if (!data) return null;
 
   if (mode === "me") {
-    //note Leah: not safe with as, typeguard for better safety ?
-    return <ProfileView mode="me" user={data.user as UserPrivate} />;
+    const user = data.user as UserPrivate;
+    return (
+      <>
+        {isEditing ? (
+          <ProfileEdit
+            user={user}
+            onCancel={handleCancel}
+            onSave={handleSave}
+          />
+        ) : (
+          <ProfileView mode="me" user={user} onEditClick={handleEditClick} />
+        )}
+      </>
+    );
   }
 
   // Public profile
