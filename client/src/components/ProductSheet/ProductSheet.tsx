@@ -150,7 +150,7 @@ export default function ProductSheet() {
                     <div className="action-buttons">
                       <button
                         type="button"
-                        className="btn btn-modify"
+                        className="primary"
                         onClick={() => setIsEditing(true)}
                       >
                         Edit
@@ -200,7 +200,7 @@ export default function ProductSheet() {
                   </div>
                 </div>
 
-                <button type="button" className="btn btn-contact">
+                <button type="button" className="primary">
                   Contact the borrower
                 </button>
               </>

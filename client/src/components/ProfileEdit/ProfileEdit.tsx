@@ -14,7 +14,7 @@ type ProfileEditProps = {
 function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // État du formulaire
+  // form state
   const [formData, setFormData] = useState({
     firstname: user.firstname,
     lastname: user.lastname,
@@ -25,7 +25,7 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
   });
 
   // Profile picture
-  const [_selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Error message
@@ -34,8 +34,8 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
 
   const currentAvatarSrc = imagePreview
     ? imagePreview
-    : user.profil_picture
-      ? `${API_URL}${user.profil_picture}`
+    : user.profile_picture
+      ? `${API_URL}${user.profile_picture}`
       : `${API_URL}/assets/images/avatar-default.png`;
 
   // Changing input
@@ -90,20 +90,22 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
       }
 
       // request PUT in the backend
+      const submitData = new FormData();
+      submitData.append("firstname", formData.firstname.trim());
+      submitData.append("lastname", formData.lastname.trim());
+      submitData.append("email", formData.email.trim());
+      submitData.append("address", formData.address.trim());
+      submitData.append("city", formData.city.trim());
+      submitData.append("zipcode", formData.zipcode.trim());
+
+      if (selectedImage) {
+        submitData.append("profil_picture", selectedImage);
+      }
+
       const response = await fetch(`${API_URL}/api/profile/me`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         credentials: "include",
-        body: JSON.stringify({
-          firstname: formData.firstname.trim(),
-          lastname: formData.lastname.trim(),
-          email: formData.email.trim(),
-          address: formData.address.trim(),
-          city: formData.city.trim(),
-          zipcode: formData.zipcode.trim(),
-        }),
+        body: submitData,
       });
 
       if (!response.ok) {

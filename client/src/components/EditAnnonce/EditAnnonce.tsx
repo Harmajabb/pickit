@@ -196,7 +196,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
       </div>
 
       <div className="edit-image-mini-wrapper">
-        <label htmlFor="image-upload" className="edit-image-btn">
+        <label htmlFor="image-upload" className="primary">
           Edit image
         </label>
 
@@ -229,11 +229,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
       </div>
 
       <div className="action-buttons">
-        <button
-          type="button"
-          className="btn btn-contact"
-          onClick={handleSubmit}
-        >
+        <button type="button" className="primary" onClick={handleSubmit}>
           Save
         </button>
         <button type="button" className="btn btn-cancel" onClick={onCancel}>

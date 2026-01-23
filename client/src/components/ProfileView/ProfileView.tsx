@@ -9,7 +9,7 @@ import type {
 import ItemCard from "../ItemCard/ItemCard";
 import "./ProfileView.css";
 
-//discriminated union for profilView props.
+//discriminated union for profileView props.
 //If mode is "me": user must be UserPrivate (with email, address)
 //If mode is "member": user must be UserPublic + items + favorites
 type ProfileViewProps =
@@ -25,8 +25,8 @@ function ProfileView(props: ProfileViewProps) {
   const API_URL = import.meta.env.VITE_API_URL;
 
   // user avatar
-  const avatarSrc = props.user.profil_picture
-    ? `${API_URL}${props.user.profil_picture}`
+  const avatarSrc = props.user.profile_picture
+    ? `${API_URL}${props.user.profile_picture}`
     : `${API_URL}/assets/images/avatar-default.png`;
 
   // private profile (me mode)
@@ -146,36 +146,44 @@ function ProfileView(props: ProfileViewProps) {
         className="profile-section"
         aria-labelledby="announcements-title"
       >
-        <h2 id="announcements-title">Announcement ({items.length})</h2>
+        <h2 id="announcements-title">
+          Announcement ({items.length}){" "}
+          <Link to="/" className="profile-see-all">
+            See all announcements
+          </Link>
+        </h2>
 
         {items.length === 0 ? (
           <p className="profile-empty">No announcement has been published</p>
         ) : (
           <ul className="profile-items-grid">
-            {items.map((item) => (
+            {items.slice(0, 6).map((item) => (
               <li key={item.id}>
                 {" "}
-                <Link to={`/announce/${item.id}`}>
-                  <ItemCard
-                    id={item.id}
-                    title={item.title}
-                    location={item.location}
-                    all_images={item.image_url ?? undefined}
-                  />
-                </Link>
+                <ItemCard
+                  id={item.id}
+                  title={item.title}
+                  location={item.location}
+                  all_images={item.image_url ?? undefined}
+                />
               </li>
             ))}
           </ul>
         )}
       </section>
       <section className="profile-section" aria-labelledby="favorites-title">
-        <h2 id="favorites-title">His favorites ({favorites.length})</h2>
+        <h2 id="favorites-title">
+          His favorites ({favorites.length})
+          <Link to="/" className="profile-see-all">
+            See all favorites
+          </Link>
+        </h2>
 
         {favorites.length === 0 ? (
           <p className="profile-empty">No favorite for the moment</p>
         ) : (
           <ul className="profile-items-grid">
-            {favorites.map((fav) => (
+            {favorites.slice(0, 6).map((fav) => (
               <li key={fav.id}>
                 {" "}
                 <Link to={`/announce/${fav.id}`}>

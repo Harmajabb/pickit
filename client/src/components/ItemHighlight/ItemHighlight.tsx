@@ -39,7 +39,7 @@ function ItemHighlight() {
 
   return (
     <>
-      <header className="itemCard-title">
+      <header className="itemHighlight-title">
         <h2>Our featured listing</h2>
       </header>
       <div className="ItemHighlight-container">

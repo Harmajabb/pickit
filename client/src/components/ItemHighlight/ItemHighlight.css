@@ -6,3 +6,7 @@
   gap: 1.5rem;
   padding: 20px;
 }
+
+.itemHighlight-title {
+  text-align: center;
+}
