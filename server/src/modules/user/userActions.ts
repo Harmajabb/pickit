@@ -71,6 +71,7 @@ const readAllUsers: RequestHandler = async (_req, res, next) => {
 const banUser: RequestHandler = async (req, res, next) => {
   try {
     const userId = Number(req.params.id);
+    const adminId = Number(req.auth?.sub);
     const { reason, days } = req.body;
 
     const existingBan = await userRepository.checkBanStatus(userId);
@@ -82,7 +83,7 @@ const banUser: RequestHandler = async (req, res, next) => {
       });
     }
 
-    await userRepository.ban(userId, req.auth?.id, reason, days);
+    await userRepository.ban(userId, adminId, reason, days);
     res.status(201).json({ message: "User banned successfully." });
   } catch (err) {
     next(err);
@@ -91,8 +92,6 @@ const banUser: RequestHandler = async (req, res, next) => {
 const unbanUser: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.body;
-
-    // 1. Validation de base
     if (!userId) {
       return res.status(400).json({
         message: "data missing or invalid.",
@@ -108,8 +107,7 @@ const unbanUser: RequestHandler = async (req, res, next) => {
 const changeUserRole: RequestHandler = async (req, res, next) => {
   try {
     const { userId, newRole } = req.body;
-    const adminId = req.auth?.id;
-
+    const adminId = Number(req.auth?.sub);
     if (Number(userId) === Number(adminId)) {
       return res.status(403).json({
         message: "Forbidden Action : You cannot change your own role.",
@@ -121,6 +119,7 @@ const changeUserRole: RequestHandler = async (req, res, next) => {
     }
 
     await userRepository.updateRole(userId, newRole);
+    res.status(201).json({ message: "user role updated successfully." });
   } catch (err) {
     next(err);
   }
@@ -128,7 +127,7 @@ const changeUserRole: RequestHandler = async (req, res, next) => {
 const deleteUser: RequestHandler = async (req, res, next) => {
   try {
     const userId = Number(req.params.id);
-    const adminId = req.auth?.id;
+    const adminId = Number(req.auth?.sub);
 
     if (Number(userId) === Number(adminId)) {
       return res.status(403).json({

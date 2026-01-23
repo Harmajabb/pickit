@@ -93,19 +93,19 @@ router.get(
   userAction.readProfileById,
 );
 router.post(
-  "/api/admin/ban-user",
+  "/api/users/:id/ban-user",
   authActions.checkAuth,
   authActions.verifyAdmin,
   userAction.banUser,
 );
-router.post(
-  "/api/admin/delete-user",
+router.delete(
+  "/api/users/:id/delete-user",
   authActions.checkAuth,
   authActions.verifyAdmin,
   userAction.deleteUser,
 );
 router.post(
-  "/api/admin/change-user-role",
+  "/api/users/:id/change-user-role",
   authActions.checkAuth,
   authActions.verifyAdmin,
   userAction.changeUserRole,
@@ -116,8 +116,8 @@ router.get(
   authActions.verifyAdmin,
   userAction.readAllUsers,
 );
-router.delete(
-  "/api/admin/unban-user",
+router.post(
+  "/api/users/:id/unban-user",
   authActions.checkAuth,
   authActions.verifyAdmin,
   userAction.unbanUser,

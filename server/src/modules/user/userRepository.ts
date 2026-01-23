@@ -54,11 +54,11 @@ class UserRepository {
   async readAllMembers(): Promise<UserMember[]> {
     const [rows] = await databaseClient.query<Rows>(
       `SELECT 
-          u.id, u.firstname, u.lastname, u.email, u.roles, u.city, u.zipcode, u.profil_picture,
-          CASE 
+          u.id, u.firstname, u.lastname, u.email, u.role, u.city, u.zipcode, u.profil_picture,
+          max(CASE 
               WHEN ub.active = 1 AND ub.end_date > NOW() THEN 1 
               ELSE 0 
-          END AS is_banned
+          END) AS is_banned
        FROM users u
        LEFT JOIN user_ban ub ON u.id = ub.user_id
        GROUP BY u.id`,
@@ -106,7 +106,7 @@ class UserRepository {
     await databaseClient.query(sql, [userId]);
   }
   async updateRole(userId: number, newRole: number): Promise<void> {
-    await databaseClient.query("UPDATE users SET roles = ? WHERE id = ?", [
+    await databaseClient.query("UPDATE users SET role = ? WHERE id = ?", [
       newRole,
       userId,
     ]);
