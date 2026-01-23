@@ -210,7 +210,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
 
       <div className="edit-image-mini-wrapper">
         <label htmlFor="image-upload" className="edit-image-btn">
-          Ajouter des images
+          Ajouter des photos
         </label>
         <input
           id="image-upload"
