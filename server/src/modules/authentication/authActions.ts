@@ -3,6 +3,7 @@ import argon2 from "argon2";
 import type { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import adminLogRepository from "../authentication/adminLogRepository";
 import authRepository from "./authRepository";
 
 declare global {
@@ -88,8 +89,6 @@ const logout: RequestHandler = (_req, res) => {
 };
 
 const checkAuth: RequestHandler = (req, res, next) => {
-  // console.log("req cookie", req.cookies);
-  // console.log("req header.cookie", req.header.cookie);
   try {
     const token = req.cookies.access_token;
     if (!token) {
@@ -112,6 +111,31 @@ const checkAuth: RequestHandler = (req, res, next) => {
   }
 };
 
+const adminLogMiddleware: RequestHandler = (req, res, next) => {
+  const originalJson = res.json;
+
+  res.json = function (data) {
+    const audit = res.locals.auditLog;
+    if (audit && res.statusCode >= 200 && res.statusCode < 300) {
+      const userId = Number(req.auth?.sub);
+      const logData = {
+        superuser_id: !Number.isNaN(userId) ? userId : 0,
+        action_type: audit.action_type || "unknown",
+        target_table: audit.target_table || "unknown",
+        target_id: Number(audit.target_id) || 0,
+        details: audit.details || null,
+      };
+
+      adminLogRepository.create(logData).catch((err) => {
+        console.error("❌ Erreur lors de l'enregistrement du log:", err);
+      });
+    }
+
+    return originalJson.call(this, data);
+  };
+
+  next();
+};
 const verifyAdmin: RequestHandler = (req, res, next) => {
   try {
     if (req.auth?.role !== 1) {
@@ -232,4 +256,5 @@ export default {
   resetPassword,
   verifyAdmin,
   register,
+  adminLogMiddleware,
 };
