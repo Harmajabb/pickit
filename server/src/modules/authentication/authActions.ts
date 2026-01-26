@@ -3,6 +3,7 @@ import argon2 from "argon2";
 import type { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import favoriteRepository from "../favorites/favoriteRepository";
 import authRepository from "./authRepository";
 
 declare global {
@@ -31,7 +32,10 @@ const login: RequestHandler = async (req, res, next) => {
         expiresIn: "1h",
       },
     );
-
+    const usersFavorites = await favoriteRepository.getFavoritesIDByUserID(
+      user.id,
+    );
+    const favoritesIds = usersFavorites.map((item) => item.announces_id);
     res
       .cookie("access_token", token, { httpOnly: true, secure: false })
       .status(200)
@@ -42,6 +46,7 @@ const login: RequestHandler = async (req, res, next) => {
           email: user.email,
           firstname: user.firstname,
           role: user.role,
+          favoritesIds,
         },
       });
   } catch (err) {
@@ -88,8 +93,7 @@ const logout: RequestHandler = (_req, res) => {
 };
 
 const checkAuth: RequestHandler = (req, res, next) => {
-  // console.log("req cookie", req.cookies);
-  // console.log("req header.cookie", req.header.cookie);
+  console.log("req cookie", req.cookies);
   try {
     const token = req.cookies.access_token;
     if (!token) {
@@ -217,10 +221,32 @@ const resetPassword: RequestHandler = async (req, res, next) => {
 };
 
 const check: RequestHandler = (req, res) => {
-  res.status(200).json({
-    user: req.auth,
-    message: "user logged in",
-  });
+  (async () => {
+    try {
+      const decoded = req.auth as jwt.JwtPayload;
+      const userId = Number(decoded?.sub);
+
+      let favoritesIds: number[] = [];
+      if (Number.isInteger(userId) && userId > 0) {
+        const usersFavorites =
+          await favoriteRepository.getFavoritesIDByUserID(userId);
+        favoritesIds = usersFavorites.map((item) => item.announces_id);
+      }
+
+      res.status(200).json({
+        user: {
+          id: Number(decoded?.sub),
+          role: decoded?.role,
+          firstname: decoded?.firstname,
+          favoritesIds,
+        },
+        message: "user logged in",
+      });
+    } catch (_err) {
+      // Fallback: return minimal auth object if something goes wrong
+      res.status(200).json({ user: req.auth, message: "user logged in" });
+    }
+  })();
 };
 
 export default {
