@@ -29,7 +29,7 @@ export type Announces = {
   categorie_id?: number;
   owner_id?: number;
   state_of_product?: string;
-  total_favorites?: number;
+  total_likes?: number;
 };
 
 export type Favorite = {
@@ -80,8 +80,16 @@ class AnnouncesRepository {
 
   async readFiltered() {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4",
+      `SELECT announces.*, users.zipcode, COUNT(favorites.id) AS total_likes, MIN(announces_images.url) AS all_images
+       FROM announces
+       LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+       LEFT JOIN users ON owner_id = users.id
+       LEFT JOIN favorites ON announces.id = favorites.announces_id
+       GROUP BY announces.id
+       ORDER BY creation_date ASC
+       LIMIT 4`,
     );
+
     return rows as Announces[];
   }
   async delete(id: number) {

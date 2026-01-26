@@ -1,9 +1,10 @@
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import "./ProductSheet.css";
 import type { AnnounceDetail } from "../../types/Announce";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
+import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
 
 export default function ProductSheet() {
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
@@ -149,10 +150,10 @@ export default function ProductSheet() {
 
                   <div className="info-field">
                     <p className="info-label">Favoris</p>
-                    <div className="favourites">
-                      <span className="info-value">{announce.total_likes}</span>
-                      <Heart className="heart-icon" />
-                    </div>
+                    <FavoriteBtn
+                      total_likes={announce.total_likes}
+                      announce_id={announce.id}
+                    />
                   </div>
                 </div>
 

@@ -13,7 +13,6 @@ const browse: RequestHandler = async (req, res, next) => {
           ? req.query.category_id
           : undefined,
     };
-    console.log(filters);
 
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
@@ -48,6 +47,7 @@ const browseFiltered: RequestHandler = async (_req, res, next) => {
   try {
     // Sends the whole object res.query to the repository
     const readFiltered = await announcesRepository.readFiltered();
+    console.log(readFiltered);
     res.json(readFiltered);
   } catch (err) {
     next(err);
