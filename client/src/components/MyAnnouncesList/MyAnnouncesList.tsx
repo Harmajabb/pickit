@@ -180,7 +180,7 @@ export default function MyAnnouncesList() {
                 <div className="announce-actions">
                   <button
                     type="button"
-                    className="btn-view"
+                    className="cta cta-with-icon"
                     onClick={() => handleViewDetails(announce.id)}
                   >
                     <Eye size={18} />
@@ -189,7 +189,7 @@ export default function MyAnnouncesList() {
 
                   <button
                     type="button"
-                    className="btn-delete"
+                    className="cta cta-delete"
                     onClick={() => handleDelete(announce.id, announce.title)}
                   >
                     <Trash2 size={18} />

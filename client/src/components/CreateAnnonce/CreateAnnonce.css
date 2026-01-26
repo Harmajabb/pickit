@@ -338,7 +338,6 @@ input[type="number"] {
 .image-upload-btn:active {
   transform: translate(1.5px, 1.5px);
 }
-
 @media (max-width: 768px) {
   .form-container {
     display: flex;
