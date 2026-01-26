@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import type { Announce } from "../../types/Announce";
 import "./FavoriteBtn.css";
 import { Heart } from "lucide-react";
@@ -13,7 +14,7 @@ interface FavoriteBtnProps {
 
 function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
   const [isLiked, setIsLiked] = useState<boolean>(false);
-
+  const navigate = useNavigate();
   //To avoid too many request and since on reload its gonna be a real value from bdd anyways, i'm "faking" total_likes on favorite toggle.
   const [fakeTotal_likes, setFakeTotalLikes] = useState<number>(total_likes);
   const { user } = useContext(AuthContext);
@@ -48,6 +49,8 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
           setFakeTotalLikes((prev) => prev + 1);
         }
       }
+    } else {
+      navigate("/login");
     }
   };
   useEffect(() => {
