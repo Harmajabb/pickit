@@ -1,23 +1,17 @@
 /* Supprimer les flèches sur input type number */
-
-/* Chrome, Edge, Safari */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Firefox */
 input[type="number"] {
-  -moz-appearance: textfield;
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield; /* Standard */
 }
 
 .create-annonce-page {
-  padding-top: 130px;
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 235px;
-
+  padding: 130px 20px 235px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -52,6 +46,10 @@ input[type="number"] {
   margin-top: 10px;
 }
 
+.image-preview {
+  position: relative;
+}
+
 .image-preview img {
   width: 100%;
   max-height: 200px;
@@ -65,6 +63,25 @@ input[type="number"] {
   transform: scale(1.02);
 }
 
+.remove-image-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.remove-image-button:hover {
+  background-color: rgba(255, 0, 0, 0.8);
+}
+
 .create-annonce-form {
   flex: 1;
   padding: 24px;
@@ -73,63 +90,6 @@ input[type="number"] {
   gap: 20px;
   font-family: Helvetica, Arial, sans-serif;
   border-radius: 10px;
-}
-
-.main-info-container,
-.small-inputs-container {
-  display: flex;
-  gap: 12px;
-  flex-wrap: nowrap;
-  width: 100%;
-}
-
-.auto-width-input {
-  flex: 1 1 auto;
-  min-width: 50px;
-  padding: 10px 12px;
-  font-size: 15px;
-  border: 1px solid var(--color-primary-text);
-  border-radius: 10px;
-  background-color: transparent;
-  text-align: center;
-}
-
-.auto-width-input:focus {
-  box-shadow: 0 0 0 2px var(--color-btn);
-  border: solid 1px var(--color-btn);
-  outline: none;
-  background: transparent;
-}
-
-.create-annonce-form textarea {
-  resize: vertical;
-  min-height: 90px;
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--color-primary-text);
-  border-radius: 10px;
-  font-size: 15px;
-}
-
-.image-preview img {
-  width: 200px;
-  max-height: 200px;
-  object-fit: cover;
-  border: 1px solid var(--color-primary-text);
-  border-radius: 10px;
-}
-.create-annonce-form select {
-  color: var(--color-primary-text);
-  border: 1px solid var(--color-primary-text);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 15px;
-  appearance: none;
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
-  text-align: center;
 }
 
 .field-group {
@@ -145,47 +105,113 @@ input[type="number"] {
   color: var(--color-primary-text);
 }
 
-/* Bouton Create Ad spécifique au formulaire */
+/* Regroupement des inputs et conteneurs */
+.main-info-container,
+.small-inputs-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.auto-width-input,
+.create-annonce-form textarea,
+.create-annonce-form select {
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid var(--color-primary-text);
+  border-radius: 10px;
+  background-color: var(--color-bg);
+  color: var(--color-primary-text);
+}
+
+.auto-width-input {
+  flex: 1 1 auto;
+  min-width: 50px;
+  text-align: center;
+}
+
+.create-annonce-form textarea {
+  resize: vertical;
+  min-height: 90px;
+  width: 100%;
+}
+
+/* États Focus */
+.auto-width-input:focus,
+.create-annonce-form textarea:focus,
+.create-annonce-form select:focus {
+  box-shadow: 0 0 0 2px var(--color-btn);
+  border: solid 1px var(--color-btn);
+  outline: none;
+}
+
+.create-annonce-form select {
+  cursor: pointer;
+  color-scheme: dark;
+  text-align: center;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+
+  /* Reset appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Custom Arrow SVG */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.create-annonce-form select option {
+  background-color: var(--color-bg);
+  color: var(--color-primary-text);
+  padding: 10px;
+}
+
+.create-annonce-form select option:checked {
+  background-color: var(--color-btn);
+  color: #000;
+}
+
 .create-annonce-form button.cta {
   align-self: flex-start;
   display: inline-block;
   padding: 0.3rem 0.8rem;
   border-radius: 10px;
+  cursor: pointer;
 }
+
 .create-annonce-form button.cta:hover,
 .create-annonce-form button.cta:active {
   box-shadow: none;
   transform: translate(1.5px, 1.5px);
 }
 
-/* ========================= */
-/*        MODAL POP-IN       */
-/* ========================= */
-
 .modal-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 1000;
 }
 
 .modal {
-  background-color: #fff;
-  border: 1px solid #000;
-  border-radius: 10px;
-
+  background-color: var(--color-bg, #fff);
+  color: var(--color-primary-text, #000);
+  border: 1px solid var(--color-primary-text);
   padding: 24px;
   width: 100%;
   max-width: 420px;
-
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border-radius: 10px;
 }
 
 .modal h2 {
@@ -207,39 +233,36 @@ input[type="number"] {
   margin-top: 10px;
 }
 
-/* ========================= */
-/*        MODAL BUTTONS      */
-/* ========================= */
-
 .modal-actions button {
   padding: 0.3rem 0.8rem;
   border-radius: 10px;
   font-size: 14px;
   cursor: pointer;
-  border: 1px solid #000;
-  background-color: #fff;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  border: 1px solid var(--color-primary-text);
+  background-color: var(--color-bg);
+  color: var(--color-primary-text);
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
 }
 
-/* Cancel */
 .modal-actions .btn-cancel:hover {
-  background-color: #f2f2f2;
+  opacity: 0.8;
 }
 
-/* Confirm */
 .modal-actions .btn-confirm {
   background-color: #ccff33;
+  color: #000;
+  border: 1px solid #ccff33;
 }
 
 .modal-actions .btn-confirm:hover {
   background-color: #c2f02e;
 }
 
-/* Click effect (same logic as CTA) */
 .modal-actions button:active {
   transform: translate(1.5px, 1.5px);
 }
-
 
 @media (max-width: 768px) {
   .form-container {

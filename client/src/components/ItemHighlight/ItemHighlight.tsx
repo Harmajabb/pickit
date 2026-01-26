@@ -18,7 +18,7 @@ function ItemHighlight() {
           throw new Error(`Error HTTP: ${data.status}`);
         }
         const jsonData = await data.json();
-        console.log(data);
+        // console.log(data);
         setData(jsonData);
       } catch (e) {
         setError(e as Error);
@@ -39,7 +39,7 @@ function ItemHighlight() {
 
   return (
     <>
-      <header className="itemCard-title">
+      <header className="itemHighlight-title">
         <h2>Our featured listing</h2>
       </header>
       <div className="ItemHighlight-container">

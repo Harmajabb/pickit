@@ -3,9 +3,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import App from "./App";
+import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
+import UserManager from "./components/UserManager/UserManager";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
 import Catalog from "./pages/Catalog/Catalog";
@@ -32,6 +34,8 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
       { path: "/profile/me", element: <Profile mode="me" /> },
       { path: "/profile/:id", element: <Profile mode="member" /> },
+      { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
+      { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
     ],
   },
 ]);

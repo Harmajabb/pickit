@@ -4,8 +4,8 @@ export interface UserPublic {
   firstname: string;
   lastname: string;
   city: string;
-  zipcode: number;
-  profil_picture: string | null;
+  zipcode: string;
+  profile_picture: string | null;
 }
 
 // private user

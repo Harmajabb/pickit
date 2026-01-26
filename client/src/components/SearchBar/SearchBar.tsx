@@ -17,7 +17,12 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
   const [open, setOpen] = useState(false); // dropdown visibility state
   const [results, setResults] = useState<SearchResult[]>([]); // current search results
   const [isLoading, setIsLoading] = useState(false); // loading state during api call
+
+  // for keyboard navigation
+  const [activeIndex, setActiveIndex] = useState<number>(-1);
+
   const containerRef = useRef<HTMLDivElement | null>(null); // ref for detecting outside clicks
+  const listboxId = "search-results";
 
   useEffect(() => {
     // the search isn't performed unless the dropdown is closed or query is less than 2 characters
@@ -74,20 +79,21 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // close dropdown on Escape key press
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, []);
-
   // handle search submission (button click or enter key)
   const performSubmit = () => {
     const query = input.trim();
+    // console.log("SUBMIT", { query, tab });
     if (query.length < 2) return;
+
+    //For Members mode with results: select first result (goes to /profile/:id)
+    if (tab === "users" && results.length > 0) {
+      handlePick(results[0]);
+      return;
+    }
+    // For Members mode without results: do nothing
+    if (tab === "users" && results.length === 0) {
+      return;
+    }
 
     onSubmit(query, tab);
     setOpen(false);
@@ -123,6 +129,64 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
     setOpen(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // console.log("keydown", e.key, {
+    //   open,
+    //   results: results.length,
+    //   activeIndex,
+    // });
+
+    // open the dropdown when user starts navigating
+    if (!open && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+      setOpen(true);
+      return;
+    }
+
+    // if closed dropdown no reason to deal with arrowDown and ArrowUp
+    if (!open) return;
+
+    // direction: 1 for down (ArrowDown), -1 for up (ArrowUp)
+    const navigateResults = (direction: 1 | -1) => {
+      e.preventDefault();
+      if (results.length === 0) return;
+
+      setActiveIndex((prev) => {
+        if (direction === 1) {
+          // Navigation down: if not at end, +1, else loop to start
+          return prev < results.length - 1 ? prev + 1 : 0;
+        }
+        // Navigation up: if not at start, -1, else loop to end
+        return prev > 0 ? prev - 1 : results.length - 1;
+      });
+    };
+
+    if (e.key === "ArrowDown") {
+      navigateResults(1);
+      return;
+    }
+
+    if (e.key === "ArrowUp") {
+      navigateResults(-1);
+      return;
+    }
+
+    if (e.key === "Enter") {
+      // If an item is active, pick it instead of submitting the form
+      if (activeIndex >= 0 && activeIndex < results.length) {
+        e.preventDefault();
+        handlePick(results[activeIndex]);
+      }
+      return;
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setOpen(false);
+      setActiveIndex(-1);
+      return;
+    }
+  };
+
   return (
     <div ref={containerRef} className="searchbar">
       <form className="searchbar-form" onSubmit={handleSubmit}>
@@ -136,14 +200,23 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
             <option value="announces">Announcements</option>
             <option value="users">Members</option>
           </select>
+          <label className="sr-only" htmlFor="search-input">
+            Search
+          </label>
           <input
+            id="search-input"
             className="searchbar-input"
             type="search"
             placeholder={placeholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onFocus={() => setOpen(true)}
+            onKeyDown={handleKeyDown}
+            role="combobox" //biome asked me to add it so...
             aria-label="Search"
+            aria-expanded={open} // state of dropdown
+            aria-controls={listboxId} // id of the element list
+            aria-autocomplete="list" // autocompletion
           />
           <button
             type="button"
@@ -168,7 +241,11 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
         </div>
       </form>
       {open && (
-        <ul className="searchbar-dropdown-slot" aria-label="Search results">
+        <ul
+          className="searchbar-dropdown-slot"
+          aria-label="Search results"
+          id={listboxId}
+        >
           {input.trim().length < 2 ? (
             <li className="searchbar-dropdown-empty">
               Type at least 2 characters...
@@ -178,18 +255,22 @@ function SearchBar({ placeholder = "Search...", onSubmit, onSelect }: Props) {
           ) : results.length === 0 ? (
             <li className="searchbar-dropdown-empty">No results.</li>
           ) : (
-            results.map((result) => {
+            results.map((result, index) => {
               // unique key for each result item
               const key =
                 result.type === "announces"
                   ? `announce-${result.item.id}`
                   : `user-${result.item.id}`;
 
+              const isActive = index === activeIndex;
+
               return (
                 <li key={key}>
                   <button
                     type="button"
-                    className="searchbar-dropdown-btn"
+                    aria-label="result"
+                    className={`searchbar-dropdown-btn ${isActive ? "is-active" : ""}`}
+                    onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => handlePick(result)}
                   >
                     {result.type === "announces" ? (

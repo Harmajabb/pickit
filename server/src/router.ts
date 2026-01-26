@@ -7,6 +7,34 @@ const router = express.Router();
 // Define Your API Routes Here
 /* ************************************************************************* */
 
+// Define Category-related routes
+import categoryActions from "./modules/categories/categoryActions";
+
+router.get(
+  "/api/categories",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.browse,
+);
+router.post(
+  "/api/categories",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.add,
+);
+router.put(
+  "/api/categories/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.edit,
+);
+router.delete(
+  "/api/categories/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  categoryActions.delete,
+);
+
 // Define Admin-related routes
 import adminActions from "./modules/admin/adminActions";
 
@@ -63,6 +91,42 @@ router.get(
   "/api/profile/:id",
   authActions.checkAuth,
   userAction.readProfileById,
+);
+router.post(
+  "/api/users/:id/ban-user",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.banUser,
+);
+router.delete(
+  "/api/users/:id/delete-user",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.deleteUser,
+);
+router.post(
+  "/api/users/:id/change-user-role",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.changeUserRole,
+);
+router.get(
+  "/api/users",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.readAllUsers,
+);
+router.post(
+  "/api/users/:id/unban-user",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  userAction.unbanUser,
+);
+router.put(
+  "/api/profile/me",
+  authActions.checkAuth,
+  upload.single("profil_picture"),
+  userAction.updateMyProfile,
 );
 
 // Define favorites routes
