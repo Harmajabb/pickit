@@ -13,8 +13,10 @@ interface FavoriteBtnProps {
 
 function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
   const [isLiked, setIsLiked] = useState<boolean>(false);
-  const { user } = useContext(AuthContext);
 
+  //To avoid too many request and since on reload its gonna be a real value from bdd anyways, i'm "faking" total_likes on favorite toggle.
+  const [fakeTotal_likes, setFakeTotalLikes] = useState<number>(total_likes);
+  const { user } = useContext(AuthContext);
   const handleFavoriteBtn = async () => {
     if (user) {
       const user_id = user.id;
@@ -29,6 +31,7 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
         });
         if (res.ok) {
           setIsLiked(false);
+          setFakeTotalLikes((prev) => prev - 1);
         }
       }
       if (!isLiked) {
@@ -42,6 +45,7 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
         });
         if (res.ok) {
           setIsLiked(true);
+          setFakeTotalLikes((prev) => prev + 1);
         }
       }
     }
@@ -55,14 +59,16 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
   return (
     <button
       type="button"
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
         setIsLiked((prev) => !prev);
         handleFavoriteBtn();
       }}
       className={isLiked ? "liked like-button" : "like-button notliked"}
     >
       <Heart size={16} strokeWidth={2} />
-      <span>{total_likes}</span>
+      <span>{fakeTotal_likes}</span>
     </button>
   );
 }
