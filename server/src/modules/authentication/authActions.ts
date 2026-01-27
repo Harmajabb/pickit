@@ -3,6 +3,7 @@ import argon2 from "argon2";
 import type { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import { resetPasswordSchema } from "../../../Validator/Resetpasswordcheck";
 import adminLogRepository from "../authentication/adminLogRepository";
 import authRepository from "./authRepository";
 
@@ -33,8 +34,17 @@ const login: RequestHandler = async (req, res, next) => {
       },
     );
 
+    const refreshToken = jwt.sign(
+      { sub: user.id, role: user.role, firstname: user.firstname },
+      process.env.REFRESH_SECRET as string,
+      { expiresIn: "7d" },
+    );
+
+    await authRepository.updateRefreshToken(user.id, refreshToken);
+
     res
       .cookie("access_token", token, { httpOnly: true, secure: false })
+      .cookie("refresh_token", refreshToken, { httpOnly: true, secure: false })
       .status(200)
       .json({
         message: "Login success !",
@@ -49,6 +59,36 @@ const login: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
+
+const refresh: RequestHandler = async (req, res, _next) => {
+  const { token: clientToken } = req.body;
+
+  if (!clientToken) return res.sendStatus(401);
+
+  try {
+    const decoded = jwt.verify(
+      clientToken,
+      process.env.REFRESH_SECRET as string,
+    ) as jwt.JwtPayload;
+
+    const user = await authRepository.readById(Number(decoded.sub));
+
+    if (!user || user.refreshToken !== clientToken) {
+      return res.status(403).json({ message: "Token invalid or already used" });
+    }
+
+    const newToken = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.APP_SECRET as string,
+      { expiresIn: "1h" },
+    );
+
+    res.json({ token: newToken });
+  } catch (_err) {
+    res.status(403).json({ message: "Session expired" });
+  }
+};
+
 const register: RequestHandler = async (req, res, next) => {
   const { firstName, lastName, city, zipcode, adress, email, password } =
     req.body;
@@ -82,7 +122,15 @@ const register: RequestHandler = async (req, res, next) => {
   }
 };
 const logout: RequestHandler = (_req, res) => {
+  const userAuth = _req.auth as jwt.JwtPayload;
+  const userId = Number(userAuth.sub);
+
+  authRepository.updateRefreshToken(userId, null).catch((err) => {
+    console.error("Error clearing refresh token on logout:", err);
+  });
+
   res
+    .clearCookie("refresh_token")
     .clearCookie("access_token")
     .status(200)
     .json({ message: "Logout success !" });
@@ -168,7 +216,7 @@ const initResetPassword: RequestHandler = async (req, res, next) => {
         "../client/public/Logo_top.png",
       );
 
-      const resetLink = `http://${process.env.CLIENT_URL}/reset-password/${jwt.sign(
+      const resetLink = `${process.env.CLIENT_URL}/reset-password/${jwt.sign(
         { sub: user.id },
         process.env.APP_SECRET as string,
         { expiresIn: "1h" },
@@ -219,20 +267,48 @@ const initResetPassword: RequestHandler = async (req, res, next) => {
 
 const resetPassword: RequestHandler = async (req, res, next) => {
   try {
-    const { token, newPassword } = req.body;
+    // 1. Validate with Joi (assuming you pass req.body to a validation helper)
+    // This replaces your manual Regex check and 'if (!newPassword)' checks
+    const { error, value } = resetPasswordSchema.validate(req.body, {
+      abortEarly: false,
+    });
 
-    // Cleaned up duplicate code block here
+    if (error) {
+      return res.status(400).json({
+        errors: error.details.map((err) => err.message),
+      });
+    }
+
+    const { token, currentPassword, newPassword } = value;
+
+    // 2. Single JWT verification (Redundancy removed)
     const decoded = jwt.verify(
       token,
       process.env.APP_SECRET as string,
     ) as jwt.JwtPayload;
 
-    const hashedPassword = await argon2.hash(newPassword);
+    // 3. Fetch user once
+    const user = await authRepository.readById(Number(decoded.sub));
 
-    await authRepository.updatePassword(
-      Number(decoded.sub) as number,
-      hashedPassword,
+    if (!user) {
+      return res.status(400).json({ message: "Invalid token." });
+    }
+
+    // 4. Verify current password
+    const isCurrentPasswordValid = await argon2.verify(
+      user.password,
+      currentPassword,
     );
+
+    if (!isCurrentPasswordValid) {
+      return res
+        .status(400)
+        .json({ message: "Current password is incorrect." });
+    }
+
+    // 5. Hash and Update
+    const hashedPassword = await argon2.hash(newPassword);
+    await authRepository.updatePassword(Number(decoded.sub), hashedPassword);
 
     res.status(200).json({ message: "Password has been reset successfully." });
   } catch (err) {
@@ -257,4 +333,5 @@ export default {
   verifyAdmin,
   register,
   adminLogMiddleware,
+  refresh,
 };
