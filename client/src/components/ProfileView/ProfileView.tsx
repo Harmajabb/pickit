@@ -174,7 +174,7 @@ function ProfileView(props: ProfileViewProps) {
       <section className="profile-section" aria-labelledby="favorites-title">
         <h2 id="favorites-title">
           His favorites ({favorites.length})
-          <Link to="/" className="profile-see-all">
+          <Link to={`/favorites/${user.id}`} className="profile-see-all">
             See all favorites
           </Link>
         </h2>

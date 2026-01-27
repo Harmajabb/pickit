@@ -1,4 +1,5 @@
 import type { RequestHandler } from "express";
+import type { JwtPayload } from "jsonwebtoken";
 import favoriteRepository from "./favoriteRepository";
 
 const addFavoriteHandler: RequestHandler = async (req, res, next) => {
@@ -38,4 +39,45 @@ const delFavoriteHandler: RequestHandler = async (req, res, next) => {
     next(err);
   }
 };
-export default { addFavoriteHandler, delFavoriteHandler };
+
+// as connected user I want to get my favorites
+const getMyFavorites: RequestHandler = async (req, res, next) => {
+  try {
+    const decoded = req.auth as JwtPayload; //middleware checkAuth
+    const userId = Number(decoded.sub);
+
+    if (!userId) {
+      res.status(401).json({ message: "No authentified user" });
+      return;
+    }
+
+    const favorites = await favoriteRepository.readFavoritesByUserId(userId);
+    res.status(200).json(favorites);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// catch the favorites from a specific user
+const getFavoritesByUserId: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+      res.status(400).json({ message: "invalid ID user" });
+      return;
+    }
+
+    const favorites = await favoriteRepository.readFavoritesByUserId(userId);
+    res.status(200).json(favorites);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default {
+  addFavoriteHandler,
+  delFavoriteHandler,
+  getMyFavorites,
+  getFavoritesByUserId,
+};

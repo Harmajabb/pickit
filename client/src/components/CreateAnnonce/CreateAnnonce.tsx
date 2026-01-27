@@ -3,16 +3,23 @@ import { useNavigate } from "react-router";
 import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
 
+type Category = {
+  id: number;
+  categorie: string;
+  parent_id: number | null;
+  children?: Category[]; // Récursif pour les sous-catégories
+};
+
 function CreateAnnonce() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // ✅ TOUS les hooks AVANT le early return
   const [showConfirm, setShowConfirm] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedPath, setSelectedPath] = useState<any[]>([]);
+  const [_categories, setCategories] = useState<Category[]>([]);
+  const [selectedPath, setSelectedPath] = useState<Category[]>([]);
 
-  const [categoryLevels, setCategoryLevels] = useState<any[][]>([]);
+  const [categoryLevels, setCategoryLevels] = useState<Category[][]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -43,7 +50,7 @@ function CreateAnnonce() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json();
+        const data: Category[] = await response.json();
         setCategories(data);
         setCategoryLevels([data]);
       } catch (error) {
@@ -79,7 +86,7 @@ function CreateAnnonce() {
       categorie_id: selectedId.toString(),
     });
 
-    if (selectedCategory.children?.length > 0) {
+    if (selectedCategory.children && selectedCategory.children.length > 0) {
       newLevels.push(selectedCategory.children);
     }
 
@@ -145,7 +152,7 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
-    } catch (error) {
+    } catch (_error) {
       alert("Error while sending");
     }
   };
