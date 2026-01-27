@@ -25,6 +25,7 @@
   padding: 20px;
 }
 
+
 @media (min-width: 740px) {
   .catalog-header .searchbar {
     display: none;
