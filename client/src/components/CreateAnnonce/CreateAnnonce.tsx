@@ -4,11 +4,15 @@ import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
 
 function CreateAnnonce() {
-  const [showConfirm, setShowConfirm] = useState(false);
-
   const { user } = useContext(AuthContext);
-
   const navigate = useNavigate();
+
+  // ✅ TOUS les hooks AVANT le early return
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedPath, setSelectedPath] = useState<any[]>([]);
+
+  const [categoryLevels, setCategoryLevels] = useState<any[][]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -17,17 +21,71 @@ function CreateAnnonce() {
     state_of_product: "good",
     start_borrow_date: "",
     end_borrow_date: "",
-    categorie_id: "1",
-    owner_id: "1",
+    categorie_id: "",
     files: [] as File[],
   });
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: this hook does not need to specify its depedency on navigate.
+  // Auth
   useEffect(() => {
     if (user === null) {
       navigate("/login");
     }
+  }, [user, navigate]);
+
+  // Charger les catégories depuis l'API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3310/api/categories", {
+          credentials: "include", // Envoie les cookies d'authentification
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setCategories(data);
+        setCategoryLevels([data]);
+      } catch (error) {
+        console.error("Error loading categories:", error);
+      }
+    };
+    fetchCategories();
   }, []);
+
+  if (!user) {
+    return null;
+  }
+  // Gestion cascade
+  const handleCategoryChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    levelIndex: number,
+  ) => {
+    const selectedId = Number(e.target.value);
+
+    const newLevels = categoryLevels.slice(0, levelIndex + 1);
+    const newPath = selectedPath.slice(0, levelIndex);
+
+    const selectedCategory = categoryLevels[levelIndex].find(
+      (cat) => cat.id === selectedId,
+    );
+
+    if (!selectedCategory) return;
+
+    newPath.push(selectedCategory);
+
+    setFormData({
+      ...formData,
+      categorie_id: selectedId.toString(),
+    });
+
+    if (selectedCategory.children?.length > 0) {
+      newLevels.push(selectedCategory.children);
+    }
+
+    setCategoryLevels(newLevels);
+    setSelectedPath(newPath);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -46,6 +104,7 @@ function CreateAnnonce() {
       });
     }
   };
+
   const handleRemoveFile = (indexToRemove: number) => {
     setFormData({
       ...formData,
@@ -53,17 +112,11 @@ function CreateAnnonce() {
     });
   };
 
-  // UI ONLY → ouvre la pop-in
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowConfirm(true);
-    if (!user) {
-      alert("User not found");
-      return;
-    }
   };
 
-  // BUSINESS LOGIC ONLY → envoi API
   const submitAnnonce = async () => {
     const formDataToSend = new FormData();
 
@@ -75,7 +128,7 @@ function CreateAnnonce() {
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
     formDataToSend.append("categorie_id", formData.categorie_id);
-    formDataToSend.append("owner_id", formData.owner_id.toString());
+    formDataToSend.append("owner_id", user.id.toString());
 
     for (const file of formData.files) {
       formDataToSend.append("images", file);
@@ -93,7 +146,6 @@ function CreateAnnonce() {
       const result = await response.json();
       alert(result.message || result.error);
     } catch (error) {
-      console.error("Error:", error);
       alert("Error while sending");
     }
   };
@@ -104,27 +156,32 @@ function CreateAnnonce() {
 
       <div className="form-container">
         <div className="image-column">
-          <input
-            type="file"
-            name="images"
-            multiple
-            onChange={handleFileChange}
-          />
+          <div className="image-upload-wrapper">
+            <label htmlFor="images-upload" className="image-upload-btn">
+              Add images
+            </label>
+
+            <input
+              id="images-upload"
+              type="file"
+              name="images"
+              multiple
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </div>
+
           {formData.files.length > 0 && (
             <div className="image-preview-container">
               {formData.files.map((file, index) => (
                 <div key={file.name} className="image-preview">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Prévisualisation ${file.name}`}
-                  />
+                  <img src={URL.createObjectURL(file)} alt={file.name} />
                   <button
                     type="button"
-                    onClick={() => handleRemoveFile(index)}
                     className="remove-image-button"
+                    onClick={() => handleRemoveFile(index)}
                   >
-                    {" "}
-                    X
+                    ×
                   </button>
                 </div>
               ))}
@@ -157,17 +214,26 @@ function CreateAnnonce() {
               />
             </div>
             <div className="field-group">
-              <label htmlFor="categorie_id">Category</label>
-              <select
-                name="categorie_id"
-                value={formData.categorie_id}
-                onChange={handleChange}
-                className="auto-width-input"
-              >
-                <option value="1">Category 1</option>
-                <option value="2">Category 2</option>
-                <option value="3">Category 3</option>
-              </select>
+              <label htmlFor="categorie_id">Categories</label>
+              {categoryLevels.map((levelCategories, levelIndex) => {
+                const parent = selectedPath[levelIndex - 1];
+
+                return (
+                  <select
+                    key={parent ? parent.id : "root"}
+                    className="auto-width-input"
+                    onChange={(e) => handleCategoryChange(e, levelIndex)}
+                  >
+                    <option value="">Select a category</option>
+
+                    {levelCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.categorie}
+                      </option>
+                    ))}
+                  </select>
+                );
+              })}
             </div>
           </div>
           <div className="field-group">
