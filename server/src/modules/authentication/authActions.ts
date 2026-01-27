@@ -32,10 +32,7 @@ const login: RequestHandler = async (req, res, next) => {
         expiresIn: "1h",
       },
     );
-    const usersFavorites = await favoriteRepository.getFavoritesIDByUserID(
-      user.id,
-    );
-    const favoritesIds = usersFavorites.map((item) => item.announces_id);
+
     res
       .cookie("access_token", token, { httpOnly: true, secure: false })
       .status(200)
@@ -46,7 +43,6 @@ const login: RequestHandler = async (req, res, next) => {
           email: user.email,
           firstname: user.firstname,
           role: user.role,
-          favoritesIds,
         },
       });
   } catch (err) {

@@ -54,7 +54,8 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
     }
   };
   useEffect(() => {
-    if (user?.favoritesIds.includes(announce_id)) {
+    const favs = user?.favoritesIds;
+    if (Array.isArray(favs) && favs.includes(announce_id)) {
       setIsLiked(true);
     }
   }, [announce_id, user?.favoritesIds]);
