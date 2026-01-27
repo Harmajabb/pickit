@@ -105,7 +105,6 @@ input[type="number"] {
   color: var(--color-primary-text);
 }
 
-/* Regroupement des inputs et conteneurs */
 .main-info-container,
 .small-inputs-container {
   display: flex;
