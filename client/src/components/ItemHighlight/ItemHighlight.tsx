@@ -1,6 +1,6 @@
 import "./ItemHighlight.css";
 import { useEffect, useState } from "react";
-import ItemCard from "../ItemCard/ItemCard.tsx";
+import CatalogCard from "../CatalogCard/CatalogCard";
 import type { Announces } from "./Ts-ItemHighlight.ts";
 
 function ItemHighlight() {
@@ -18,7 +18,6 @@ function ItemHighlight() {
           throw new Error(`Error HTTP: ${data.status}`);
         }
         const jsonData = await data.json();
-        // console.log(data);
         setData(jsonData);
       } catch (e) {
         setError(e as Error);
@@ -44,13 +43,7 @@ function ItemHighlight() {
       </header>
       <div className="ItemHighlight-container">
         {data.map((item) => (
-          <ItemCard
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            location={item.location}
-            all_images={item.all_images}
-          />
+          <CatalogCard key={item.id} data={item} />
         ))}
       </div>
     </>

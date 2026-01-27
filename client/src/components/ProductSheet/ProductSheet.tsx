@@ -1,10 +1,11 @@
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
 import type { AnnounceDetail } from "../../types/Announce";
 import ButtonDelete from "../Btn-Delete/ButtonDelete";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
+import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
 import "./ProductSheet.css";
 
 interface Announce {
@@ -192,11 +193,11 @@ export default function ProductSheet() {
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">Favourites</p>
-                    <div className="favourites">
-                      <span className="info-value">{announce.total_likes}</span>
-                      <Heart className="heart-icon" />
-                    </div>
+                    <p className="info-label">Favoris</p>
+                    <FavoriteBtn
+                      total_likes={announce.total_likes}
+                      announce_id={announce.id}
+                    />
                   </div>
                 </div>
 

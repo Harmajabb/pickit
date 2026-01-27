@@ -13,13 +13,13 @@ const browse: RequestHandler = async (req, res, next) => {
           ? req.query.category_id
           : undefined,
     };
-    console.log(filters);
 
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
+
     res.json(formattedAnnounces);
   } catch (err) {
     next(err);
@@ -31,7 +31,6 @@ const destroy: RequestHandler = async (req, res, next) => {
     const id = Number(req.query.id);
 
     const resultDelete = await announcesRepository.delete(id);
-    console.log(resultDelete);
     if (resultDelete.affectedRows === 0) {
       res.status(404).json({ message: "Annonce non trouvée" });
       return;

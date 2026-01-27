@@ -20,18 +20,21 @@ router.post(
   "/api/categories",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   categoryActions.add,
 );
 router.put(
   "/api/categories/:id",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   categoryActions.edit,
 );
 router.delete(
   "/api/categories/:id",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   categoryActions.delete,
 );
 
@@ -113,18 +116,21 @@ router.post(
   "/api/users/:id/ban-user",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   userAction.banUser,
 );
 router.delete(
   "/api/users/:id/delete-user",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   userAction.deleteUser,
 );
 router.post(
   "/api/users/:id/change-user-role",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   userAction.changeUserRole,
 );
 router.get(
@@ -137,6 +143,7 @@ router.post(
   "/api/users/:id/unban-user",
   authActions.checkAuth,
   authActions.verifyAdmin,
+  authActions.adminLogMiddleware,
   userAction.unbanUser,
 );
 router.put(
@@ -145,6 +152,12 @@ router.put(
   upload.single("profil_picture"),
   userAction.updateMyProfile,
 );
+
+// Define favorites routes
+import favoriteAction from "./modules/favorites/favoriteAction";
+
+router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
+router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 
 /* ************************************************************************* */
 

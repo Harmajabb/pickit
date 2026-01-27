@@ -10,4 +10,5 @@ export interface Announces {
   location: string;
   state: string;
   all_images?: string;
+  total_likes: number;
 }
