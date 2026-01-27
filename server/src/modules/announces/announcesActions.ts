@@ -199,7 +199,7 @@ const readMyAnnounces: RequestHandler = async (req, res, next) => {
     const userId = req.auth?.sub;
 
     if (!userId) {
-      res.status(401).json({ error: "Unauthenticated" });
+      res.status(401).json({ error: "Unauthenticated !" });
       return;
     }
 
