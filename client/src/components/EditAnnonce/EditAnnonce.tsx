@@ -122,7 +122,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
       }
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la modification de l'annonce");
+      alert("Error editing ad");
     }
   };
 

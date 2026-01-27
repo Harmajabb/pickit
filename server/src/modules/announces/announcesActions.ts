@@ -187,7 +187,7 @@ const updateAnnounce: RequestHandler = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: "Annonce mise à jour !",
+      message: "Announcement updated !",
       announce: formattedAnnounce,
     });
   } catch (err) {
@@ -200,7 +200,7 @@ const readMyAnnounces: RequestHandler = async (req, res, next) => {
     const userId = req.auth?.sub;
 
     if (!userId) {
-      res.status(401).json({ error: "Non authentifié" });
+      res.status(401).json({ error: "Unauthenticated" });
       return;
     }
 
