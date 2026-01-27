@@ -133,7 +133,6 @@ function CreateAnnonce() {
     for (const file of formData.files) {
       formDataToSend.append("images", file);
     }
-
     try {
       const response = await fetch(
         "http://localhost:3310/api/create_announce",

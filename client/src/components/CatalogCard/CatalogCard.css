@@ -29,29 +29,6 @@
   transform: scale(1.05);
 }
 
-.like-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.like-button:hover {
-  background: white;
-  transform: scale(1.05);
-}
-
-.like-button svg {
-  flex-shrink: 0; /* it help to not compress the icon */
-}
-
 .catalogCard-info {
   display: flex;
   flex-direction: column;
