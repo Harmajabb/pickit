@@ -31,7 +31,6 @@ const destroy: RequestHandler = async (req, res, next) => {
     const id = Number(req.query.id);
 
     const resultDelete = await announcesRepository.delete(id);
-    console.log(resultDelete);
     if (resultDelete.affectedRows === 0) {
       res.status(404).json({ message: "Annonce non trouvée" });
       return;
@@ -47,7 +46,6 @@ const browseFiltered: RequestHandler = async (_req, res, next) => {
   try {
     // Sends the whole object res.query to the repository
     const readFiltered = await announcesRepository.readFiltered();
-    console.log(readFiltered);
     res.json(readFiltered);
   } catch (err) {
     next(err);

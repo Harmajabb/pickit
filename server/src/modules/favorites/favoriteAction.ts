@@ -19,7 +19,6 @@ const addFavoriteHandler: RequestHandler = async (req, res, next) => {
   }
 };
 const delFavoriteHandler: RequestHandler = async (req, res, next) => {
-  console.log("req.body : ", req.body);
   try {
     const dbres = await favoriteRepository.delFavorites(
       req.body.user_id,

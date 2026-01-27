@@ -79,8 +79,6 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           : formData.all_images,
       };
 
-      console.log("Données envoyées:", dataToSend);
-
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/announces/${announce.id}`,
         {

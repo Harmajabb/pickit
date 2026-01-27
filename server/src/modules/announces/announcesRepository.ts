@@ -52,8 +52,6 @@ class AnnouncesRepository {
     LEFT JOIN users ON owner_id = users.id
     LEFT JOIN favorites ON announces.id = favorites.announces_id`;
 
-    console.log(filters);
-
     const sqlValues: (string | number)[] = [];
     const conditions: string[] = [];
 

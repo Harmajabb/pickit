@@ -3,8 +3,8 @@ import argon2 from "argon2";
 import type { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import favoriteRepository from "../favorites/favoriteRepository";
 import adminLogRepository from "../authentication/adminLogRepository";
+import favoriteRepository from "../favorites/favoriteRepository";
 import authRepository from "./authRepository";
 
 declare global {

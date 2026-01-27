@@ -18,7 +18,6 @@ function ItemHighlight() {
           throw new Error(`Error HTTP: ${data.status}`);
         }
         const jsonData = await data.json();
-        // console.log(data);
         setData(jsonData);
       } catch (e) {
         setError(e as Error);

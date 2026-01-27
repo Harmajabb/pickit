@@ -80,9 +80,6 @@ function CreateAnnonce() {
     for (const file of formData.files) {
       formDataToSend.append("images", file);
     }
-
-    console.log("Files to send:", formData.files);
-
     try {
       const response = await fetch(
         "http://localhost:3310/api/create_announce",
@@ -95,7 +92,6 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
-      console.log("Result:", result);
     } catch (error) {
       console.error("Error:", error);
       alert("Error while sending");
