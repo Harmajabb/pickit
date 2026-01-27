@@ -102,7 +102,7 @@ function ButtonDelete({ annonceId }: buttonDeleteProps) {
                   onClick={closePopup1}
                   aria-label="close popup"
                 >
-                  thank you
+                  Thank you
                 </button>
               </div>
             </div>
