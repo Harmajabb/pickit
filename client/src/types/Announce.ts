@@ -11,6 +11,7 @@ export interface Announce {
   location: string;
   state: string;
   all_images?: string;
+  total_likes: number;
 }
 //used for product sheet and announce details
 export interface AnnounceDetail {

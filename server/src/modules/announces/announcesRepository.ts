@@ -29,6 +29,7 @@ export type Announces = {
   categorie_id?: number;
   owner_id?: number;
   state_of_product?: string;
+  total_likes?: number;
 };
 
 export type Favorite = {
@@ -45,13 +46,12 @@ type AnnouncesFilter = {
 // DISTINCT to avoid carthesian products (= similar entries)
 class AnnouncesRepository {
   async readAll(filters: AnnouncesFilter = {}) {
-    let sql = `SELECT announces.*, users.zipcode, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
+    let sql = `SELECT announces.*, users.zipcode, COUNT(favorites.id) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id
     LEFT JOIN users ON owner_id = users.id
     LEFT JOIN favorites ON announces.id = favorites.announces_id`;
 
-    console.log(filters);
     const sqlValues: (string | number)[] = [];
     const conditions: string[] = [];
 
@@ -78,8 +78,16 @@ class AnnouncesRepository {
 
   async readFiltered() {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, MIN(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id GROUP BY announces.id ORDER BY creation_date ASC LIMIT 4",
+      `SELECT announces.*, users.zipcode, COUNT(favorites.id) AS total_likes, MIN(announces_images.url) AS all_images
+       FROM announces
+       LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+       LEFT JOIN users ON owner_id = users.id
+       LEFT JOIN favorites ON announces.id = favorites.announces_id
+       GROUP BY announces.id
+       ORDER BY creation_date ASC
+       LIMIT 4`,
     );
+
     return rows as Announces[];
   }
   async delete(id: number) {
@@ -216,6 +224,69 @@ class AnnouncesRepository {
     ];
 
     await databaseClient.query<Rows>(query, values);
+  }
+
+  async readMyAnnounces(ownerId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      `SELECT 
+      announces.id, 
+      announces.title, 
+      announces.description,
+      announces.location,
+      announces.start_borrow_date,
+      announces.end_borrow_date,
+      announces.creation_date,
+      announces.state_of_product,
+      MIN(announces_images.url) AS image_url
+    FROM announces 
+    LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+    WHERE announces.owner_id = ?
+    GROUP BY announces.id 
+    ORDER BY announces.creation_date DESC`,
+      [ownerId],
+    );
+    return rows as Announces[];
+  }
+  // Supprimer une image spécifique
+  async deleteImage(imageUrl: string, announceId: number) {
+    await databaseClient.query(
+      "DELETE FROM announces_images WHERE url = ? AND announce_id = ?",
+      [imageUrl, announceId],
+    );
+
+    // Supprimer le fichier physique
+    const fs = await import("node:fs/promises");
+    const path = await import("node:path");
+
+    try {
+      await fs.unlink(
+        path.join(process.cwd(), "public/assets/images", imageUrl),
+      );
+    } catch (err) {
+      console.error("Erreur suppression fichier:", err);
+    }
+  }
+
+  // Ajouter de nouvelles images à une annonce
+  async addImages(announceId: number, files: Express.Multer.File[]) {
+    if (files.length === 0) return;
+
+    const rows = files.map((f) => [f.filename, announceId]);
+
+    await databaseClient.query(
+      "INSERT INTO announces_images (url, announce_id) VALUES ?",
+      [rows],
+    );
+  }
+
+  // Récupérer toutes les images d'une annonce
+  async getAnnounceImages(announceId: number): Promise<string[]> {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT url FROM announces_images WHERE announce_id = ?",
+      [announceId],
+    );
+
+    return (rows as { url: string }[]).map((row) => row.url);
   }
 }
 

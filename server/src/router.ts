@@ -61,16 +61,33 @@ router.post("/auth/register", authActions.register, authActions.login);
 // Define Announced-related routes
 import announcesActions from "./modules/announces/announcesActions";
 
+router.get(
+  "/api/announces/my-announces",
+  authActions.checkAuth,
+  announcesActions.readMyAnnounces,
+);
+
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
 router.delete("/api/announcesDelete", announcesActions.destroy);
-router.get("/api/announces/:id", announcesActions.readOne);
-router.put("/api/announces/:id", announcesActions.updateAnnounce);
+
 router.post(
   "/api/create_announce",
   // authActions.checkAuth,
   upload.array("images", 10),
   announcesActions.createAnnounce,
+);
+
+router.get("/api/announces/:id", announcesActions.readOne);
+router.put(
+  "/api/announces/:id",
+  upload.array("new_images", 10),
+  announcesActions.updateAnnounce,
+);
+router.delete(
+  "/api/announces/:id",
+  authActions.checkAuth,
+  announcesActions.destroy,
 );
 
 // Define item-related routes
@@ -135,6 +152,12 @@ router.put(
   upload.single("profil_picture"),
   userAction.updateMyProfile,
 );
+
+// Define favorites routes
+import favoriteAction from "./modules/favorites/favoriteAction";
+
+router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
+router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 
 /* ************************************************************************* */
 

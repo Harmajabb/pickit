@@ -13,13 +13,13 @@ const browse: RequestHandler = async (req, res, next) => {
           ? req.query.category_id
           : undefined,
     };
-    console.log(filters);
 
     const announcesFromDB = await announcesRepository.readAll(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce, // spread opetator
       all_images: announce.all_images ? announce.all_images.split(",") : [],
     }));
+
     res.json(formattedAnnounces);
   } catch (err) {
     next(err);
@@ -31,7 +31,6 @@ const destroy: RequestHandler = async (req, res, next) => {
     const id = Number(req.query.id);
 
     const resultDelete = await announcesRepository.delete(id);
-    console.log(resultDelete);
     if (resultDelete.affectedRows === 0) {
       res.status(404).json({ message: "Annonce non trouvée" });
       return;
@@ -137,19 +136,81 @@ const readOne: RequestHandler = async (req, res, next) => {
 };
 
 // Update an announcement
+// Remplacer la fonction updateAnnounce dans announcesActions.ts
+
 const updateAnnounce: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await announcesRepository.sendUpdateAnnounce(Number(id), req.body);
+    const announceId = Number(id);
+
+    // Mettre à jour les données de l'annonce
+    const updateData = {
+      title: req.body.title,
+      description: req.body.description,
+      amount_deposit: Number(req.body.amount_deposit),
+      location: req.body.location,
+      start_borrow_date: req.body.start_borrow_date,
+      end_borrow_date: req.body.end_borrow_date,
+      categorie_id: Number(req.body.categorie_id),
+      state_of_product: req.body.state_of_product,
+    };
+
+    await announcesRepository.sendUpdateAnnounce(announceId, updateData);
+
+    // Gérer la suppression des anciennes images
+    const imagesToDelete = req.body.deleted_images;
+    if (imagesToDelete) {
+      const images = Array.isArray(imagesToDelete)
+        ? imagesToDelete
+        : [imagesToDelete];
+      for (const imageUrl of images) {
+        await announcesRepository.deleteImage(imageUrl, announceId);
+      }
+    }
+
+    // Ajouter les nouvelles images
+    const newFiles = req.files as Express.Multer.File[] | undefined;
+    if (newFiles && newFiles.length > 0) {
+      await announcesRepository.addImages(announceId, newFiles);
+    }
+
+    // Récupérer l'annonce mise à jour avec toutes ses images
+    const updatedAnnounce = await announcesRepository.getOne(announceId);
+
+    const formattedAnnounce = {
+      ...updatedAnnounce,
+      all_images: updatedAnnounce?.all_images
+        ? updatedAnnounce.all_images.split(",")
+        : [],
+    };
 
     res.json({
       success: true,
-      message: "Annonce mise à jour !",
+      message: "Announcement updated !",
+      announce: formattedAnnounce,
     });
   } catch (err) {
     next(err);
   }
 };
+
+const readMyAnnounces: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = req.auth?.sub;
+
+    if (!userId) {
+      res.status(401).json({ error: "Unauthenticated !" });
+      return;
+    }
+
+    const announces = await announcesRepository.readMyAnnounces(Number(userId));
+
+    res.json(announces);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   browse,
   browseFiltered,
@@ -157,4 +218,5 @@ export default {
   readOne,
   updateAnnounce,
   destroy,
+  readMyAnnounces,
 };

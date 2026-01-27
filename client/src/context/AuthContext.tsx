@@ -12,6 +12,7 @@ interface User {
   name: string;
   role: number;
   firstname: string;
+  favoritesIds: number[];
 }
 
 const Base_URL = import.meta.env.VITE_API_URL;

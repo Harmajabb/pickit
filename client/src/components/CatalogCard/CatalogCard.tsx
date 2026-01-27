@@ -1,31 +1,51 @@
-import { Heart, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Link } from "react-router";
-import type { Announces } from "../ItemHighlight/Ts-ItemHighlight.ts";
+import type { Announce } from "../../types/Announce";
 import "./CatalogCard.css";
+import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
+
 const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
 
 interface CatalogCardProps {
-  data: Announces;
+  data: Announce;
 }
 
 function CatalogCard({ data }: CatalogCardProps) {
+  // compute first image: server may return a comma-separated string or an array
+  const getFirstImage = () => {
+    const imgs = data.all_images as unknown;
+
+    if (Array.isArray(imgs)) {
+      return imgs.find(Boolean) ?? "";
+    }
+
+    if (typeof imgs === "string") {
+      return (
+        imgs
+          .split(",")
+          .map((s) => s.trim())
+          .find(Boolean) ?? ""
+      );
+    }
+
+    return "";
+  };
+
+  const firstImage = getFirstImage();
   return (
-    <Link
-      to={`/announce/${data.id}`}
-      // state={{ announce: data }}
-      className="catalogCard-button"
-    >
+    <Link to={`/announce/${data.id}`} className="catalogCard-button">
       <article className="catalogCard-section">
         <div className="catalogCard-image-container" key={data.id}>
           <img
-            key={`${data.id}-${data.all_images}`}
-            src={`${BASE_URL}${data.all_images?.[0]}`}
-            alt={`${data.title}-${data.all_images}`}
+            key={`${data.id}-${String(data.all_images)}`}
+            src={
+              firstImage
+                ? `${BASE_URL}${firstImage}`
+                : `${BASE_URL}placeholder.png`
+            }
+            alt={`${data.title}-${firstImage}`}
           />
-          <button type="button" className="like-button">
-            <Heart size={16} strokeWidth={2} />
-            <span>12</span>
-          </button>
+          <FavoriteBtn total_likes={data.total_likes} announce_id={data.id} />
         </div>
         <div className="catalogCard-info" key={data.id}>
           <h3>{data.title}</h3>

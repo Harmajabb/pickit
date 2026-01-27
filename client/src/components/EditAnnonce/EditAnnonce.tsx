@@ -1,21 +1,6 @@
 import { useState } from "react";
 import type { AnnounceDetail } from "../../types/Announce";
 
-// interface Announce {
-//   id: number;
-//   title: string;
-//   description: string;
-//   location: string;
-//   owner_id: number;
-//   all_images: string[];
-//   start_borrow_date: Date;
-//   end_borrow_date: Date;
-//   amount_deposit: number;
-//   state_of_product: string;
-//   name: string;
-//   categorie_id: number;
-// }
-
 type EditAnnonceProps = {
   announce: AnnounceDetail;
   onCancel: () => void;
@@ -29,7 +14,11 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
     end_borrow_date: new Date(announce.end_borrow_date),
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    announce.all_images,
+  );
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -43,19 +32,31 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
     setFormData({ ...formData, [field]: new Date(value) });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      const file = e.target.files[0];
-      const preview = URL.createObjectURL(file);
-      setImagePreview(preview);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setNewImages([...newImages, ...Array.from(e.target.files)]);
     }
+  };
+
+  const handleRemoveExistingImage = (imageUrl: string) => {
+    setExistingImages(existingImages.filter((img) => img !== imageUrl));
+    setDeletedImages([...deletedImages, imageUrl]);
+  };
+
+  const handleRemoveNewImage = (fileToRemove: File) => {
+    setNewImages((prev) =>
+      prev.filter(
+        (file) =>
+          file.name !== fileToRemove.name ||
+          file.lastModified !== fileToRemove.lastModified,
+      ),
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // Fonction pour formater les dates au format YYYY-MM-DD
       const formatDateForDB = (date: Date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -63,58 +64,70 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         return `${year}-${month}-${day}`;
       };
 
-      // Préparer les données avec les dates au bon format
-      const dataToSend = {
-        title: formData.title,
-        description: formData.description,
-        amount_deposit: Number(formData.amount_deposit),
-        location: formData.location,
-        state_of_product: formData.state_of_product,
-        start_borrow_date: formatDateForDB(formData.start_borrow_date),
-        end_borrow_date: formatDateForDB(formData.end_borrow_date),
-        owner_id: formData.owner_id,
-        categorie_id: formData.categorie_id,
-        all_images: imagePreview
-          ? [imagePreview, ...formData.all_images.slice(1)]
-          : formData.all_images,
-      };
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append(
+        "amount_deposit",
+        formData.amount_deposit.toString(),
+      );
+      formDataToSend.append("location", formData.location);
+      formDataToSend.append("state_of_product", formData.state_of_product);
+      formDataToSend.append(
+        "start_borrow_date",
+        formatDateForDB(formData.start_borrow_date),
+      );
+      formDataToSend.append(
+        "end_borrow_date",
+        formatDateForDB(formData.end_borrow_date),
+      );
+      formDataToSend.append("categorie_id", formData.categorie_id.toString());
 
-      console.log("Données envoyées:", dataToSend);
+      // Ajouter les images à supprimer
+      for (const imageUrl of deletedImages) {
+        formDataToSend.append("deleted_images", imageUrl);
+      }
+
+      // Ajouter les nouvelles images
+      for (const file of newImages) {
+        formDataToSend.append("new_images", file);
+      }
 
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/announces/${announce.id}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dataToSend),
+          body: formDataToSend,
+          credentials: "include",
         },
       );
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Erreur serveur:", errorText);
-        throw new Error("Erreur lors de la modification");
-      }
+      if (!res.ok) throw new Error("Erreur lors de la modification");
 
-      await res.json();
-      onSave({
-        ...formData,
-        all_images: imagePreview
-          ? [imagePreview, ...formData.all_images.slice(1)]
-          : formData.all_images,
-      });
+      const result = await res.json();
+
+      // Utiliser l'annonce retournée par le serveur
+      if (result.announce) {
+        onSave({
+          ...result.announce,
+          start_borrow_date: new Date(result.announce.start_borrow_date),
+          end_borrow_date: new Date(result.announce.end_borrow_date),
+        });
+      } else {
+        // Fallback si le serveur ne retourne pas l'annonce complète
+        onSave({
+          ...formData,
+          all_images: [...existingImages],
+        });
+      }
     } catch (err) {
-      console.error("Erreur lors de la modification", err);
-      alert("Erreur lors de la modification de l'annonce");
+      console.error(err);
+      alert("Error editing ad");
     }
   };
 
-  // Format pour input date (YYYY-MM-DD)
-  const formatDateForInput = (date: Date) => {
-    return date.toISOString().split("T")[0];
-  };
-
-  const currentImage = imagePreview || formData.all_images[0];
+  const formatDateForInput = (date: Date) => date.toISOString().split("T")[0];
+  const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
 
   return (
     <>
@@ -139,7 +152,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Caution</p>
+          <p className="info-label">Deposit (in €)</p>
           <input
             type="number"
             name="amount_deposit"
@@ -174,7 +187,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Overall status</p>
+          <p className="info-label">Product condition</p>
           <select
             name="state_of_product"
             value={formData.state_of_product}
@@ -190,7 +203,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         </div>
 
         <div className="info-field">
-          <p className="info-label">Published by</p>
+          <p className="info-label">Publish by</p>
           <p className="info-value">{formData.name}</p>
         </div>
       </div>
@@ -199,26 +212,51 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         <label htmlFor="image-upload" className="primary">
           Edit image
         </label>
-
-        <img src={currentImage} alt="Produit" className="edit-image-mini" />
-
         <input
           id="image-upload"
           type="file"
           accept="image/*"
+          multiple
           style={{ display: "none" }}
-          onChange={handleImageChange}
+          onChange={handleFileChange}
         />
       </div>
 
-      <div className="description" style={{ marginTop: "2rem" }}>
-        <p
-          className="info-label"
-          style={{ textAlign: "left", marginBottom: "0.5rem" }}
-        >
-          Description
-        </p>
+      <div className="image-previews-container">
+        {/* Images existantes */}
+        {existingImages.map((img) => (
+          <div key={img} className="image-preview">
+            <img src={BASE_URL + img} alt="Produit" />
+            <button
+              type="button"
+              className="remove-image-btn"
+              onClick={() => handleRemoveExistingImage(img)}
+            >
+              ✕
+            </button>
+          </div>
+        ))}
 
+        {/* Nouvelles images */}
+        {newImages.map((file) => (
+          <div
+            key={`${file.name}-${file.lastModified}`}
+            className="image-preview"
+          >
+            <img src={URL.createObjectURL(file)} alt={file.name} />
+            <button
+              type="button"
+              className="remove-image-btn"
+              onClick={() => handleRemoveNewImage(file)}
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="description" style={{ marginTop: "2rem" }}>
+        <p className="info-label">Description</p>
         <textarea
           name="description"
           value={formData.description}
