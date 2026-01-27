@@ -83,6 +83,13 @@ const banUser: RequestHandler = async (req, res, next) => {
       });
     }
 
+    res.locals.auditLog = {
+      action_type: "banner_user",
+      target_table: "users",
+      target_id: userId,
+      details: `User ${userId} banned by admin ${adminId} for ${days} days. Reason: ${reason}`,
+    };
+
     await userRepository.ban(userId, adminId, reason, days);
     res.status(201).json({ message: "User banned successfully." });
   } catch (err) {
@@ -92,11 +99,20 @@ const banUser: RequestHandler = async (req, res, next) => {
 const unbanUser: RequestHandler = async (req, res, next) => {
   try {
     const { userId } = req.body;
+    const adminId = Number(req.auth?.sub);
     if (!userId) {
       return res.status(400).json({
         message: "data missing or invalid.",
       });
     }
+
+    res.locals.auditLog = {
+      action_type: "unbanner_user",
+      target_table: "users",
+      target_id: userId,
+      details: `User ${userId} unbanned by admin ${adminId}`,
+    };
+
     await userRepository.unban(userId);
 
     res.status(201).json({ message: "user unbanned successfully." });
@@ -117,7 +133,12 @@ const changeUserRole: RequestHandler = async (req, res, next) => {
     if (newRole !== 0 && newRole !== 1) {
       return res.status(400).json({ message: "Invalid role." });
     }
-
+    res.locals.auditLog = {
+      action_type: "Change_user_role",
+      target_table: "users",
+      target_id: userId,
+      details: `Change role ${userId} by admin ${adminId} to role ${newRole}`,
+    };
     await userRepository.updateRole(userId, newRole);
     res.status(201).json({ message: "user role updated successfully." });
   } catch (err) {
@@ -134,7 +155,12 @@ const deleteUser: RequestHandler = async (req, res, next) => {
         message: "Forbidden Action : You cannot delete your own account.",
       });
     }
-
+    res.locals.auditLog = {
+      action_type: "delete_user",
+      target_table: "users",
+      target_id: userId,
+      details: `User ${userId} deleted by admin ${adminId}`,
+    };
     await userRepository.deleteById(userId);
 
     res

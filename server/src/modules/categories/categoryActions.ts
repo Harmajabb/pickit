@@ -42,6 +42,12 @@ class CategoryAction {
         parent_id: req.body.parent_id || null,
       };
       const insertId = await categoryRepository.create(newCategory);
+      res.locals.auditLog = {
+        action_type: "create_category",
+        target_table: "categories",
+        target_id: insertId,
+        details: `Category ${newCategory.category} created by admin ${req.auth?.sub}`,
+      };
       res.status(201).json({ insertId });
     } catch (err) {
       next(err);
@@ -54,6 +60,12 @@ class CategoryAction {
         category: req.body.category,
         parent_id: req.body.parent_id || null,
       };
+      res.locals.auditLog = {
+        action_type: "Edit_category",
+        target_table: "categories",
+        target_id: category.id,
+        details: `Category ${category.category} edited by admin ${req.auth?.sub} to ${JSON.stringify(category)}`,
+      };
       const affectedRows = await categoryRepository.update(category);
       res.json({ affectedRows });
     } catch (err) {
@@ -64,6 +76,12 @@ class CategoryAction {
     try {
       const categoryId = Number(req.params.id);
       const affectedRows = await categoryRepository.delete(categoryId);
+      res.locals.auditLog = {
+        action_type: "delete_category",
+        target_table: "categories",
+        target_id: categoryId,
+        details: `Category ${categoryId} deleted by admin ${req.auth?.sub}`,
+      };
       res.json({ affectedRows });
     } catch (err) {
       next(err);
