@@ -136,6 +136,12 @@ router.put(
   userAction.updateMyProfile,
 );
 
+// Define favorites routes
+import favoriteAction from "./modules/favorites/favoriteAction";
+
+router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
+router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
+
 /* ************************************************************************* */
 
 export default router;
