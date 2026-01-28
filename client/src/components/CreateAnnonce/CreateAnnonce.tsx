@@ -228,7 +228,7 @@ function CreateAnnonce() {
 
                     {levelCategories.map((category) => (
                       <option key={category.id} value={category.id}>
-                        {category.categorie}
+                        {category.category}
                       </option>
                     ))}
                   </select>

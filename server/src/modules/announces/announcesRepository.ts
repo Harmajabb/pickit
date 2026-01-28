@@ -1,4 +1,5 @@
 import type { ResultSetHeader } from "mysql2";
+import type { PoolConnection } from "mysql2/promise";
 import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
 
@@ -135,6 +136,17 @@ class AnnouncesRepository {
     return rows[0] as Announces | undefined;
   }
 
+  async saveAvailability(
+    announceId: number,
+    rows: any[][],
+    connection: PoolConnection,
+  ): Promise<void> {
+    const sql = "INSERT INTO availability (announce_id, date) VALUES ?";
+    const [result] = await connection.query<ResultSetHeader>(sql, [rows]);
+
+    console.log("Nombre de lignes insérées :", result.affectedRows);
+  }
+
   async sendCreateAnnounce(
     form: CreateAnnounceInput,
     files: Express.Multer.File[],
@@ -174,6 +186,22 @@ class AnnouncesRepository {
         );
       }
 
+      const availabilityRows = [];
+      let curr = new Date(form.start_borrow_date);
+      const end = new Date(form.end_borrow_date);
+
+      while (curr <= end) {
+        const year = curr.getFullYear();
+        const month = String(curr.getMonth() + 1).padStart(2, "0");
+        const day = String(curr.getDate()).padStart(2, "0");
+        const formatted = `${year}-${month}-${day}`;
+
+        availabilityRows.push([announceId, formatted]);
+
+        curr.setDate(curr.getDate() + 1);
+      }
+
+      await this.saveAvailability(announceId, availabilityRows, connection);
       await connection.commit();
       return announceId;
     } catch (err) {
