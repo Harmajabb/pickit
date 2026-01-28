@@ -61,15 +61,15 @@ const getMyFavorites: RequestHandler = async (req, res, next) => {
 // catch the favorites from a specific user
 const getFavoritesByUserId: RequestHandler = async (req, res, next) => {
   try {
-    const userId = Number(req.params.userId);
+    const id = Number(req.params.id);
 
-    if (!Number.isInteger(userId) || userId <= 0) {
+    if (!Number.isInteger(id) || id <= 0) {
       res.status(400).json({ message: "invalid ID user" });
       return;
     }
 
-    const favorites = await favoriteRepository.readFavoritesByUserId(userId);
-    res.status(200).json(favorites);
+    const favorites = await favoriteRepository.readFavoritesByUserId(id);
+    res.status(200).json(favorites || []);
   } catch (err) {
     next(err);
   }
