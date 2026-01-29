@@ -3,12 +3,11 @@ import { useNavigate } from "react-router";
 import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
 
-type Category = {
+interface Category {
   id: number;
-  categorie: string;
-  parent_id: number | null;
-  children?: Category[]; // Récursif pour les sous-catégories
-};
+  category: string;
+  children?: Category[];
+}
 
 function CreateAnnonce() {
   const { user } = useContext(AuthContext);
@@ -16,9 +15,7 @@ function CreateAnnonce() {
 
   // ✅ TOUS les hooks AVANT le early return
   const [showConfirm, setShowConfirm] = useState(false);
-  const [_categories, setCategories] = useState<Category[]>([]);
   const [selectedPath, setSelectedPath] = useState<Category[]>([]);
-
   const [categoryLevels, setCategoryLevels] = useState<Category[][]>([]);
   const [formData, setFormData] = useState({
     title: "",
@@ -50,8 +47,7 @@ function CreateAnnonce() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data: Category[] = await response.json();
-        setCategories(data);
+        const data = await response.json();
         setCategoryLevels([data]);
       } catch (error) {
         console.error("Error loading categories:", error);
@@ -235,7 +231,7 @@ function CreateAnnonce() {
 
                     {levelCategories.map((category) => (
                       <option key={category.id} value={category.id}>
-                        {category.categorie}
+                        {category.category}
                       </option>
                     ))}
                   </select>

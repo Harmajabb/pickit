@@ -21,30 +21,30 @@ function FavoritesPage(props: FavoritesPageProps) {
   const userId =
     props.mode === "member" ? (props.userId ?? paramUserId) : undefined;
 
-  console.log("render FavoritesPage", {
-    mode: props.mode,
-    userId,
-    isLoading,
-    error,
-    favoritesCount: favorites.length,
-  });
+  // console.log("render FavoritesPage", {
+  //   mode: props.mode,
+  //   userId,
+  //   isLoading,
+  //   error,
+  //   favoritesCount: favorites.length,
+  // });
 
   useEffect(() => {
-    console.log("useEffect START", {
-      mode: props.mode,
-      userId,
-      authUser: authUser?.id,
-    });
+    // console.log("useEffect START", {
+    //   mode: props.mode,
+    //   userId,
+    //   authUser: authUser?.id,
+    // });
 
     if (props.mode === "member" && !userId) {
-      console.log("No userId for member mode");
+      // console.log("No userId for member mode");
       setIsLoading(false);
       setError("User ID is missing");
       return;
     }
 
     if (props.mode === "me" && !authUser) {
-      console.log("Not authenticated, redirecting");
+      // console.log("Not authenticated, redirecting");
       navigate("/login");
       return;
     }
@@ -54,7 +54,7 @@ function FavoritesPage(props: FavoritesPageProps) {
         ? `${API_URL}/api/favorites/me`
         : `${API_URL}/api/favorites/${userId}`;
 
-    console.log("📡 Fetching from:", endpoint);
+    // console.log("Fetching from:", endpoint);
 
     const fetchFavorites = async () => {
       try {
@@ -62,11 +62,11 @@ function FavoritesPage(props: FavoritesPageProps) {
           credentials: "include",
         });
 
-        console.log("Response:", {
-          status: response.status,
-          ok: response.ok,
-          statusText: response.statusText,
-        });
+        // console.log("Response:", {
+        //   status: response.status,
+        //   ok: response.ok,
+        //   statusText: response.statusText,
+        // });
 
         if (response.status === 401) {
           navigate("/login");
@@ -82,12 +82,12 @@ function FavoritesPage(props: FavoritesPageProps) {
         }
 
         const data = await response.json();
-        console.log(" Data received:", {
-          type: typeof data,
-          isArray: Array.isArray(data),
-          length: data?.length,
-          data: data,
-        });
+        // console.log(" Data received:", {
+        //   type: typeof data,
+        //   isArray: Array.isArray(data),
+        //   length: data?.length,
+        //   data: data,
+        // });
         setFavorites(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -99,8 +99,17 @@ function FavoritesPage(props: FavoritesPageProps) {
     fetchFavorites();
   }, [props.mode, userId, authUser, navigate]);
 
+  // local sync after an unlike (when user.favoritesId is changing)
+  useEffect(() => {
+    if (props.mode === "me" && authUser?.favoritesIds) {
+      setFavorites((prev) =>
+        prev.filter((fav) => authUser.favoritesIds.includes(fav.id)),
+      );
+    }
+  }, [authUser?.favoritesIds, props.mode]);
+
   if (isLoading) {
-    console.log(" Displaying loading state");
+    // console.log(" Displaying loading state");
     return (
       <section className="favorites-page" aria-busy="true">
         <div aria-live="polite" className="favorites-loading">
@@ -125,11 +134,11 @@ function FavoritesPage(props: FavoritesPageProps) {
     props.mode === "me"
       ? "You haven't added any favorites yet."
       : "This member hasn't added any favorites yet.";
-  console.log(" Rendering final content", {
-    title,
-    favoritesCount: favorites.length,
-    isEmpty: favorites.length === 0,
-  });
+  // console.log(" Rendering final content", {
+  //   title,
+  //   favoritesCount: favorites.length,
+  //   isEmpty: favorites.length === 0,
+  // });
 
   return (
     <section className="favorites-page" aria-labelledby="favorites-title">
