@@ -156,6 +156,16 @@ router.put(
 // Define favorites routes
 import favoriteAction from "./modules/favorites/favoriteAction";
 
+router.get(
+  "/api/favorites/me",
+  authActions.checkAuth,
+  favoriteAction.getMyFavorites,
+);
+router.get(
+  "/api/favorites/:id",
+  authActions.checkAuth,
+  favoriteAction.getFavoritesByUserId,
+);
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 

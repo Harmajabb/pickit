@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import App from "./App";
 import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
+import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 import UserManager from "./components/UserManager/UserManager";
@@ -14,10 +15,10 @@ import Catalog from "./pages/Catalog/Catalog";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
+import FavoritesPage from "./pages/Favorite/FavoritesPage";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
-import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,8 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
       { path: "/profile/me", element: <Profile mode="me" /> },
       { path: "/profile/:id", element: <Profile mode="member" /> },
+      { path: "/favorites/:id", element: <FavoritesPage mode="member" /> },
+      { path: "/my-favorites", element: <FavoritesPage mode="me" /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
       { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
     ],
