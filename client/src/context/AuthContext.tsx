@@ -22,7 +22,11 @@ interface AuthContextType {
   login: (user: User) => void;
   logout: () => void;
   initResetPassword(email: string): Promise<void>;
-  resetPassword(token: string, newPassword: string): Promise<void>;
+  resetPassword(
+    token: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -53,14 +57,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
   const resetPassword = useCallback(
-    async (token: string, newPassword: string) => {
+    async (token: string, currentPassword: string, newPassword: string) => {
       try {
         await fetch(`${Base_URL}/auth/reset-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ token, newPassword }),
+          body: JSON.stringify({ token, currentPassword, newPassword }),
         });
       } catch (error) {
         console.error("Error resetting password:", error);

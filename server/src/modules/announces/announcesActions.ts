@@ -101,7 +101,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
     const announceId = await announcesRepository.sendCreateAnnounce(
       payload,
       files,
-    );
+    );    
 
     res.status(201).json({
       success: true,

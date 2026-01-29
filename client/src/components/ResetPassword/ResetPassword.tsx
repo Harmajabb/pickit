@@ -8,6 +8,7 @@ function ResetPassword() {
   const { token } = useParams<{ token: string }>();
 
   const [newPassword, setNewPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -22,10 +23,26 @@ function ResetPassword() {
     }
 
     try {
-      await resetPassword(token, newPassword);
+      await resetPassword(token, currentPassword, newPassword);
       setMessage("Password has been reset successfully.");
-    } catch (_err) {
-      setError("Failed to reset password. Please try again later.");
+      setNewPassword("");
+      setCurrentPassword("");
+    } catch (err: unknown) {
+      // If the backend returns Joi errors, display the first one or a generic message
+      const serverMessage =
+        (
+          err as {
+            response?: { data?: { errors?: string[]; message?: string } };
+          }
+        ).response?.data?.errors?.[0] ||
+        (
+          err as {
+            response?: { data?: { errors?: string[]; message?: string } };
+          }
+        ).response?.data?.message;
+      setError(
+        serverMessage || "Failed to reset password. Please try again later.",
+      );
     }
   };
 
@@ -37,6 +54,15 @@ function ResetPassword() {
         className="reset-password-form"
         onSubmit={handleSubmit}
       >
+        <label htmlFor="current-password">Current Password:</label>
+        <input
+          type="password"
+          id="current-password"
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          required
+        />
+
         <label htmlFor="new-password">New Password:</label>
         <input
           aria-label="New password"
@@ -46,6 +72,7 @@ function ResetPassword() {
           onChange={(e) => setNewPassword(e.target.value)}
           required
         />
+
         <button
           aria-label="Set new password button"
           className="primary btnreset"
