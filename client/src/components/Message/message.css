@@ -1,0 +1,24 @@
+.sent {
+  align-self: flex-end;
+  text-align: right;
+}
+.sent p {
+  border-radius: var(--b-radius) var(--b-radius) 0 var(--b-radius);
+
+  background: var(--color-card);
+  padding: 0.24rem 1rem;
+}
+.received {
+  align-self: flex-start;
+}
+.received p {
+  border-radius: var(--b-radius) var(--b-radius) var(--b-radius) 0;
+  background: var(--color-btn);
+  color: var(--color-dark-text);
+  padding: 0.24rem 1rem;
+}
+.message span {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: color-mix(in lab, var(--color-primary-text) 30%, transparent);
+}
