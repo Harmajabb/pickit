@@ -165,25 +165,34 @@ CREATE TABLE IF NOT EXISTS reviews (
     INDEX idx_moderation (action_moderate)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE conversations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    subject VARCHAR(100) NOT NULL,
-    message TEXT NOT NULL,
-    user_id INT NOT NULL COMMENT 'Sender',
-    announce_id INT DEFAULT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    user_id_owner INT NOT NULL,
+    user_id_requester INT NOT NULL,
+announce_id INT NOT NULL,
     moderate_by INT DEFAULT NULL,
     moderation_reason TEXT DEFAULT NULL,
-    status ENUM('sent', 'read', 'archived', 'moderated') DEFAULT 'sent',
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_conversation (user_id_owner, user_id_requester, announce_id),
+    FOREIGN KEY (user_id_owner) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id_requester) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (announce_id) REFERENCES announces(id) ON DELETE CASCADE,
+    FOREIGN KEY (moderate_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    sender_id INT NOT NULL,
+    conversation_id INT NOT NULL COMMENT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (announce_id) REFERENCES announces(id) ON DELETE SET NULL,
-    FOREIGN KEY (moderate_by) REFERENCES users(id) ON DELETE SET NULL,
-    
-    INDEX idx_user (user_id),
-    INDEX idx_announce (announce_id),
-    INDEX idx_status (status),
-    INDEX idx_date (create_date)
+
+    INDEX idx_conversation (conversation_id),
+    INDEX idx_sender (sender_id),
+    INDEX idx_created (created_at)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS reports (

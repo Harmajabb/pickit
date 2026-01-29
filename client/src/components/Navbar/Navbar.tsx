@@ -45,30 +45,27 @@ function Navbar() {
         <Link to="/create-annonce" className="cta">
           List an item
         </Link>
-        {/* <input
-          type="text"
-          className="text-input"
-          placeholder="search an item..."
-        /> */}
         <SearchBar
           placeholder="Search for announcements or members..."
           onSubmit={handleSearchSubmit}
           onSelect={handleSearchSelect}
         />
-        <svg viewBox="0 0 24 23" aria-hidden="true" className="nav-icons ">
-          <path
-            d="M19.0889 18.1082C19.0889 18.1082 19.183 18.0395 19.3333 17.9221C21.5859 16.1429 23 13.5645 23 10.694C23 5.34259 18.0744 1 12 1C5.92556 1 1 5.34259 1 10.694C1 16.048 5.92556 20.2407 12 20.2407C12.5182 20.2407 13.3689 20.2058 14.552 20.1359C16.0944 21.1597 18.3458 22 20.316 22C20.9259 22 21.2131 21.4881 20.822 20.9662C20.228 20.222 19.4091 19.0296 19.0913 18.1069L19.0889 18.1082Z"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M6.49756 13.3733C9.55311 16.4948 14.442 16.4948 17.4976 13.3733"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <Link to="/inbox">
+          <svg viewBox="0 0 24 23" aria-hidden="true" className="nav-icons ">
+            <path
+              d="M19.0889 18.1082C19.0889 18.1082 19.183 18.0395 19.3333 17.9221C21.5859 16.1429 23 13.5645 23 10.694C23 5.34259 18.0744 1 12 1C5.92556 1 1 5.34259 1 10.694C1 16.048 5.92556 20.2407 12 20.2407C12.5182 20.2407 13.3689 20.2058 14.552 20.1359C16.0944 21.1597 18.3458 22 20.316 22C20.9259 22 21.2131 21.4881 20.822 20.9662C20.228 20.222 19.4091 19.0296 19.0913 18.1069L19.0889 18.1082Z"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M6.49756 13.3733C9.55311 16.4948 14.442 16.4948 17.4976 13.3733"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </Link>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="nav-icons heart">
           <g>
             <path

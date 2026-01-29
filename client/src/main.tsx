@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import App from "./App";
 import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
+import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 import UserManager from "./components/UserManager/UserManager";
@@ -15,9 +16,9 @@ import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import Home from "./pages/Home";
+import Inbox from "./pages/Inbox/Inbox";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
-import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
       { path: "/profile/:id", element: <Profile mode="member" /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
       { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
+      { path: "/inbox", element: <Inbox /> },
     ],
   },
 ]);
