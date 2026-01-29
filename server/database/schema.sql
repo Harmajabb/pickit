@@ -183,11 +183,11 @@ CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     content TEXT NOT NULL,
     sender_id INT NOT NULL,
-    conversation_id INT NOT NULL COMMENT,
+    conversation_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (announce_id) REFERENCES announces(id) ON DELETE SET NULL,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
 
     INDEX idx_conversation (conversation_id),
     INDEX idx_sender (sender_id),
@@ -205,14 +205,14 @@ CREATE TABLE IF NOT EXISTS reports (
     resolution_note TEXT DEFAULT NULL,
     reported_user_id INT DEFAULT NULL,
     reported_review_id INT DEFAULT NULL,
-    reported_message_id INT DEFAULT NULL,
+    reported_conversations_id INT DEFAULT NULL,
     reported_announce_id INT DEFAULT NULL,
     
     FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (handled_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (reported_user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (reported_review_id) REFERENCES reviews(id) ON DELETE CASCADE,
-    FOREIGN KEY (reported_message_id) REFERENCES messages(id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_conversations_id) REFERENCES conversations(id) ON DELETE CASCADE,
     FOREIGN KEY (reported_announce_id) REFERENCES announces(id) ON DELETE CASCADE,
     
     INDEX idx_reporter (reporter_id),
@@ -346,11 +346,6 @@ INSERT IGNORE INTO favorites (id, user_id, announces_id, is_favorite) VALUES
 INSERT IGNORE INTO reviews (id, subject, review, user_id, announce_id, note, action_moderate) VALUES
 (1, 'Excellent Mountain Bike!', 'Equipment in perfect condition, very friendly owner. I recommend!', 2, 1, 5, 'approved'),
 (2, 'Very Good Board', 'Perfect for beginners, easy exchange with the owner.', 1, 2, 4, 'approved');
-
--- Messages (2 messages)
-INSERT IGNORE INTO messages (id, subject, message, user_id, announce_id, status) VALUES
-(1, 'Question about the Mountain Bike', 'Hello, is the mountain bike still available from December 20 to 22?', 2, 1, 'sent'),
-(2, 'Board Availability', 'Hi, is it possible to rent the board for next weekend?', 1, 2, 'read');
 
 -- Reports (1 report)
 INSERT IGNORE INTO reports (id, reporter_id, description, status, reported_announce_id) VALUES
