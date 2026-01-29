@@ -14,7 +14,8 @@
 
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
+  justify-content: center;
   max-width: 1200px;
   margin: 2em auto;
   gap: 1.5rem;
