@@ -21,7 +21,7 @@ export interface AnnounceDetail {
   location: string;
   state: string;
   owner_id: number;
-  categorie_id: number;
+  category_id: number;
   all_images: string[];
   favourites?: number;
   start_borrow_date: Date;
@@ -32,5 +32,5 @@ export interface AnnounceDetail {
   total_likes: number;
   lastname: string;
   firstname: string;
-  zipcode: number;
+  zipcode: string;
 }

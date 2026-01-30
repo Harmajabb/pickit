@@ -1,12 +1,12 @@
-import { AuthContext } from "../../context/AuthContext";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useParams } from "react-router";
 import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router";
+import { AuthContext } from "../../context/AuthContext";
 import type { AnnounceDetail } from "../../types/Announce";
 import ButtonDelete from "../Btn-Delete/ButtonDelete";
+import ContactLenderButton from "../ContactLenderButton/ContactLenderButton";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
-import ContactLenderButton from "../ContactLenderButton/ContactLenderButton";
 import "./ProductSheet.css";
 
 interface Announce {
@@ -26,8 +26,8 @@ interface Announce {
   total_likes: number;
   lastname: string;
   firstname: string;
-  zipcode: number;
-  categorie_id: number;
+  zipcode: string;
+  category_id: number;
 }
 
 export default function ProductSheet() {

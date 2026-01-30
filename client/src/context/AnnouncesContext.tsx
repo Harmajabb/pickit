@@ -1,66 +1,63 @@
 import {
+  createContext, //create the announcements context
   type ReactNode,
-  createContext, //utilisé pour créer le contexte des annonces
-  useCallback, //utilisé pour mémoriser la fonction refreshAnnounces et calmer les warnings de dépendances dans useEffect
-  useContext, //utilisé pour consommer le contexte dans le hook useAnnounces
-  useEffect, //utilisé pour déclencher le chargement initial des annonces lorsque le composant est monté
-  useState, //utilisé pour gérer l'état des annonces, de la requête, du chargement et des erreurs
+  useCallback, // memoize the refreshAnnounces function and silence dependency warnings in useEffect
+  useContext, // consume the context in the useAnnounces hook
+  useState, // manage the state of announcements, the request, loading, and errors
 } from "react";
-import { fetchAllAnnounces } from "../services/ServiceAnnouncesApi"; //importation de la fonction fetchAnnounces pour récupérer les annonces depuis l'API
-import type { Announce } from "../types/Announce"; //importation du type Announce pour typer les annonces
+import { fetchAllAnnounces } from "../services/ServiceAnnouncesApi"; // import of the fetchAnnounces function to retrieve announcements from the API
+import type { Announce } from "../types/Announce"; // import of the Announce type to type the announcements
+import type { AnnounceFilters } from "../types/AnnounceFilters";
 
 type AnnouncesContextType = {
-  announces: Announce[]; //tableau des annonces
-  isLoading: boolean; //indicateur de chargement des annonces
-  error: string | null; //message d'erreur en cas de problème lors du chargement
-  refreshAnnounces: (q?: string) => Promise<void>; //fonction pour rafraîchir la liste des annonces, optionnellement avec une requête de recherche
-  // note : la fonction retourne une Promise<void> car elle est asynchrone
+  announces: Announce[]; // announcements array
+  isLoading: boolean; // announcements loading indicator
+  error: string | null; // error message in case of a loading issue
+  refreshAnnounces: (filters: AnnounceFilters) => void; // function to refresh the list of announcements, optionally with a search query
+  // note: the function returns a Promise<void> because it is asynchronous
 };
 
-// Création du contexte des annonces avec un type pouvant être undefined
-// pour gérer le cas où le contexte n'est pas encore fourni
+// Creation of the announcements context with a type that can be undefined
+// to handle the case where the context is not yet provided
 const AnnouncesContext = createContext<AnnouncesContextType | undefined>(
   undefined,
 );
 
-// Fournisseur du contexte des annonces, qui encapsule les composants enfants
-// et leur fournit l'accès aux données et fonctions liées aux annonces
+// Announcements context provider, which wraps child components
+// and provides them with access to data and functions related to announcements
 export function AnnouncesProvider({ children }: { children: ReactNode }) {
   // console.log("AnnouncesProvider rendered");
-  const [announces, setAnnounces] = useState<Announce[]>([]); //état pour stocker les annonces
-  const [isLoading, setIsLoading] = useState(true); //état pour indiquer si les annonces sont en cours de chargement
-  const [error, setError] = useState<string | null>(null); //état pour stocker un message d'erreur éventuel
+  const [announces, setAnnounces] = useState<Announce[]>([]); // state to store the announcements
+  const [isLoading, setIsLoading] = useState(true); // state to indicate if the announcements are loading
+  const [error, setError] = useState<string | null>(null); // state to store a potential error message
 
-  // Fonction pour rafraîchir la liste des annonces, avec une option de requête de recherche
-  // Utilisation de useCallback pour mémoriser la fonction et éviter les recréations inutiles.
-  // biome a requêté cela.
-  const refreshAnnounces = useCallback(async (q?: string) => {
-    // console.log("Refreshing announces with query:", q);
-    setIsLoading(true);
-    setError(null);
+  // Function to refresh the list of announcements, with an optional search query
+  // Uses useCallback to memoize the function and avoid unnecessary recreations.
+  // biome requested this.
+  const refreshAnnounces = useCallback(
+    async (filters: AnnounceFilters = {}) => {
+      // console.log("Refreshing announces with query:", q);
+      setIsLoading(true);
+      setError(null);
 
-    // Appel de la fonction fetchAnnounces pour récupérer les annonces depuis l'API
-    try {
-      const data = await fetchAllAnnounces(q);
-      // console.log("Fetched announces:", data);
-      setAnnounces(data);
-    } catch {
-      // console.error("Error fetching announces");
-      // En cas d'erreur, on met à jour l'état de l'erreur
-      setError("Failed to fetch announces");
-    } finally {
-      // Toujours désactiver l'indicateur de chargement à la fin
-      setIsLoading(false);
-    }
-  }, []);
+      // Call to the fetchAnnounces function to retrieve announcements from the API
+      try {
+        const data = await fetchAllAnnounces(filters);
+        // console.log("Fetched announces:", data);
+        setAnnounces(data);
+      } catch {
+        // console.error("Error fetching announces");
+        // In case of an error, update the error state
+        setError("Failed to fetch announces");
+      } finally {
+        // Always disable the loading indicator at the end
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
-  // Utilisation de useEffect pour charger les annonces initiales lorsque le composant est monté
-  useEffect(() => {
-    // console.log("Fetching announces on mount");
-    refreshAnnounces();
-  }, [refreshAnnounces]);
-
-  // Valeur du contexte à fournir aux composants enfants /!\IMPORTANT/!\
+  // Context value to provide to child components
   const value: AnnouncesContextType = {
     announces,
     isLoading,
@@ -68,7 +65,7 @@ export function AnnouncesProvider({ children }: { children: ReactNode }) {
     refreshAnnounces,
   };
 
-  // permet aux composants enfants d'accéder au contexte des annonces
+  // allows child components to access the announcements context
   return (
     <AnnouncesContext.Provider value={value}>
       {children}
@@ -76,7 +73,7 @@ export function AnnouncesProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Hook personnalisé pour consommer le contexte des annonces
+// Custom hook to consume the announcements context
 export function useAnnounces() {
   const ctx = useContext(AnnouncesContext);
   if (ctx === undefined) {

@@ -60,18 +60,20 @@ CREATE TABLE IF NOT EXISTS announces (
     end_borrow_date DATE NOT NULL,
     location VARCHAR(255) NOT NULL,
     status VARCHAR(20) DEFAULT 'active' COMMENT 'active, inactive, archived',
-    categorie_id INT NOT NULL,
+    zipcode VARCHAR(10) NOT NULL,
+    category_id INT NOT NULL,
     owner_id INT NOT NULL COMMENT 'Equipment owner',
     state_of_product ENUM('new', 'excellent', 'good', 'fair', 'poor') DEFAULT 'good',
     
-    FOREIGN KEY (categorie_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
     
-    INDEX idx_category (categorie_id),
+    INDEX idx_category (category_id),
     INDEX idx_owner (owner_id),
     INDEX idx_location (location),
     INDEX idx_status (status),
-    INDEX idx_dates (start_borrow_date, end_borrow_date)
+    INDEX idx_dates (start_borrow_date, end_borrow_date),
+    INDEX idx_zipcode (zipcode)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS borrows (
@@ -284,17 +286,17 @@ INSERT IGNORE INTO categories (id, category, parent_id) VALUES
 (7, 'Mountain Biking', 3);
 
 -- Announces (2 listings)
-INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, status, categorie_id, owner_id, state_of_product) VALUES
-(1, 'Giant Talon Mountain Bike', 'Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.', 200, '2024-10-09', '2024-10-31','2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 7, 1, 'excellent'),
-(2, 'Quiksilver Surfboard', '6''2" surfboard, ideal for beginners and intermediates. Includes protective cover.', 150, '2024-11-25', '', '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 6, 2, 'good'),
-(3, 'Raquette de Tennis Wilson Pro Staff', 'Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.', 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', 'Lyon, Rhône', 'active', 5, 3, 'new'),
-(4, 'Pack Ski Alpin Rossignol', 'Skis de piste performants + bâtons. Taille 175cm. Idéal pour skieur confirmé.', 300, '2024-11-15', '', '2024-12-20', '2025-04-15', 'Grenoble, Isère', 'active', 8, 4, ''),
-(5, 'Banc de musculation pliable', 'Banc réglable avec support barre. Très peu encombrant une fois plié. État neuf.', 80, '2024-12-10', '', '2024-12-15', '', '', '', '', '', ''),
-(6, 'Paddle Gonflable Itiwit', 'Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.', 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', 'Annecy, Haute-Savoie', 'active', 6, 1, ''),
-(7, 'Sac à dos de randonnée 70L', 'Sac de trekking avec système de portage ventilé. Nombreuses poches, housse de pluie incluse.', 40, '2024-12-05', '', '2024-12-15', '2025-10-31', 'Chamonix, Haute-Savoie', 'active', 10, 2, ''),
-(8, 'Série de fers Callaway (5-PW)', 'Série complète pour droitier, shaft acier régulier. Très tolérant pour progresser.', 250, '2024-11-30', '', '2024-12-01', '2025-08-30', 'Bordeaux, Gironde', 'active', 11, 6, ''),
-(9, 'Rollers en ligne Rollerblade', 'Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.', 30, '2024-12-12', '', '2024-12-15', '2025-12-31', 'Montpellier, Hérault', 'active', 7, 3, ''),
-(10, 'Crashpad d''escalade Black Diamond', 'Tapis de réception pour le bloc en extérieur. Mousse haute densité, bretelles de transport.', 70, '2024-12-08', '', '2025-03-01', '', '', '', '', '', '');
+INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, status, zipcode, category_id, owner_id, state_of_product) VALUES
+(1, 'Giant Talon Mountain Bike', 'Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.', 200, '2024-10-09', '2024-10-31','2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 59000, 7, 1, 'excellent'),
+(2, 'Quiksilver Surfboard', '6''2" surfboard, ideal for beginners and intermediates. Includes protective cover.', 150, '2024-11-25', '', '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 64200, 6, 2, 'good'),
+(3, 'Raquette de Tennis Wilson Pro Staff', 'Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.', 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', 'Lyon, Rhône', 'active', 69000, 5, 3, 'new'),
+(4, 'Pack Ski Alpin Rossignol', 'Skis de piste performants + bâtons. Taille 175cm. Idéal pour skieur confirmé.', 300, '2024-11-15', '', '2024-12-20', '2025-04-15', 'Grenoble, Isère', 'active', 38000, 8, 4, ''),
+(5, 'Banc de musculation pliable', 'Banc réglable avec support barre. Très peu encombrant une fois plié. État neuf.', 80, '2024-12-10', '', '2024-12-15', '', '', '', '', '', '', ''),
+(6, 'Paddle Gonflable Itiwit', 'Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.', 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', 'Annecy, Haute-Savoie', 'active', 74000, 6, 1, ''),
+(7, 'Sac à dos de randonnée 70L', 'Sac de trekking avec système de portage ventilé. Nombreuses poches, housse de pluie incluse.', 40, '2024-12-05', '', '2024-12-15', '2025-10-31', 'Chamonix, Haute-Savoie', 'active', 74400, 10, 2, ''),
+(8, 'Série de fers Callaway (5-PW)', 'Série complète pour droitier, shaft acier régulier. Très tolérant pour progresser.', 250, '2024-11-30', '', '2024-12-01', '2025-08-30', 'Bordeaux, Gironde', 'active', 33000, 11, 6, ''),
+(9, 'Rollers en ligne Rollerblade', 'Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.', 30, '2024-12-12', '', '2024-12-15', '2025-12-31', 'Montpellier, Hérault', 'active', 34000, 7, 3, ''),
+(10, 'Crashpad d''escalade Black Diamond', 'Tapis de réception pour le bloc en extérieur. Mousse haute densité, bretelles de transport.', 70, '2024-12-08', '', '2025-03-01', '','', '', '', '', '', '');
 -- Announces Images (3 images)
 INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
 (1, '2025-Giant-Talon-2.jpeg.webp', 1),

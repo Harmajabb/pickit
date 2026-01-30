@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
-import type { RowDataPacket, FieldPacket } from "mysql2";
-import borrowRepository from "./borrowRepository";
+import type { FieldPacket, RowDataPacket } from "mysql2";
 import databaseClient from "../../../database/client";
+import borrowRepository from "./borrowRepository";
 
 interface AuthenticatedRequest extends Request {
   user?: {

@@ -10,12 +10,8 @@ const router = express.Router();
 // Define Category-related routes
 import categoryActions from "./modules/categories/categoryActions";
 
-router.get(
-  "/api/categories",
-  authActions.checkAuth,
-  authActions.verifyAdmin,
-  categoryActions.browse,
-);
+router.get("/api/categories", categoryActions.browse);
+
 router.post(
   "/api/categories",
   authActions.checkAuth,
