@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
+import type { Category } from "../../types/Category";
 
 function CreateAnnonce() {
   const { user } = useContext(AuthContext);
@@ -9,10 +10,10 @@ function CreateAnnonce() {
 
   // ✅ TOUS les hooks AVANT le early return
   const [showConfirm, setShowConfirm] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedPath, setSelectedPath] = useState<any[]>([]);
+  const [_categories, setCategories] = useState<Category[]>([]);
+  const [selectedPath, setSelectedPath] = useState<Category[]>([]);
 
-  const [categoryLevels, setCategoryLevels] = useState<any[][]>([]);
+  const [categoryLevels, setCategoryLevels] = useState<Category[][]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -80,7 +81,7 @@ function CreateAnnonce() {
       category_id: selectedId.toString(),
     });
 
-    if (selectedCategory.children?.length > 0) {
+    if (selectedCategory.children && selectedCategory.children.length > 0) {
       newLevels.push(selectedCategory.children);
     }
 
@@ -147,7 +148,7 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
-    } catch (error) {
+    } catch (_error) {
       alert("Error while sending");
     }
   };

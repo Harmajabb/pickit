@@ -1,9 +1,8 @@
 import {
-  type ReactNode,
   createContext, //create the announcements context
+  type ReactNode,
   useCallback, // memoize the refreshAnnounces function and silence dependency warnings in useEffect
   useContext, // consume the context in the useAnnounces hook
-  useEffect, // trigger the initial loading of announcements when the component is mounted
   useState, // manage the state of announcements, the request, loading, and errors
 } from "react";
 import { fetchAllAnnounces } from "../services/ServiceAnnouncesApi"; // import of the fetchAnnounces function to retrieve announcements from the API
