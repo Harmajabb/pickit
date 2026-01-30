@@ -8,8 +8,9 @@ export type CreateAnnounceInput = {
   amount_deposit: number;
   start_borrow_date: string;
   end_borrow_date: string;
+  zipcode: string;
   location: string;
-  categorie_id: number;
+  category_id: number;
   owner_id: number;
   state_of_product: string;
 };
@@ -23,10 +24,11 @@ export type Announces = {
   update_date?: Date;
   start_borrow_date?: string;
   end_borrow_date?: string;
+  zipcode?: string;
   location?: string;
   status?: string;
   all_images?: string | null;
-  categorie_id?: number;
+  category_id?: number;
   owner_id?: number;
   state_of_product?: string;
   total_likes?: number;
@@ -40,13 +42,16 @@ export type Favorite = {
 };
 type AnnouncesFilter = {
   zipcode?: string;
-  categorie_id?: number;
+  category_id?: string;
 };
 
 // DISTINCT to avoid carthesian products (= similar entries)
 class AnnouncesRepository {
   async readAll(filters: AnnouncesFilter = {}) {
-    let sql = `SELECT announces.*, users.zipcode, COUNT(favorites.id) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
+    let sql = `SELECT 
+    announces.*,
+    COUNT(DISTINCT favorites.id) AS total_likes,
+    GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id
     LEFT JOIN users ON owner_id = users.id
@@ -60,13 +65,13 @@ class AnnouncesRepository {
       sqlValues.push(`%${filters.zipcode}%`); // filters the two first numbers of the zipcode
     }
 
-    if (filters.categorie_id) {
-      conditions.push("announces.categorie_id = ?");
-      sqlValues.push(filters.categorie_id);
+    if (filters.category_id) {
+      conditions.push("announces.category_id = ?");
+      sqlValues.push(filters.category_id);
     }
 
     if (conditions.length > 0) {
-      sql += `WHERE ${conditions.join(" AND ")}`;
+      sql += ` WHERE ${conditions.join(" AND ")}`;
     }
 
     sql += " GROUP BY announces.id ORDER BY creation_date DESC";
@@ -117,11 +122,11 @@ class AnnouncesRepository {
     return rows as Favorite[];
   }
 
-  // Récupérer une seule annonce par son ID
+  // Get just one announcement with its ID
   async getOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
-      SELECT announces.*, users.zipcode, users.lastname, users.firstname, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
+      SELECT announces.*, users.lastname, users.firstname, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
       FROM announces
       LEFT JOIN announces_images ON announces.id = announces_images.announce_id
       LEFT JOIN users ON owner_id = users.id
@@ -147,8 +152,8 @@ class AnnouncesRepository {
       const [result] = await connection.query<ResultSetHeader>(
         `
       INSERT INTO announces
-      (title, description, amount_deposit, creation_date, start_borrow_date, end_borrow_date, location, categorie_id, owner_id, state_of_product)
-      VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)
+      (title, description, amount_deposit, creation_date, start_borrow_date, end_borrow_date, zipcode, location, category_id, owner_id, state_of_product)
+      VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)
       `,
         [
           form.title,
@@ -156,8 +161,9 @@ class AnnouncesRepository {
           form.amount_deposit,
           form.start_borrow_date,
           form.end_borrow_date,
+          form.zipcode,
           form.location,
-          form.categorie_id,
+          form.category_id,
           form.owner_id,
           form.state_of_product,
         ],
@@ -179,7 +185,7 @@ class AnnouncesRepository {
     } catch (err) {
       await connection.rollback();
 
-      // cleanup fichiers
+      // cleanup files
       const fs = await import("node:fs/promises");
       const path = await import("node:path");
 
@@ -208,7 +214,7 @@ class AnnouncesRepository {
   ) {
     const query = `
       UPDATE announces
-      SET title = ?, description = ?, amount_deposit = ?, location = ?, start_borrow_date = ?, end_borrow_date = ?, categorie_id = ?, update_date = NOW()
+      SET title = ?, description = ?, amount_deposit = ?, zipcode = ?, location = ?, start_borrow_date = ?, end_borrow_date = ?, category_id = ?, update_date = NOW()
       WHERE id = ?
     `;
 
@@ -216,10 +222,11 @@ class AnnouncesRepository {
       form.title,
       form.description,
       form.amount_deposit,
+      form.zipcode,
       form.location,
       form.start_borrow_date,
       form.end_borrow_date,
-      form.categorie_id,
+      form.category_id,
       id,
     ];
 
@@ -232,6 +239,7 @@ class AnnouncesRepository {
       announces.id, 
       announces.title, 
       announces.description,
+      announces.zipcode,
       announces.location,
       announces.start_borrow_date,
       announces.end_borrow_date,

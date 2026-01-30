@@ -71,6 +71,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         "amount_deposit",
         formData.amount_deposit.toString(),
       );
+      formDataToSend.append("zipcode", formData.zipcode);
       formDataToSend.append("location", formData.location);
       formDataToSend.append("state_of_product", formData.state_of_product);
       formDataToSend.append(
@@ -81,7 +82,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
         "end_borrow_date",
         formatDateForDB(formData.end_borrow_date),
       );
-      formDataToSend.append("categorie_id", formData.categorie_id.toString());
+      formDataToSend.append("category_id", formData.category_id.toString());
 
       // Ajouter les images à supprimer
       for (const imageUrl of deletedImages) {
@@ -130,7 +131,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
 
   return (
-    <>
+    <div>
       <h1 className="product-title">
         <textarea
           name="title"
@@ -139,6 +140,18 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           rows={2}
         />
       </h1>
+
+      <div className="info-fields">
+        <div className="info-field">
+          <p className="info-label">Zipcode</p>
+          <input
+            name="zipcode"
+            value={formData.zipcode}
+            onChange={handleChange}
+            className="info-value"
+          />
+        </div>
+      </div>
 
       <div className="info-fields">
         <div className="info-field">
@@ -274,7 +287,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
           Cancel
         </button>
       </div>
-    </>
+    </div>
   );
 }
 

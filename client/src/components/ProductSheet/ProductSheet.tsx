@@ -25,8 +25,8 @@ interface Announce {
   total_likes: number;
   lastname: string;
   firstname: string;
-  zipcode: number;
-  categorie_id: number;
+  zipcode: string;
+  category_id: number;
 }
 
 export default function ProductSheet() {

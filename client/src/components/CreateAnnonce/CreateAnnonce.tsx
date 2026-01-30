@@ -17,11 +17,12 @@ function CreateAnnonce() {
     title: "",
     description: "",
     amount_deposit: "",
+    zipcode: "",
     location: "",
     state_of_product: "good",
     start_borrow_date: "",
     end_borrow_date: "",
-    categorie_id: "",
+    category_id: "",
     files: [] as File[],
   });
   // Auth
@@ -31,7 +32,7 @@ function CreateAnnonce() {
     }
   }, [user, navigate]);
 
-  // Charger les catégories depuis l'API
+  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -76,7 +77,7 @@ function CreateAnnonce() {
 
     setFormData({
       ...formData,
-      categorie_id: selectedId.toString(),
+      category_id: selectedId.toString(),
     });
 
     if (selectedCategory.children?.length > 0) {
@@ -123,11 +124,12 @@ function CreateAnnonce() {
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("amount_deposit", formData.amount_deposit.toString());
+    formDataToSend.append("zipcode", formData.zipcode);
     formDataToSend.append("location", formData.location);
     formDataToSend.append("state_of_product", formData.state_of_product);
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
-    formDataToSend.append("categorie_id", formData.categorie_id);
+    formDataToSend.append("category_id", formData.category_id);
     formDataToSend.append("owner_id", user.id.toString());
 
     for (const file of formData.files) {
@@ -203,6 +205,17 @@ function CreateAnnonce() {
               />
             </div>
             <div className="field-group">
+              <label htmlFor="zipcode">Zipcode</label>
+              <input
+                type="text"
+                name="zipcode"
+                placeholder="Zipcode"
+                value={formData.zipcode}
+                onChange={handleChange}
+                className="auto-width-input"
+              />
+            </div>
+            <div className="field-group">
               <label htmlFor="location">Location</label>
               <input
                 type="text"
@@ -214,7 +227,7 @@ function CreateAnnonce() {
               />
             </div>
             <div className="field-group">
-              <label htmlFor="categorie_id">Categories</label>
+              <label htmlFor="category_id">Categories</label>
               {categoryLevels.map((levelCategories, levelIndex) => {
                 const parent = selectedPath[levelIndex - 1];
 
@@ -228,7 +241,7 @@ function CreateAnnonce() {
 
                     {levelCategories.map((category) => (
                       <option key={category.id} value={category.id}>
-                        {category.categorie}
+                        {category.category}
                       </option>
                     ))}
                   </select>
