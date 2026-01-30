@@ -148,6 +148,12 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
+
+      if (response.ok) {
+        setTimeout(() => {
+          navigate(`/announce/${result.announceId}`);
+        }, 1000);
+      }
     } catch (_error) {
       alert("Error while sending");
     }
