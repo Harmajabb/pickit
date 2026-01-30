@@ -91,7 +91,7 @@ router.delete(
 );
 
 // Define Borrow/Loan Request routes
-import borrowActions from "./modules/borrow /borrowActions";
+import borrowActions from "./modules/borrows/borrowActions";
 
 // Créer une demande de prêt
 router.post(
