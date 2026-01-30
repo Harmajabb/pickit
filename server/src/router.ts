@@ -90,6 +90,16 @@ router.delete(
   announcesActions.destroy,
 );
 
+// Define Borrow/Loan Request routes
+import borrowActions from "./modules/borrow /borrowActions";
+
+// Créer une demande de prêt
+router.post(
+  "/api/loan-requests",
+  authActions.checkAuth,
+  borrowActions.createLoanRequest,
+);
+
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";
 

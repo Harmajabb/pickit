@@ -1,11 +1,12 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useParams } from "react-router";
+import { useContext, useEffect, useState } from "react";
 import type { AnnounceDetail } from "../../types/Announce";
 import ButtonDelete from "../Btn-Delete/ButtonDelete";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
+import ContactLenderButton from "../ContactLenderButton/ContactLenderButton";
 import "./ProductSheet.css";
 
 interface Announce {
@@ -78,6 +79,10 @@ export default function ProductSheet() {
   const handleSave = (updatedAnnounce: AnnounceDetail) => {
     setAnnounce(updatedAnnounce);
     setIsEditing(false);
+  };
+
+  const handleLoanRequestSuccess = () => {
+    console.log("Demande de prêt envoyée avec succès !");
   };
 
   return (
@@ -201,9 +206,16 @@ export default function ProductSheet() {
                   </div>
                 </div>
 
-                <button type="button" className="primary">
-                  Contact the borrower
-                </button>
+                {/* Bouton de demande de prêt */}
+                <ContactLenderButton
+                  announceId={announce.id}
+                  ownerId={announce.owner_id}
+                  currentUserId={user?.id || null}
+                  isAuthenticated={!!user}
+                  onSuccess={handleLoanRequestSuccess}
+                  availableFrom={announce.start_borrow_date}
+                  availableUntil={announce.end_borrow_date}
+                />
               </>
             )}
           </div>
