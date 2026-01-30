@@ -10,7 +10,6 @@ function CreateAnnonce() {
 
   // ✅ TOUS les hooks AVANT le early return
   const [showConfirm, setShowConfirm] = useState(false);
-  const [_categories, setCategories] = useState<Category[]>([]);
   const [selectedPath, setSelectedPath] = useState<Category[]>([]);
 
   const [categoryLevels, setCategoryLevels] = useState<Category[][]>([]);
@@ -46,7 +45,6 @@ function CreateAnnonce() {
         }
 
         const data = await response.json();
-        setCategories(data);
         setCategoryLevels([data]);
       } catch (error) {
         console.error("Error loading categories:", error);
@@ -148,6 +146,12 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
+
+      if (response.ok) {
+        setTimeout(() => {
+          navigate(`/announce/${result.announceId}`);
+        }, 1000);
+      }
     } catch (_error) {
       alert("Error while sending");
     }

@@ -1,13 +1,9 @@
 import { Heart, Package } from "lucide-react";
 import { Link } from "react-router";
-import type {
-  ProfileFavorite,
-  ProfileItem,
-  UserPrivate,
-  UserPublic,
-} from "../../types/User";
-import ItemCard from "../ItemCard/ItemCard";
+import type { Announce } from "../../types/Announce";
+import type { UserPrivate, UserPublic } from "../../types/User";
 import "./ProfileView.css";
+import CatalogCard from "../CatalogCard/CatalogCard";
 
 //discriminated union for profileView props.
 //If mode is "me": user must be UserPrivate (with email, address)
@@ -17,8 +13,8 @@ type ProfileViewProps =
   | {
       mode: "member";
       user: UserPublic;
-      items: ProfileItem[];
-      favorites: ProfileFavorite[];
+      items: Announce[];
+      favorites: Announce[];
     };
 
 function ProfileView(props: ProfileViewProps) {
@@ -160,12 +156,7 @@ function ProfileView(props: ProfileViewProps) {
             {items.slice(0, 6).map((item) => (
               <li key={item.id}>
                 {" "}
-                <ItemCard
-                  id={item.id}
-                  title={item.title}
-                  location={item.location}
-                  all_images={item.image_url ?? undefined}
-                />
+                <CatalogCard data={item} />
               </li>
             ))}
           </ul>
@@ -174,7 +165,7 @@ function ProfileView(props: ProfileViewProps) {
       <section className="profile-section" aria-labelledby="favorites-title">
         <h2 id="favorites-title">
           His favorites ({favorites.length})
-          <Link to="/" className="profile-see-all">
+          <Link to={`/favorites/${user.id}`} className="profile-see-all">
             See all favorites
           </Link>
         </h2>
@@ -187,12 +178,7 @@ function ProfileView(props: ProfileViewProps) {
               <li key={fav.id}>
                 {" "}
                 <Link to={`/announce/${fav.id}`}>
-                  <ItemCard
-                    id={fav.id}
-                    title={fav.title}
-                    location={fav.location}
-                    all_images={fav.image_url ?? undefined}
-                  />
+                  <CatalogCard data={fav} />
                 </Link>
               </li>
             ))}

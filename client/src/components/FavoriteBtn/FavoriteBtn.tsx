@@ -17,7 +17,21 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
   const navigate = useNavigate();
   //To avoid too many request and since on reload its gonna be a real value from bdd anyways, i'm "faking" total_likes on favorite toggle.
   const [fakeTotal_likes, setFakeTotalLikes] = useState<number>(total_likes);
-  const { user } = useContext(AuthContext);
+  const { user, login } = useContext(AuthContext);
+
+  // Refetch user data to sync favoritesIds bdd
+  const refetchUser = async () => {
+    //who is connected actually
+    const response = await fetch(`${BASE_URL}/auth/check`, {
+      credentials: "include",
+    });
+    //if succeed then extract the data user and update the auth context
+    if (response.ok) {
+      const data = await response.json();
+      login(data.user);
+    }
+  };
+
   const handleFavoriteBtn = async () => {
     if (user) {
       const user_id = user.id;
@@ -33,6 +47,7 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
         if (res.ok) {
           setIsLiked(false);
           setFakeTotalLikes((prev) => prev - 1);
+          await refetchUser();
         }
       }
       if (!isLiked) {
@@ -47,6 +62,7 @@ function FavoriteBtn({ total_likes, announce_id }: FavoriteBtnProps) {
         if (res.ok) {
           setIsLiked(true);
           setFakeTotalLikes((prev) => prev + 1);
+          await refetchUser();
         }
       }
     } else {

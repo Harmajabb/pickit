@@ -9,6 +9,7 @@ const router = express.Router();
 
 // Define Category-related routes
 import categoryActions from "./modules/categories/categoryActions";
+
 router.get("/api/categories", categoryActions.browse);
 
 router.post(
@@ -85,6 +86,16 @@ router.delete(
   announcesActions.destroy,
 );
 
+// Define Borrow/Loan Request routes
+import borrowActions from "./modules/borrows/borrowActions";
+
+// Créer une demande de prêt
+router.post(
+  "/api/loan-requests",
+  authActions.checkAuth,
+  borrowActions.createLoanRequest,
+);
+
 // Define item-related routes
 import itemActions from "./modules/item/itemActions";
 
@@ -151,6 +162,16 @@ router.put(
 // Define favorites routes
 import favoriteAction from "./modules/favorites/favoriteAction";
 
+router.get(
+  "/api/favorites/me",
+  authActions.checkAuth,
+  favoriteAction.getMyFavorites,
+);
+router.get(
+  "/api/favorites/:id",
+  authActions.checkAuth,
+  favoriteAction.getFavoritesByUserId,
+);
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 

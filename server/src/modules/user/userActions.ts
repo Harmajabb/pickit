@@ -1,6 +1,7 @@
 import type { RequestHandler } from "express";
 import type { JwtPayload } from "jsonwebtoken"; // allow to get the token from req.auth
 import announcesRepository from "../announces/announcesRepository";
+import favoriteRepository from "../favorites/favoriteRepository";
 import userRepository, { type UserUpdateData } from "./userRepository";
 
 // get my profile (only for authenticated user - private data only)
@@ -50,7 +51,7 @@ const readProfileById: RequestHandler = async (req, res, next) => {
 
     // take back items and favorites for user profile seen by others
     const items = await announcesRepository.readByOwnerId(id);
-    const favorites = await announcesRepository.readFavoritesByUserId(id);
+    const favorites = await favoriteRepository.readFavoritesByUserId(id);
 
     res.json({ user, items, favorites });
   } catch (err) {

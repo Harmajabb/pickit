@@ -1,4 +1,5 @@
 import type { ResultSetHeader } from "mysql2";
+import type { PoolConnection } from "mysql2/promise";
 import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
 
@@ -34,12 +35,6 @@ export type Announces = {
   total_likes?: number;
 };
 
-export type Favorite = {
-  id: number;
-  title: string;
-  location: string;
-  image_url: string | null;
-};
 type AnnouncesFilter = {
   zipcode?: string;
   category_id?: string;
@@ -106,23 +101,22 @@ class AnnouncesRepository {
   // Announce by owner ID.
   async readByOwnerId(ownerId: number) {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS image_url FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      `SELECT announces.*, COUNT(favorites.id) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
+      FROM announces
+      LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+      LEFT JOIN favorites ON announces.id = favorites.announces_id
+      AND favorites.is_favorite = 1
+      WHERE announces.owner_id = ?
+      AND announces.status = 'active'
+      GROUP BY announces.id
+      ORDER BY announces.creation_date DESC;
+      `,
       [ownerId],
     );
     return rows as Announces[];
   }
 
-  //Favorite by user id.
-  async readFavoritesByUserId(userId: number) {
-    const [rows] = await databaseClient.query<Rows>(
-      "SELECT a.id, a.title, a.location, MIN(ai.url) AS image_url FROM favorites f JOIN announces a ON a.id = f.announces_id LEFT JOIN announces_images ai ON ai.announce_id = a.id WHERE f.user_id = ? AND f.is_favorite = 1 AND a.status = 'active' GROUP BY a.id",
-      [userId],
-    );
-
-    return rows as Favorite[];
-  }
-
-  // Get just one announcement with its ID
+  // Récupérer une seule annonce par son ID
   async getOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
@@ -138,6 +132,17 @@ class AnnouncesRepository {
     );
 
     return rows[0] as Announces | undefined;
+  }
+
+  async saveAvailability(
+    _announceId: number,
+    rows: (string | number)[][],
+    connection: PoolConnection,
+  ): Promise<void> {
+    const sql = "INSERT INTO availability (announce_id, date) VALUES ?";
+    const [result] = await connection.query<ResultSetHeader>(sql, [rows]);
+
+    console.log("Nombre de lignes insérées :", result.affectedRows);
   }
 
   async sendCreateAnnounce(
@@ -180,6 +185,22 @@ class AnnouncesRepository {
         );
       }
 
+      const availabilityRows = [];
+      const curr = new Date(form.start_borrow_date);
+      const end = new Date(form.end_borrow_date);
+
+      while (curr <= end) {
+        const year = curr.getFullYear();
+        const month = String(curr.getMonth() + 1).padStart(2, "0");
+        const day = String(curr.getDate()).padStart(2, "0");
+        const formatted = `${year}-${month}-${day}`;
+
+        availabilityRows.push([announceId, formatted]);
+
+        curr.setDate(curr.getDate() + 1);
+      }
+
+      await this.saveAvailability(announceId, availabilityRows, connection);
       await connection.commit();
       return announceId;
     } catch (err) {

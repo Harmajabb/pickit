@@ -1,5 +1,7 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
+import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
+import type { Announces } from "../announces/announcesRepository";
 
 export interface Favorites extends RowDataPacket {
   announces_id: number;
@@ -26,6 +28,33 @@ class FavoriteRepository {
       [announces_id, user_id],
     );
     return result;
+  }
+
+  //Favorite by user id.
+  async readFavoritesByUserId(userId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      `SELECT
+      announces.*,
+      COUNT(all_favorites.id) AS total_likes,
+      GROUP_CONCAT(DISTINCT announces_images.url) AS all_images,
+      user_favorites.created_at AS favorited_at
+    FROM favorites AS user_favorites
+    JOIN announces
+      ON announces.id = user_favorites.announces_id
+    LEFT JOIN announces_images
+      ON announces_images.announce_id = announces.id
+    LEFT JOIN favorites AS all_favorites
+      ON announces.id = all_favorites.announces_id
+      AND all_favorites.is_favorite = 1
+    WHERE user_favorites.user_id = ?
+      AND user_favorites.is_favorite = 1
+      AND announces.status = 'active'
+    GROUP BY announces.id, user_favorites.created_at
+    ORDER BY user_favorites.created_at DESC`,
+      [userId],
+    );
+
+    return rows as Announces[];
   }
 }
 export default new FavoriteRepository();
