@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Trash2, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
+import ButtonDelete from "../Btn-Delete/ButtonDelete";
 import "./MyAnnouncesList.css";
 
 interface MyAnnounce {
@@ -51,30 +52,6 @@ export default function MyAnnouncesList() {
 
     fetchMyAnnounces();
   }, [navigate]);
-
-  const handleDelete = async (id: number, title: string) => {
-    if (!window.confirm(`Are you sure you want to delete ? "${title}" ?`)) {
-      return;
-    }
-
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/announces/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        },
-      );
-
-      if (!res.ok) {
-        throw new Error("Error during deletion");
-      }
-
-      setAnnounces(announces.filter((announce) => announce.id !== id));
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Error deleting ad");
-    }
-  };
 
   const handleViewDetails = (id: number) => {
     navigate(`/announce/${id}`);
@@ -187,14 +164,7 @@ export default function MyAnnouncesList() {
                     View / Edit
                   </button>
 
-                  <button
-                    type="button"
-                    className="cta cta-delete"
-                    onClick={() => handleDelete(announce.id, announce.title)}
-                  >
-                    <Trash2 size={18} />
-                    Delete
-                  </button>
+                  <ButtonDelete annonceId={announce.id} />
                 </div>
               </div>
             </div>

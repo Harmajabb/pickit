@@ -15,23 +15,24 @@
 
 .my-announces-header h1 {
   font-size: 2rem;
-  color: #333;
+  color: var(--color-title);
 }
 
 .btn-create {
-  background-color: #ccff33;
-  color: #000;
-  border: none;
+  background-color: var(--color-btn);
+  color: var(--color-dark-text);
+  border: 1px solid var(--color-primary-text);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 3px 3px 0 0 var(--color-primary-text);
 }
 
 .btn-create:hover,
 .btn-create:focus {
-  background-color: #b8e62e;
+  background-color: var(--color-btn-hover);
   transform: translateY(-2px);
   outline: none;
 }
@@ -39,32 +40,33 @@
 .no-announces {
   text-align: center;
   padding: 4rem 2rem;
-  background: #f5f5f5;
-  border-radius: 12px;
+  background: var(--color-card);
+  border-radius: var(--b-radius);
   margin-top: 2rem;
 }
 
 .no-announces p {
   font-size: 1.2rem;
-  color: #666;
+  color: var(--color-primary-text);
   margin-bottom: 1.5rem;
 }
 
 .btn-create-empty {
-  background-color: #ccff33;
-  color: #000;
-  border: none;
+  background-color: var(--color-btn);
+  color: var(--color-dark-text);
+  border: 1px solid var(--color-primary-text);
   padding: 1rem 2rem;
   border-radius: 8px;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 3px 3px 0 0 var(--color-primary-text);
 }
 
 .btn-create-empty:hover,
 .btn-create-empty:focus {
-  background-color: #b8e62e;
+  background-color: var(--color-btn-hover);
   transform: translateY(-2px);
   outline: none;
 }
@@ -77,25 +79,27 @@
 }
 
 .announce-card {
-  background: white;
-  border-radius: 12px;
+  background: var(--color-card);
+  border-radius: var(--b-radius);
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+  border: 1px solid
+    color-mix(in srgb, var(--color-primary-text) 20%, transparent);
 }
 
-.announce-card:hover {
+/* .announce-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
+} */
 
 .announce-image {
   width: 100%;
   height: 200px;
   overflow: hidden;
-  background: #f0f0f0;
+  background: color-mix(in srgb, var(--color-card) 80%, var(--color-bg));
   position: relative;
 }
 
@@ -103,7 +107,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background-color: #f0f0f0;
+  background-color: color-mix(in srgb, var(--color-card) 80%, var(--color-bg));
 }
 
 .announce-card:hover .announce-image img {
@@ -116,10 +120,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: color-mix(in srgb, var(--color-primary-text) 50%, transparent);
   font-style: italic;
   font-size: 1rem;
-  background-color: #eaeaea;
+  background-color: color-mix(in srgb, var(--color-card) 80%, var(--color-bg));
 }
 
 .announce-content {
@@ -129,34 +133,32 @@
 .announce-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #333;
+  color: var(--color-title);
   margin-bottom: 0.75rem;
-
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-
   min-height: 3rem;
 }
 
 .announce-description {
-  color: #666;
+  color: var(--color-primary-text);
   font-size: 0.95rem;
   line-height: 1.5;
   margin-bottom: 1rem;
-
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-
   min-height: 4.5em;
+  opacity: 0.9;
 }
 
 .announce-info {
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid
+    color-mix(in srgb, var(--color-primary-text) 20%, transparent);
   padding-top: 1rem;
   margin-bottom: 1rem;
 }
@@ -169,12 +171,12 @@
 }
 
 .info-label {
-  color: #666;
+  color: color-mix(in srgb, var(--color-primary-text) 70%, transparent);
   font-weight: 500;
 }
 
 .info-value {
-  color: #333;
+  color: var(--color-primary-text);
   font-weight: 400;
 }
 
@@ -201,15 +203,15 @@
 .cta-with-icon svg {
   display: block;
 }
+
 .cta-delete {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-
   background-color: #ff4444;
   color: #fff;
-  border: 1px solid black;
-  box-shadow: 3px 3px 0 0 black;
+  border: 1px solid var(--color-primary-text);
+  box-shadow: 3px 3px 0 0 var(--color-primary-text);
   margin-left: auto;
 }
 
