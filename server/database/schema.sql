@@ -85,7 +85,8 @@ CREATE TABLE IF NOT EXISTS borrows (
     borrower_id INT NOT NULL COMMENT 'Borrower',
     return_date DATETIME NOT NULL,
     status ENUM('pending', 'confirmed', 'ongoing', 'completed', 'cancelled', 'rejected') DEFAULT 'pending',
-    deposit_status ENUM('not_paid', 'paid', 'refunded', 'kept') DEFAULT 'not_paid',
+    deposit_status ENUM('not_paid', 'authorized', 'refunded', 'kept') DEFAULT 'not_paid',
+    payment_intent_id varchar(255) DEFAULT NULL COMMENT 'Stripe session number for payment tracking',
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_date DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     
@@ -93,11 +94,12 @@ CREATE TABLE IF NOT EXISTS borrows (
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (borrower_id) REFERENCES users(id) ON DELETE CASCADE,
     
-    INDEX idx_announce (announces_id),
+    INDEX idx_session_id (session_id),
     INDEX idx_borrower (borrower_id),
     INDEX idx_owner (owner_id),
     INDEX idx_status (status),
     INDEX idx_dates (borrow_date, return_date),
+
     INDEX idx_announce_dates (announces_id, borrow_date, return_date, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
