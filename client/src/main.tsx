@@ -15,6 +15,7 @@ import Catalog from "./pages/Catalog/Catalog";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
+import DepositPage from "./pages/Deposit/DepositPage";
 import FavoritesPage from "./pages/Favorite/FavoritesPage";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile/Profile";
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: "/my-favorites", element: <FavoritesPage mode="me" /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
       { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
+      { path: "/deposit/:id", element: <DepositPage /> },
     ],
   },
 ]);

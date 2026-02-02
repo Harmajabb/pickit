@@ -44,6 +44,28 @@ router.get(
   adminActions.getDashboardStats,
 );
 
+// Define Borrow-related routes
+import borrowActions from "./modules/borrows/borrowActions";
+
+router.post(
+  "/api/borrows/secure-deposit",
+  authActions.checkAuth,
+  borrowActions.secureDeposit,
+);
+
+router.get(
+  "/api/borrows/:id",
+  authActions.checkAuth,
+  borrowActions.getBorrowById,
+);
+
+router.post(
+  "/api/borrows/create-payment-intent",
+  borrowActions.createPaymentIntent,
+);
+
+/* ************************************************************************* */
+
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
 
@@ -85,9 +107,6 @@ router.delete(
   authActions.checkAuth,
   announcesActions.destroy,
 );
-
-// Define Borrow/Loan Request routes
-import borrowActions from "./modules/borrows/borrowActions";
 
 // Créer une demande de prêt
 router.post(

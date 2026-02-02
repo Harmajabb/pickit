@@ -1,4 +1,3 @@
-// biome-ignore assist/source/organizeImports: <!-- Organize imports manually for clarity in this template -->
 import cookieParser from "cookie-parser";
 import express from "express";
 
