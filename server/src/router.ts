@@ -1,5 +1,6 @@
 import express from "express";
 import { upload } from "./config/multer";
+import borrowAction from "./modules/borrow/borrowAction";
 
 const router = express.Router();
 
@@ -158,6 +159,13 @@ import favoriteAction from "./modules/favorites/favoriteAction";
 
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
+
+// Define Borrow-related routes
+
+// Routes for loans
+router.get("/api/borrows", authActions.checkAuth, borrowAction.browseByOwner);
+
+router.put("/api/borrows/:id", authActions.checkAuth, borrowAction.editStatus);
 
 /* ************************************************************************* */
 

@@ -2,26 +2,27 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./CreateAnnonce.css";
 import { AuthContext } from "../../context/AuthContext";
+import type { Category } from "../../types/Category";
 
 function CreateAnnonce() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // ✅ TOUS les hooks AVANT le early return
+  // TOUS les hooks AVANT le early return
   const [showConfirm, setShowConfirm] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [selectedPath, setSelectedPath] = useState<any[]>([]);
+  const [selectedPath, setSelectedPath] = useState<Category[]>([]);
 
-  const [categoryLevels, setCategoryLevels] = useState<any[][]>([]);
+  const [categoryLevels, setCategoryLevels] = useState<Category[][]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     amount_deposit: "",
+    zipcode: "",
     location: "",
     state_of_product: "good",
     start_borrow_date: "",
     end_borrow_date: "",
-    categorie_id: "",
+    category_id: "",
     files: [] as File[],
   });
   // Auth
@@ -31,7 +32,7 @@ function CreateAnnonce() {
     }
   }, [user, navigate]);
 
-  // Charger les catégories depuis l'API
+  // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -44,7 +45,6 @@ function CreateAnnonce() {
         }
 
         const data = await response.json();
-        setCategories(data);
         setCategoryLevels([data]);
       } catch (error) {
         console.error("Error loading categories:", error);
@@ -76,10 +76,10 @@ function CreateAnnonce() {
 
     setFormData({
       ...formData,
-      categorie_id: selectedId.toString(),
+      category_id: selectedId.toString(),
     });
 
-    if (selectedCategory.children?.length > 0) {
+    if (selectedCategory.children && selectedCategory.children.length > 0) {
       newLevels.push(selectedCategory.children);
     }
 
@@ -123,11 +123,12 @@ function CreateAnnonce() {
     formDataToSend.append("title", formData.title);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("amount_deposit", formData.amount_deposit.toString());
+    formDataToSend.append("zipcode", formData.zipcode);
     formDataToSend.append("location", formData.location);
     formDataToSend.append("state_of_product", formData.state_of_product);
     formDataToSend.append("start_borrow_date", formData.start_borrow_date);
     formDataToSend.append("end_borrow_date", formData.end_borrow_date);
-    formDataToSend.append("categorie_id", formData.categorie_id);
+    formDataToSend.append("category_id", formData.category_id);
     formDataToSend.append("owner_id", user.id.toString());
 
     for (const file of formData.files) {
@@ -145,7 +146,13 @@ function CreateAnnonce() {
 
       const result = await response.json();
       alert(result.message || result.error);
-    } catch (error) {
+
+      if (response.ok) {
+        setTimeout(() => {
+          navigate(`/announce/${result.announceId}`);
+        }, 1000);
+      }
+    } catch (_error) {
       alert("Error while sending");
     }
   };
@@ -203,6 +210,17 @@ function CreateAnnonce() {
               />
             </div>
             <div className="field-group">
+              <label htmlFor="zipcode">Zipcode</label>
+              <input
+                type="text"
+                name="zipcode"
+                placeholder="Zipcode"
+                value={formData.zipcode}
+                onChange={handleChange}
+                className="auto-width-input"
+              />
+            </div>
+            <div className="field-group">
               <label htmlFor="location">Location</label>
               <input
                 type="text"
@@ -214,7 +232,7 @@ function CreateAnnonce() {
               />
             </div>
             <div className="field-group">
-              <label htmlFor="categorie_id">Categories</label>
+              <label htmlFor="category_id">Categories</label>
               {categoryLevels.map((levelCategories, levelIndex) => {
                 const parent = selectedPath[levelIndex - 1];
 
@@ -228,7 +246,7 @@ function CreateAnnonce() {
 
                     {levelCategories.map((category) => (
                       <option key={category.id} value={category.id}>
-                        {category.categorie}
+                        {category.category}
                       </option>
                     ))}
                   </select>
