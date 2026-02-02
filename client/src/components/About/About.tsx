@@ -1,5 +1,5 @@
 import "./About.css";
-import AboutLanding from "../../assets/images/About-landing/about-landing.svg";
+import AboutLanding from "../../assets/images/About-landing/landing2.png";
 
 function About() {
   return (
