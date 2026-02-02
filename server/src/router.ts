@@ -64,6 +64,12 @@ router.post(
   borrowActions.createPaymentIntent,
 );
 
+router.post(
+  "/api/loan-requests",
+  authActions.checkAuth,
+  borrowActions.createLoanRequest,
+);
+
 /* ************************************************************************* */
 
 // Define Authentication-related routes
