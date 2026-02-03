@@ -3,8 +3,12 @@ import type { FieldPacket, RowDataPacket } from "mysql2";
 import Stripe from "stripe";
 import databaseClient from "../../../database/client";
 import borrowRepository from "./borrowRepository";
+import userRepository from "../user/userRepository";
+import nodemailer from "nodemailer";
+import path from "node:path";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+const logoPath = path.join(process.cwd(), "../client/public/Logo_top.png");
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -139,10 +143,25 @@ const createLoanRequest: RequestHandler = async (
   }
 };
 
+interface BorrowData extends RowDataPacket {
+  id: number;
+  announces_id: number;
+  owner_id: number;
+  borrower_id: number;
+  borrow_date: string;
+  return_date: string;
+  status: string;
+  payment_intent_id?: string;
+}
+
 const getBorrowById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const borrow = await borrowRepository.getBorrowById(Number(id));
+    const borrowRows = await borrowRepository.getBorrowById(Number(id));
+    const borrow: BorrowData | null =
+      borrowRows && borrowRows.length > 0
+        ? (borrowRows[0] as BorrowData)
+        : null;
 
     if (!borrow) {
       return res.status(404).json({ error: "Borrow not found" });
@@ -249,7 +268,6 @@ const createPaymentIntent: RequestHandler = async (req, res) => {
       automatic_payment_methods: {
         enabled: true,
       },
-      capture_method: "manual",
     });
 
     // Sending the key to the frontend
@@ -263,9 +281,414 @@ const createPaymentIntent: RequestHandler = async (req, res) => {
   }
 };
 
+const declarereturnedDeposit: RequestHandler = async (req, res) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  try {
+    const { borrowId } = req.body;
+
+    const borrow = await borrowRepository.getBorrowById(borrowId);
+    if (!borrow) {
+      return res.status(404).json({ error: "Borrow not found" });
+    }
+
+    // Capture the payment intent to release the deposit
+    const borrowstatusupdate =
+      await borrowRepository.declarereturnedDeposit(borrowId);
+
+    const borrowDataResult = await borrowRepository.getBorrowById(borrowId);
+    if (!borrowDataResult || borrowDataResult.length === 0) {
+      return res.status(404).json({ error: "Borrow not found after update" });
+    }
+    const [Borrowdata] = borrowDataResult;
+
+    const Userdataborrow = await userRepository.readPrivateById(
+      Borrowdata.borrower_id,
+    );
+    const UserdataOwner = await userRepository.readPrivateById(
+      Borrowdata.owner_id,
+    );
+    if (!Userdataborrow || !UserdataOwner) {
+      return res.status(404).json({ error: "User or borrower not found" });
+    }
+    await transporter.sendMail({
+      from: '"PickIt" <contact@pickit.fr>',
+      to: Userdataborrow.email,
+      subject: "Deposit returned - PickIt",
+      text: `Hello ${Userdataborrow.firstname}, your deposit has been returned. Please wait for confirmation.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
+          </div>
+    
+          <h2 style="color: #333;">Deposit update</h2>
+          
+          <p>Hello <strong>${Userdataborrow.firstname}</strong>,</p>
+          
+          <p>Great news! Your deposit has been successfully returned, and the owner has been notified.</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
+            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          </div>
+    
+          <p>Please wait for the final confirmation. We’ll keep you posted!</p>
+          
+          <p>Thank you for using <strong>PickIt</strong>!</p>
+          
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #888; text-align: center;">
+            Need help? Contact our support at contact@pickit.fr
+          </p>
+        </div>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          path: logoPath, // Assurez-vous que logoPath est défini
+          cid: "unique-logo-id",
+        },
+      ],
+    });
+
+    await transporter.sendMail({
+      from: '"PickIt" <contact@pickit.fr>',
+      to: UserdataOwner.email,
+      subject: "Deposit returned - PickIt",
+      text: `Hello ${UserdataOwner.firstname}, your deposit has been returned. Please confirm return for refund your borrower.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
+          </div>
+    
+          <h2 style="color: #333;">Deposit update</h2>
+          
+          <p>Hello <strong>${UserdataOwner.firstname}</strong>,</p>
+          
+          <p>Great news! Your deposit has been successfully returned, please confirm the return to refund on your profile your borrower.</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
+            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          </div>
+          
+          <p>Thank you for using <strong>PickIt</strong>!</p>
+          
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #888; text-align: center;">
+            Need help? Contact our support at contact@pickit.fr
+          </p>
+        </div>
+      `,
+      attachments: [
+        {
+          filename: "logo.png",
+          path: logoPath,
+          cid: "unique-logo-id",
+        },
+      ],
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Deposit return declared successfully and emails sent",
+      borrowstatusupdate,
+    });
+  } catch (error) {
+    console.error("Error declaring returned deposit:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
+const declaredepositconformed: RequestHandler = async (req, res) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  try {
+    const { borrowId } = req.body;
+    const borrowRows = await borrowRepository.getBorrowById(borrowId);
+    const borrow = borrowRows?.[0] as BorrowData;
+    if (!borrow || !borrow.payment_intent_id) {
+      return res
+        .status(404)
+        .json({ error: "Borrow not Borrow or Payment Intent not found" });
+    }
+    const refundParams = {
+      payment_intent: borrow.payment_intent_id,
+      expand: ["charge"],
+    };
+    const refund = await stripe.refunds.create(refundParams);
+    if (refund.status === "succeeded" || refund.status === "pending") {
+      const borrowstatusupdate =
+        await borrowRepository.declareborrowconformed(borrowId);
+
+      const borrowDataResult = await borrowRepository.getBorrowById(borrowId);
+      if (!borrowDataResult || borrowDataResult.length === 0) {
+        return res.status(404).json({ error: "Borrow not found after update" });
+      }
+      const [Borrowdata] = borrowDataResult;
+
+      const UserdataOwner = await userRepository.readPrivateById(
+        Borrowdata.owner_id,
+      );
+      if (!UserdataOwner || !Borrowdata) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Send email to owner to inform them that the deposit has been returned
+      if (UserdataOwner && Borrowdata) {
+        await transporter.sendMail({
+          from: '"PickIt" <contact@pickit.fr>',
+          to: Borrowdata.email,
+          subject: "Deposit returned - PickIt",
+          text: `Hello ${Borrowdata.firstname}, your deposit has been declared conformed. The refund process has been initiated for your borrower.`,
+          html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
+          </div>
+    
+          <h2 style="color: #333;">Deposit update</h2>
+          
+          <p>Hello <strong>${Borrowdata.firstname}</strong>,</p>
+          
+          <p>Great news! Your deposit has been successfully returned and confirmed by <strong>${UserdataOwner.firstname}</strong>, your refund process will take 5 to 7 business days.</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
+            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          </div>
+          
+          <p>Thank you for using <strong>PickIt</strong>!</p>
+          
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #888; text-align: center;">
+            Need help? Contact our support at contact@pickit.fr
+          </p>
+        </div>
+      `,
+          attachments: [
+            {
+              filename: "logo.png",
+              path: logoPath,
+              cid: "unique-logo-id",
+            },
+          ],
+        });
+
+        await transporter.sendMail({
+          from: '"PickIt" <contact@pickit.fr>',
+          to: Borrowdata.email,
+          subject: "Deposit returned - PickIt",
+          text: `Hello ${Borrowdata.firstname}, your trasaction with ${UserdataOwner.firstname} has been close and refund. The refund process has been initiated for your borrower.`,
+          html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
+          </div>
+    
+          <h2 style="color: #333;">Deposit update</h2>
+          
+          <p>Hello <strong>${Borrowdata.firstname}</strong>,</p>
+          
+          <p>Great news! Your deposit has been successfully returned and confirmed, your refund borrower process will take 5 to 7 business days.</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
+            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          </div>
+          
+          <p>Thank you for using <strong>PickIt</strong>!</p>
+          
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #888; text-align: center;">
+            Need help? Contact our support at contact@pickit.fr
+          </p>
+        </div>
+      `,
+          attachments: [
+            {
+              filename: "logo.png",
+              path: logoPath,
+              cid: "unique-logo-id",
+            },
+          ],
+        });
+      }
+      return res.status(200).json({
+        refund,
+        success: true,
+        message: "Deposit return confirmed successfully",
+        borrowstatusupdate,
+      });
+    }
+    return res.status(400).json({ error: "Refund not succeeded" });
+  } catch (error) {
+    console.error("Error confirming returned deposit:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+const declaredepositbroken: RequestHandler = async (req, res) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  try {
+    const { borrowId, amount, reason } = req.body;
+    const borrowRows = await borrowRepository.getBorrowById(borrowId);
+    const borrow = borrowRows?.[0] as BorrowData;
+
+    if (!borrow || !borrow.payment_intent_id) {
+      return res
+        .status(404)
+        .json({ error: "Borrow not Borrow or Payment Intent not found" });
+    }
+
+    let refund: Stripe.Response<Stripe.Refund>;
+
+    if (!amount || amount <= 0) {
+      refund = await stripe.refunds.create({
+        payment_intent: borrow.payment_intent_id,
+        expand: ["charge"],
+      });
+    } else {
+      refund = await stripe.refunds.create({
+        payment_intent: borrow.payment_intent_id,
+        amount: Math.round(amount * 100),
+        expand: ["charge"],
+      });
+    }
+
+    if (refund.status === "succeeded" || refund.status === "pending") {
+      const ownerData = await userRepository.readPrivateById(borrow.owner_id);
+      const borrowerData = await userRepository.readPrivateById(
+        borrow.borrower_id,
+      );
+      if (!ownerData || !borrowerData) {
+        return res.status(404).json({ error: "Owner or Borrower not found" });
+      }
+
+      const borrowstatusupdate =
+        await borrowRepository.declareborrowrejected(borrowId);
+
+      await transporter.sendMail({
+        from: '"PickIt" <contact@pickit.fr>',
+        to: borrowerData.email,
+        subject: "Deposit partial refund - PickIt",
+        text: `Hello ${borrowerData.firstname}, your deposit has not been fully refunded for ${reason}. Please check your PickIt account for details.`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
+          </div>
+    
+          <h2 style="color: #333;">Deposit update</h2>
+          
+          <p>Hello <strong>${borrowerData.firstname}</strong>,</p>
+          
+          <p>Unfortunately, your deposit has not been fully refunded for ${reason}. Please check your PickIt account for details.</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
+            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          </div>
+          
+          <p>Thank you for using <strong>PickIt</strong>!</p>
+          
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #888; text-align: center;">
+            Need help? Contact our support at contact@pickit.fr
+          </p>
+        </div>
+      `,
+        attachments: [
+          {
+            filename: "logo.png",
+            path: logoPath,
+            cid: "unique-logo-id",
+          },
+        ],
+      });
+
+      await transporter.sendMail({
+        from: '"PickIt" <contact@pickit.fr>',
+        to: ownerData.email,
+        subject: "Deposit partial refund - PickIt",
+        text: `Hello ${ownerData.firstname}, the deposit for your borrower has not been fully refunded. Please check your PickIt account for details.`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
+          
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
+          </div>
+    
+          <h2 style="color: #333;">Deposit update</h2>
+          
+          <p>Hello <strong>${ownerData.firstname}</strong>,</p>
+          
+          <p>The deposit for your borrower has not been fully refunded. Please check your PickIt account for details.</p>
+          
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
+            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          </div>
+          
+          <p>Thank you for using <strong>PickIt</strong>!</p>
+          
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+          
+          <p style="font-size: 12px; color: #888; text-align: center;">
+            Need help? Contact our support at contact@pickit.fr
+          </p>
+        </div>
+      `,
+        attachments: [
+          {
+            filename: "logo.png",
+            path: logoPath,
+            cid: "unique-logo-id",
+          },
+        ],
+      });
+
+      return res.status(200).json({
+        refund,
+        success: true,
+        message: "Deposit broken declared successfully",
+        borrowstatusupdate,
+      });
+    }
+    return res.status(400).json({ error: "Refund not succeeded" });
+  } catch (error) {
+    console.error("Error declaring broken deposit:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+};
+
 export default {
   secureDeposit,
   createPaymentIntent,
   createLoanRequest,
   getBorrowById,
+  declarereturnedDeposit,
+  declaredepositconformed,
+  declaredepositbroken,
 };

@@ -122,6 +122,45 @@ const borrowRepository = {
     ]);
     return result;
   },
+  async declarereturnedDeposit(
+    borrowId: number,
+  ): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET deposit_status = 'returned' 
+          WHERE id = ?
+        `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query, [
+      borrowId,
+    ]);
+    return result;
+  },
+  async declareborrowconformed(
+    borrowId: number,
+  ): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET status = 'completed',
+          WHERE id = ?
+        `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query, [
+      borrowId,
+    ]);
+    return result;
+  },
+  async declareborrowrejected(
+    borrowId: number,
+  ): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET status = 'object_broken'
+          WHERE id = ?
+        `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query, [
+      borrowId,
+    ]);
+    return result;
+  }
 };
 
 export default borrowRepository;
