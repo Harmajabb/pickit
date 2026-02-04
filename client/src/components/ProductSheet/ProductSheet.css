@@ -214,7 +214,6 @@ body {
 .info-section .edit-image-mini-wrapper {
   align-self: flex-end;
 }
-
 .product-title {
   font-family: "Poppins", sans-serif;
   font-size: clamp(2rem, 4.5vw, 3.25rem);
@@ -335,7 +334,7 @@ body {
 .info-fields {
   width: 100%;
   max-width: 320px;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   gap: 1rem;
 }
