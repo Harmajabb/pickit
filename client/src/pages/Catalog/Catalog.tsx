@@ -1,6 +1,6 @@
 import CatalogCard from "../../components/CatalogCard/CatalogCard.tsx";
 import "./Catalog.css";
-import { ChevronDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
@@ -133,9 +133,6 @@ function Catalog() {
                 </option>
               ))}
             </select>
-            <div className="select-icon">
-              <ChevronDown size={18} strokeWidth={1.5} />
-            </div>
           </div>
 
           <div className="filter-item zipcode-filter">
