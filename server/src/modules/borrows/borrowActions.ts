@@ -263,9 +263,57 @@ const createPaymentIntent: RequestHandler = async (req, res) => {
   }
 };
 
+const browseByOwner: RequestHandler = async (req, res, next) => {
+  try {
+    const authReq = req as unknown as AuthenticatedRequest;
+
+    const ownerId = authReq.auth?.sub;
+
+    console.log("Searching borrows for Owner ID:", ownerId);
+
+    if (!ownerId) {
+      res
+        .status(401)
+        .json({ message: "User not identified. Check the session." });
+      return;
+    }
+
+    const borrows = await borrowRepository.readAllByOwner(Number(ownerId));
+
+    console.log(
+      `Number of requests found in database: ${Array.isArray(borrows) ? borrows.length : 0}`,
+    );
+
+    res.json(borrows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const editStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { status } = req.body;
+
+    console.log(`update request ${id} to state: ${status}`);
+
+    const result = await borrowRepository.updateStatus(id, status);
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: "Request not found." });
+    } else {
+      res.json({ message: `Status updated to: ${status}` });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   secureDeposit,
   createPaymentIntent,
   createLoanRequest,
   getBorrowById,
+  browseByOwner,
+  editStatus,
 };

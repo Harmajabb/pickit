@@ -6,18 +6,17 @@ import { AuthContext } from "../../context/AuthContext";
 import type { ProfileData, UserPrivate } from "../../types/User";
 
 function Profile({ mode }: { mode: "me" | "member" }) {
-  const { id } = useParams(); // get user ID from url
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { user: authUser } = useContext(AuthContext); // for authentified "me" member
+  const { user: authUser } = useContext(AuthContext);
 
   const [data, setData] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // for edition in "me" member
+  const [isEditing, setIsEditing] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    //security
     if (mode === "member" && !id) return;
 
     if (mode === "me" && !authUser) {
@@ -27,15 +26,13 @@ function Profile({ mode }: { mode: "me" | "member" }) {
 
     const endpoint =
       mode === "me"
-        ? `${API_URL}/api/profile/me` // private profile
-        : `${API_URL}/api/profile/${id}`; // public profile
+        ? `${API_URL}/api/profile/me`
+        : `${API_URL}/api/profile/${id}`;
 
-    //fetch profile data
     (async () => {
       setLoading(true);
       const res = await fetch(endpoint, { credentials: "include" });
 
-      //unauthorized access
       if (res.status === 401) {
         navigate("/login");
         return;
@@ -45,6 +42,27 @@ function Profile({ mode }: { mode: "me" | "member" }) {
       setLoading(false);
     })();
   }, [mode, id, authUser, navigate]);
+
+  // --- NOUVELLE FONCTION POUR COMMUNIQUER AVEC TON BACKEND ---
+  const handleStatusUpdate = async (borrowId: number, newStatus: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/borrows/${borrowId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        alert(`Demande mise à jour : ${newStatus}`);
+        window.location.reload(); // Rafraîchit pour voir le changement
+      } else {
+        alert("Erreur lors de la mise à jour.");
+      }
+    } catch (error) {
+      console.error("Erreur API:", error);
+    }
+  };
 
   const handleSave = (updatedUser: UserPrivate) => {
     setData((prevData) => {
@@ -79,14 +97,17 @@ function Profile({ mode }: { mode: "me" | "member" }) {
             onSave={handleSave}
           />
         ) : (
-          <ProfileView mode="me" user={user} onEditClick={handleEditClick} />
+          <ProfileView
+            mode="me"
+            user={user}
+            onEditClick={handleEditClick}
+            onStatusUpdate={handleStatusUpdate} // Connexion faite ici !
+          />
         )}
       </>
     );
   }
 
-  // Public profile
-  //note Leah: maybe using kind if I have time to avoid manual checks.
   return (
     <ProfileView
       mode="member"
