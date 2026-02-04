@@ -1,4 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import BorrowProgressStepper from "../BorrowProgressStepper/BorrowProgressStepper";
+import DeclareBrokenDepositButton from "../buttons-borrows/DeclareBrokenDepositButton";
+import DeclareDepositConformedButton from "../buttons-borrows/DeclareDepositConformedButton";
+import DeclareReturnedDepositButton from "../buttons-borrows/DeclareReturnedDepositButton";
 import "./MyRequest.css";
 
 interface BorrowRequest {
@@ -6,39 +11,76 @@ interface BorrowRequest {
   item_title: string;
   borrower_name: string;
   status: string;
+  owner_name: string;
+  deposit_status?: string;
+  amount_deposit?: number;
+  amount_refunded?: number;
+  amount_kept?: number;
 }
 
 function MyRequests() {
-  const [borrows, setBorrows] = useState<BorrowRequest[]>([]);
+  const [Owner, setOwner] = useState<BorrowRequest[]>([]);
+  const [Borrower, setBorrower] = useState<BorrowRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingActions, setLoadingActions] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(`${API_URL}/api/borrows`, { credentials: "include" })
-      .then((res) => res.json())
-      .then((data) => {
-        setBorrows(Array.isArray(data) ? data : []);
+    const fetchData = async () => {
+      try {
+        const [resOwner, resBorrower] = await Promise.all([
+          fetch(`${API_URL}/api/borrows/Owner`, { credentials: "include" }),
+          fetch(`${API_URL}/api/borrows/Borrower`, { credentials: "include" }),
+        ]);
+
+        if (resOwner.ok) {
+          const ownerData = await resOwner.json();
+          console.log("Owner data fetched:", ownerData);
+          setOwner(Array.isArray(ownerData) ? ownerData : []);
+        }
+        if (resBorrower.ok) {
+          const borrowerData = await resBorrower.json();
+          console.log("Borrower data fetched:", borrowerData);
+          setBorrower(Array.isArray(borrowerData) ? borrowerData : []);
+        }
+
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erreur fetch:", err);
+      } catch (error) {
+        console.error("Network or parsing error:", error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleAction = async (id: number, status: string) => {
+  const handleAction = async (
+    id: number,
+    status: string,
+    depositStatus: string,
+  ) => {
     try {
       const response = await fetch(`${API_URL}/api/borrows/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, deposit_status: depositStatus }),
         credentials: "include",
       });
 
       if (response.ok) {
-        setBorrows((prev) =>
-          prev.map((b) => (b.id === id ? { ...b, status } : b)),
+        setOwner((prev) =>
+          prev.map((o) =>
+            o.id === id ? { ...o, status, deposit_status: depositStatus } : o,
+          ),
+        );
+        setBorrower((prev) =>
+          prev.map((b) =>
+            b.id === id ? { ...b, status, deposit_status: depositStatus } : b,
+          ),
         );
       }
     } catch (error) {
@@ -46,144 +88,248 @@ function MyRequests() {
     }
   };
 
-  if (loading)
+  const handleDeclareReturned = async (borrowId: number) => {
+    setLoadingActions((prev) => ({ ...prev, [borrowId]: true }));
+    try {
+      const response = await fetch(
+        `${API_URL}/api/borrows/declare-returned-deposit`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ borrowId }),
+          credentials: "include",
+        },
+      );
+
+      if (response.ok) {
+        setBorrower((prev) =>
+          prev.map((b) =>
+            b.id === borrowId ? { ...b, deposit_status: "returned" } : b,
+          ),
+        );
+      } else {
+        console.error("Failed to declare returned deposit");
+      }
+    } catch (error) {
+      console.error("Error declaring returned deposit:", error);
+    } finally {
+      setLoadingActions((prev) => ({ ...prev, [borrowId]: false }));
+    }
+  };
+
+  const handleDeclareConformed = async (borrowId: number) => {
+    setLoadingActions((prev) => ({ ...prev, [borrowId]: true }));
+    try {
+      const response = await fetch(
+        `${API_URL}/api/borrows/declare-deposit-conformed`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ borrowId }),
+          credentials: "include",
+        },
+      );
+
+      if (response.ok) {
+        setOwner((prev) =>
+          prev.map((o) =>
+            o.id === borrowId ? { ...o, deposit_status: "refunded" } : o,
+          ),
+        );
+      } else {
+        console.error("Failed to declare conformed deposit");
+      }
+    } catch (error) {
+      console.error("Error declaring conformed deposit:", error);
+    } finally {
+      setLoadingActions((prev) => ({ ...prev, [borrowId]: false }));
+    }
+  };
+
+  const handleDeclareBroken = async (
+    borrowId: number,
+    amount?: number,
+    reason?: string,
+  ) => {
+    setLoadingActions((prev) => ({ ...prev, [borrowId]: true }));
+    try {
+      const response = await fetch(
+        `${API_URL}/api/borrows/declare-deposit-broken`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ borrowId, amount, reason }),
+          credentials: "include",
+        },
+      );
+
+      if (response.ok) {
+        setOwner((prev) =>
+          prev.map((o) =>
+            o.id === borrowId ? { ...o, deposit_status: "kept" } : o,
+          ),
+        );
+      } else {
+        console.error("Failed to declare broken deposit");
+      }
+    } catch (error) {
+      console.error("Error declaring broken deposit:", error);
+    } finally {
+      setLoadingActions((prev) => ({ ...prev, [borrowId]: false }));
+    }
+  };
+
+  const shouldShowDepositButtons = (
+    status: string,
+    depositStatus?: string,
+  ): boolean => {
     return (
-      <p style={{ color: "var(--color-primary-text)", padding: "20px" }}>
-        Loading requests...
-      </p>
+      status === "in_progress" && (!depositStatus || depositStatus === "paid")
     );
+  };
+
+  const shouldShowOwnerReturnButtons = (
+    status: string,
+    depositStatus?: string,
+  ): boolean => {
+    return status === "returned" && depositStatus === "paid";
+  };
+
+  const shouldShowPayDepositButton = (
+    status: string,
+    depositStatus?: string,
+  ): boolean => {
+    return status === "confirmed" && depositStatus === "not_paid";
+  };
+
+  const handlePayDeposit = (borrowId: number) => {
+    navigate(`/deposit/${borrowId}`);
+  };
+
+  if (loading) return <p>Loading requests...</p>;
 
   return (
-    <div
-      style={{
-        padding: "40px 20px",
-        // We use the theme variables
-        backgroundColor: "var(--color-bg)",
-        minHeight: "100vh",
-        color: "var(--color-primary-text)",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <h1
-          style={{
-            fontSize: "2rem",
-            marginBottom: "30px",
-            fontWeight: "bold",
-            color: "var(--color-title)",
-          }}
-        >
-          Borrow Requests
-        </h1>
+    <div className="my-requests-page">
+      <div>
+        <h1 className="my-requests-title">Requests for my items</h1>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-          {borrows.length > 0 ? (
-            borrows.map((b, index) => (
-              <div
-                key={`${b.id}-${index}`}
-                style={{
-                  display: "flex",
-                  // We put quotation marks here
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  backgroundColor: "var(--color-card)",
-                  padding: "20px",
-                  borderRadius: "12px",
-                  border: "1px solid var(--color-btn)",
-                }}
-              >
-                <div>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "1.1rem",
-                      fontWeight: "600",
-                      color: "var(--color-title)",
-                    }}
-                  >
-                    {b.item_title}
-                  </p>
-                  <p
-                    style={{
-                      margin: "5px 0",
-                      color: "var(--color-primary-text)",
-                      opacity: 0.7,
-                      fontSize: "0.9rem",
-                    }}
-                  >
-                    Requested by:{" "}
-                    <span style={{ color: "var(--color-title)" }}>
-                      {b.borrower_name}
-                    </span>
-                  </p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: "0.8rem",
-                      fontWeight: "bold",
-                      color:
-                        b.status === "confirmed"
-                          ? "#22c55e"
-                          : b.status === "rejected"
-                            ? "#ef4444"
-                            : "#eab308",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Status: {b.status}
+        <div className="requests-grid">
+          {Owner.length > 0 ? (
+            Owner.map((o, index) => (
+              <div key={`${o.id}-${index}`} className="borrow-card">
+                <div className="borrow-info">
+                  <h3>{o.item_title}</h3>
+                  <p>
+                    Requested by: <span>{o.borrower_name}</span>
                   </p>
                 </div>
 
-                <div style={{ display: "flex", gap: "10px" }}>
-                  {b.status === "pending" && (
+                <div className="borrow-progress">
+                  <BorrowProgressStepper
+                    status={o.status}
+                    depositStatus={o.deposit_status}
+                    isOwner={true}
+                    amountDeposit={o.amount_deposit || 0}
+                    amountKept={o.amount_kept || 0}
+                    amountRefunded={o.amount_refunded || 0}
+                  />
+                </div>
+
+                <div className="actions-buttons">
+                  {o.status === "pending" && (
                     <>
                       <button
                         type="button"
-                        onClick={() => handleAction(b.id, "confirmed")}
-                        style={{
-                          backgroundColor: "var(--color-btn)",
-                          color: "#000",
-                          border: "none",
-                          padding: "10px 20px",
-                          borderRadius: "6px",
-                          cursor: "pointer",
-                          fontWeight: "bold",
-                        }}
+                        onClick={() =>
+                          handleAction(o.id, "confirmed", "not_paid")
+                        }
+                        className="primary btn-accept"
                       >
                         Accept
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleAction(b.id, "rejected")}
-                        style={{
-                          backgroundColor: "#ef4444",
-                          color: "white",
-                          border: "none",
-                          padding: "10px 20px",
-                          borderRadius: "6px",
-                          cursor: "pointer",
-                          fontWeight: "bold",
-                        }}
+                        className="secondary btn-refuse"
+                        onClick={() =>
+                          handleAction(o.id, "rejected", "not_paid")
+                        }
                       >
                         Refuse
                       </button>
+                    </>
+                  )}
+
+                  {shouldShowOwnerReturnButtons(o.status, o.deposit_status) && (
+                    <>
+                      <DeclareDepositConformedButton
+                        borrowId={o.id}
+                        onClick={handleDeclareConformed}
+                        isLoading={loadingActions[o.id] || false}
+                      />
+                      <DeclareBrokenDepositButton
+                        borrowId={o.id}
+                        onClick={handleDeclareBroken}
+                        isLoading={loadingActions[o.id] || false}
+                      />
                     </>
                   )}
                 </div>
               </div>
             ))
           ) : (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "40px",
-                backgroundColor: "var(--color-card)",
-                borderRadius: "12px",
-              }}
-            >
-              <p style={{ color: "var(--color-primary-text)", opacity: 0.6 }}>
-                No borrow requests for your items yet.
-              </p>
+            <div>
+              <p>No borrow requests for your items yet.</p>
+            </div>
+          )}
+        </div>
+
+        <h1 className="my-requests-title">Requests I made</h1>
+        <div className="requests-grid">
+          {Borrower.length > 0 ? (
+            Borrower.map((o, index) => (
+              <div key={`${o.id}-${index}`} className="borrow-card">
+                <div className="borrow-info">
+                  <h3>{o.item_title}</h3>
+                  <p>
+                    Owner: <span>{o.owner_name}</span>
+                  </p>
+                </div>
+
+                <div className="borrow-progress">
+                  <BorrowProgressStepper
+                    status={o.status}
+                    depositStatus={o.deposit_status}
+                    isOwner={false}
+                    amountDeposit={o.amount_deposit || 0}
+                    amountKept={o.amount_kept || 0}
+                    amountRefunded={o.amount_refunded || 0}
+                  />
+                </div>
+
+                <div className="actions-buttons">
+                  {shouldShowPayDepositButton(o.status, o.deposit_status) && (
+                    <button
+                      type="button"
+                      className="primary btn-pay-deposit"
+                      onClick={() => handlePayDeposit(o.id)}
+                    >
+                      Pay Deposit ({o.amount_deposit || "N/A"}€)
+                    </button>
+                  )}
+
+                  {shouldShowDepositButtons(o.status, o.deposit_status) && (
+                    <DeclareReturnedDepositButton
+                      borrowId={o.id}
+                      onClick={handleDeclareReturned}
+                      isLoading={loadingActions[o.id] || false}
+                    />
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div>
+              <p>No borrow requests made yet.</p>
             </div>
           )}
         </div>
