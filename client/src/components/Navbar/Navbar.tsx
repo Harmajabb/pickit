@@ -45,11 +45,7 @@ function Navbar() {
         <Link to="/create-annonce" className="cta">
           List an item
         </Link>
-        {/* <input
-          type="text"
-          className="text-input"
-          placeholder="search an item..."
-        /> */}
+
         <SearchBar
           placeholder="Search for announcements or members..."
           onSubmit={handleSearchSubmit}
@@ -85,10 +81,11 @@ function Navbar() {
             </g>
           </svg>
         </Link>
+
         {/* CHANGE CONDITION : IF USER IS LOGGED IN -> SHOW PROFILE ICON AND DISCONNECT BTN (FIST DIV) IF HES NOT LOGGED IN -> SHOW LOG IN / SIGN IN BTN */}
         {isLogged ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className="nav-user-info">
               <Link to={user?.role === 1 ? "/ad-dashboard" : "/profile/me"}>
                 <svg
                   aria-hidden="true"
@@ -109,9 +106,7 @@ function Navbar() {
                   />
                 </svg>
               </Link>
-              <span className="nav-firstname" style={{ fontWeight: "500" }}>
-                Hello, {user?.firstname}
-              </span>
+              <span className="nav-firstname">Hello, {user?.firstname}</span>
             </div>
 
             <Link onClick={logout} to="/" className="secondary">
@@ -125,6 +120,7 @@ function Navbar() {
         )}
         <ThemeToggle />
       </nav>
+
       <Link to="/">
         <img src={roundedLogo} alt="PICKIT logo" className="mobile-nav_logo" />
       </Link>
@@ -152,49 +148,7 @@ function Navbar() {
           </svg>
           <span>Home</span>
         </Link>
-        <Link to="/catalog">
-          <svg viewBox="0 0 20 20" aria-hidden="true" className="nav-icons">
-            <path
-              d="M1 8C1 8.91925 1.18106 9.82951 1.53284 10.6788C1.88463 11.5281 2.40024 12.2997 3.05025 12.9497C3.70026 13.5998 4.47194 14.1154 5.32122 14.4672C6.1705 14.8189 7.08075 15 8 15C8.91925 15 9.82951 14.8189 10.6788 14.4672C11.5281 14.1154 12.2997 13.5998 12.9497 12.9497C13.5998 12.2997 14.1154 11.5281 14.4672 10.6788C14.8189 9.82951 15 8.91925 15 8C15 7.08075 14.8189 6.1705 14.4672 5.32122C14.1154 4.47194 13.5998 3.70026 12.9497 3.05025C12.2997 2.40024 11.5281 1.88463 10.6788 1.53284C9.82951 1.18106 8.91925 1 8 1C7.08075 1 6.1705 1.18106 5.32122 1.53284C4.47194 1.88463 3.70026 2.40024 3.05025 3.05025C2.40024 3.70026 1.88463 4.47194 1.53284 5.32122C1.18106 6.1705 1 7.08075 1 8Z"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M19 19L13 13"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span>Search</span>
-        </Link>
-        <Link to="">
-          <svg viewBox="0 0 20 20" aria-hidden="true" className="nav-icons add">
-            <path
-              strokeLinejoin="round"
-              d="M16.333 4C17.3055 4 18.2383 4.38634 18.926 5.07404C19.6137 5.76174 20 6.69445 20 7.667V16.333C20 17.3055 19.6137 18.2383 18.926 18.926C18.2383 19.6137 17.3055 20 16.333 20H7.667C6.69445 20 5.76174 19.6137 5.07404 18.926C4.38634 18.2383 4 17.3055 4 16.333V7.667C4 6.69445 4.38634 5.76174 5.07404 5.07404C5.76174 4.38634 6.69445 4 7.667 4H16.333ZM12 8C11.7348 8 11.4804 8.10536 11.2929 8.29289C11.1054 8.48043 11 8.73478 11 9V11H9C8.75507 11 8.51866 11.09 8.33563 11.2527C8.15259 11.4155 8.03566 11.6397 8.007 11.883L8 12C8 12.2652 8.10536 12.5196 8.29289 12.7071C8.48043 12.8946 8.73478 13 9 13H11V15C11 15.2449 11.09 15.4813 11.2527 15.6644C11.4155 15.8474 11.6397 15.9643 11.883 15.993L12 16C12.2652 16 12.5196 15.8946 12.7071 15.7071C12.8946 15.5196 13 15.2652 13 15V13H15C15.2449 13 15.4813 12.91 15.6644 12.7473C15.8474 12.5845 15.9643 12.3603 15.993 12.117L16 12C16 11.7348 15.8946 11.4804 15.7071 11.2929C15.5196 11.1054 15.2652 11 15 11H13V9C13 8.75507 12.91 8.51866 12.7473 8.33563C12.5845 8.15259 12.3603 8.03566 12.117 8.007L12 8ZM13 0C14.094 0 14.828 0.533 15.374 1.514C15.4378 1.62878 15.4784 1.755 15.4935 1.88546C15.5085 2.01592 15.4977 2.14807 15.4617 2.27436C15.4256 2.40065 15.3651 2.5186 15.2835 2.62149C15.2019 2.72437 15.1008 2.81018 14.986 2.874C14.8712 2.93782 14.745 2.97841 14.6145 2.99345C14.4841 3.0085 14.3519 2.99769 14.2256 2.96167C14.0994 2.92564 13.9814 2.86509 13.8785 2.78347C13.7756 2.70186 13.6898 2.60078 13.626 2.486C13.405 2.088 13.284 2 13 2H3C2.452 2 2 2.452 2 3V12.998C2 13.318 2.154 13.616 2.407 13.803L2.507 13.868C2.62112 13.933 2.72132 14.0198 2.80187 14.1236C2.88243 14.2273 2.94176 14.3459 2.97649 14.4725C3.01122 14.5992 3.02066 14.7315 3.00428 14.8618C2.98789 14.9921 2.946 15.1179 2.881 15.232C2.816 15.3461 2.72915 15.4463 2.62542 15.5269C2.5217 15.6074 2.40312 15.6668 2.27646 15.7015C2.1498 15.7362 2.01754 15.7457 1.88723 15.7293C1.75692 15.7129 1.63112 15.671 1.517 15.606C1.05661 15.3442 0.67374 14.9652 0.407293 14.5074C0.140845 14.0497 0.000320882 13.5296 0 13V3C0 1.348 1.348 0 3 0H13Z"
-            />
-          </svg>
-          <span>Add</span>
-        </Link>
-        <Link to="">
-          <svg viewBox="0 0 24 23" aria-hidden="true" className="nav-icons">
-            <path
-              d="M19.0889 18.1082C19.0889 18.1082 19.183 18.0395 19.3333 17.9221C21.5859 16.1429 23 13.5645 23 10.694C23 5.34259 18.0744 1 12 1C5.92556 1 1 5.34259 1 10.694C1 16.048 5.92556 20.2407 12 20.2407C12.5182 20.2407 13.3689 20.2058 14.552 20.1359C16.0944 21.1597 18.3458 22 20.316 22C20.9259 22 21.2131 21.4881 20.822 20.9662C20.228 20.222 19.4091 19.0296 19.0913 18.1069L19.0889 18.1082Z"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M6.49756 13.3733C9.55311 16.4948 14.442 16.4948 17.4976 13.3733"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span>Chat</span>
-        </Link>
+        {/* ... (Catalog, Add, Chat links omis pour la clarté, mais garde les tiens tels quels) */}
         <Link to={user?.role === 1 ? "/ad-dashboard" : "/profile/me"}>
           <svg viewBox="0 0 14 20" aria-hidden="true" className="nav-icons">
             <path

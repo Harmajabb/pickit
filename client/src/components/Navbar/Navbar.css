@@ -77,6 +77,12 @@
   fill: var(--color-primary-text);
   stroke: none;
 }
+
+.nav-user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 @media (min-width: 740px) {
   .mobile-nav,
   .mobile-nav_logo {
