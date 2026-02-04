@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router";
-import logo from "../../assets/icons/logo.svg";
-import roundedLogo from "../../assets/icons/rounded-logo.svg";
+// import roundedLogo from "../../assets/icons/rounded-logo.svg";
+import pickitDark from "../../assets/icons/pickit-dark.png";
+import pickitLight from "../../assets/icons/pickit-light.png";
 import type { SearchResult, Tab } from "../../types/Search";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
@@ -40,7 +41,8 @@ function Navbar() {
     <>
       <nav className="desktop-nav">
         <Link to="/">
-          <img src={logo} alt="logo PICKIT" />
+          <img src={pickitDark} alt="logo PICKIT" className="logo-dark" />
+          <img src={pickitLight} alt="logo PICKIT" className="logo-light" />
         </Link>
         <Link to="/create-annonce" className="cta">
           List an item
@@ -109,14 +111,23 @@ function Navbar() {
             </Link>
           </>
         ) : (
-          <Link to="/login" className="primary">
+          <Link to="/login" className="primary navbar-login-btn">
             Log In
           </Link>
         )}
         <ThemeToggle />
       </nav>
       <Link to="/">
-        <img src={roundedLogo} alt="PICKIT logo" className="mobile-nav_logo" />
+        <img
+          src={pickitDark}
+          alt="PICKIT logo"
+          className="mobile-nav_logo logo-dark"
+        />
+        <img
+          src={pickitLight}
+          alt="PICKIT logo"
+          className="mobile-nav_logo logo-light"
+        />
       </Link>
       <nav className="mobile-nav">
         <Link to="/">

@@ -42,8 +42,8 @@
   --color-btn-secondary-hover: #ff6f00;
 
   /* Smooth shadows */
-  --shadow-soft: 0 4px 12px rgba(111, 165, 54, 0.15);
-  --shadow-soft-hover: 0 8px 20px rgba(111, 165, 54, 0.22);
+  --shadow-soft: 0 20px 50px rgba(0, 0, 0, 0.1);
+  --shadow-soft-hover: 0 10px 25px rgba(15, 22, 8, 0.22);
 
   /* Animations */
   --smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -256,6 +256,7 @@ button:focus-visible {
   border-radius: var(--b-radius-sm);
   position: relative;
   overflow: hidden;
+  background: transparent;
   &:hover {
     background: var(--color-btn-secondary-hover);
     box-shadow: var(--shadow-soft-hover);
@@ -360,19 +361,94 @@ textarea:hover {
   border: 0;
 }
 
-/* ==== Card Styles ==== */
+/* ==== Animation scroll reveal ==== */
 
-/* style flat with smooth shadows */
-.card-flat {
-  background: var(--color-card);
-  border-radius: var(--b-radius);
-  box-shadow: var(--shadow-soft);
-  padding: 1.5rem;
-  transition: all 0.3s var(--smooth-ease);
-  border: none;
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
 }
 
-.card-flat:hover {
-  box-shadow: var(--shadow-soft-hover);
-  transform: translateY(-4px);
+.reveal.is-visible {
+  animation: revealFadeUp 0.9s var(--smooth-ease) forwards;
+  pointer-events: auto;
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
+}
+
+.reveal-stagger.is-visible > * {
+  animation: revealFadeUp 0.9s var(--smooth-ease) forwards;
+  pointer-events: auto;
+}
+
+.reveal-stagger.is-visible > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(2) {
+  animation-delay: 50ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(3) {
+  animation-delay: 100ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(4) {
+  animation-delay: 150ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(6) {
+  animation-delay: 250ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(7) {
+  animation-delay: 300ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(8) {
+  animation-delay: 350ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(9) {
+  animation-delay: 400ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(10) {
+  animation-delay: 450ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(11) {
+  animation-delay: 500ms;
+}
+
+.reveal-stagger.is-visible > *:nth-child(12) {
+  animation-delay: 550ms;
+}
+
+@keyframes revealFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
 }

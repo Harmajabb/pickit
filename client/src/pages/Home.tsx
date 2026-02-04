@@ -1,7 +1,7 @@
 import About from "../components/About/About";
 import Hero from "../components/Hero/Hero";
-import Testimony from "../components/Testimony/Testimony";
 import ItemHighlight from "../components/ItemHighlight/ItemHighlight";
+import Testimony from "../components/Testimony/Testimony";
 
 import "./Home.css";
 
@@ -10,8 +10,8 @@ function Home() {
     <>
       <Hero />
       <ItemHighlight />
-      <About />
       <Testimony />
+      <About />
     </>
   );
 }

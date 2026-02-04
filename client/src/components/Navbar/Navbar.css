@@ -8,7 +8,7 @@
   aspect-ratio: 1 / 1;
 }
 .desktop-nav .nav-icons:hover {
-  stroke: #282727;
+  stroke: var(--color-bg);
   background: var(--color-btn);
   box-shadow: 0 0 0 2px var(--color-btn);
 }
@@ -18,14 +18,12 @@
   position: fixed;
   top: 0;
   width: 100%;
-  /* box-shadow: 0 1px 0 0 var(--color-primary-text); */
+  box-shadow: var(--shadow-soft-hover);
   white-space: nowrap;
-
   display: grid;
   grid-template-columns: auto 1fr 3fr auto auto auto auto auto;
-
   gap: 2rem;
-  padding: 1rem 3rem;
+  padding: 1.5rem 3rem;
   place-items: center;
 
   &::after {
@@ -69,6 +67,9 @@
 }
 .desktop-nav .heart {
   padding: 0.3rem;
+}
+.navbar-login-btn {
+  color: black;
 }
 
 .mobile-nav {
@@ -141,5 +142,18 @@
     calc(env(safe-area-inset-left) + 1rem);
   top: 0;
   left: 0;
-  width: 70px;
+  width: 50px;
+}
+
+/* Logo theme switching */
+.logo-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .logo-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .logo-light {
+  display: block;
 }

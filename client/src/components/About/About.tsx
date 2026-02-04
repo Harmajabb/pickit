@@ -1,33 +1,54 @@
+import AboutVideo from "../../assets/images/About-landing/5679346-uhd_3840_2160_25fps.mp4";
 import "./About.css";
-import AboutLanding from "../../assets/images/About-landing/landing2.png";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 
 function About() {
+  const { ref, isVisible } = useRevealOnScroll<HTMLElement>();
+
   return (
-    <section className="about" aria-labelledby="about-title">
+    <section
+      ref={ref}
+      className={`about reveal ${isVisible ? "is-visible" : ""}`}
+      aria-labelledby="about-title"
+    >
       <div className="about-container">
         <h2 id="about-title" className="about-title">
-          About Pickit
+          Share More. Buy Less.
         </h2>
 
-        <div className="about-divider" aria-hidden="true" />
+        <div
+          className={`about-divider ${isVisible ? "divider-visible" : ""}`}
+          aria-hidden="true"
+        />
 
-        <div className="about-text">
-          <p>
-            Pickit is a peer-to-peer sports equipment lending platform. We start
-            from a simple observation: sports gear is often expensive and only
-            used a few times. With Pickit, everyone can lend, borrow, and enjoy
-            sports more freely without unnecessary purchases. Our goal is to
-            make sharing easier, build trust between users, and make sports more
-            accessible to everyone.
-          </p>
-          <p className="about-closing">Because sport is meant to be shared.</p>
+        <div className="about-text-wrapper">
+          <div className="about-feature-text">
+            <p className="about-feature-line">
+              One-click change everything. Access, share, and enjoy sports
+              without the price tag.
+            </p>
+          </div>
+
+          <div className="about-text-column">
+            <p>
+              Pickit is a peer-to-peer sports equipment lending platform. We
+              start from a simple observation: sports gear is often expensive
+              and only used a few times. With Pickit, everyone can lend, borrow,
+              and enjoy sports more freely without unnecessary purchases. Our
+              goal is to make sharing easier, build trust between users, and
+              make sports more accessible to everyone.
+            </p>
+          </div>
         </div>
 
-        <img
-          className="about-img"
-          src={AboutLanding}
-          alt=""
-          aria-hidden="true"
+        <video
+          className="about-video"
+          src={AboutVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-label="Video showing people sharing sports equipment"
         />
       </div>
     </section>
