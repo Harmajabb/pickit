@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS borrows (
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (borrower_id) REFERENCES users(id) ON DELETE CASCADE,
     
-    INDEX idx_session_id (session_id),
+    INDEX idx_payment_intent_id (payment_intent_id),
     INDEX idx_borrower (borrower_id),
     INDEX idx_owner (owner_id),
     INDEX idx_status (status),
@@ -288,21 +288,22 @@ INSERT IGNORE INTO categories (id, category, parent_id) VALUES
 (7, 'Mountain Biking', 3);
 
 -- Announces (2 listings)
+
 INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, status, zipcode, category_id, owner_id, state_of_product) VALUES
-id,title,description,amount_deposit,creation_date,update_date,start_borrow_date,end_borrow_date,location,status,zipcode,category_id,owner_id,state_of_product
-(1,"Giant Talon Mountain Bike","Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.",200,2024-10-09,2024-10-31,2024-12-01,2025-03-31,"Lille, Nord",active,59000,7,1,excellent)
-(2,"Quiksilver Surfboard","surfboard, ideal for beginners and intermediates. Includes protective cover.",150,2024-11-25,0000-00-00,2024-12-01,2025-09-30,"Biarritz, Pyrénées-Atlantiques",active,64200,6,2,good)
-(3,"Raquette de Tennis Wilson Pro Staff","Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.",50,2024-12-01,2024-12-05,2024-12-10,2025-06-30,"Lyon, Rhône",active,69000,5,3,new)
-(6,"Paddle Gonflable Itiwit","Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.",120,2024-10-20,2024-11-02,2025-05-01,2025-09-30,"Annecy, Haute-Savoie",active,74000,6,1,new)
-(9,"Rollers en ligne Rollerblade","Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.",30,2024-12-12,0000-00-00,2024-12-15,2025-12-31,"Montpellier, Hérault",active,34000,7,3,new)
-(11,"Ballon de piscine","Très beau ballon de piscine tout neuf pour surfer dans la joie et la bonne humeur",5,2026-01-30,2026-01-30,2026-01-30,2026-02-28,Paris,active,75018,6,3,good)
-(12,"Bike helmet","Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.",50,2026-02-02,NULL,2026-02-02,2027-08-05,Lyon,active,59000,7,3,excellent)
-(13,"Raquettes de randonnée","Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.",80,2026-02-02,2026-02-02,2026-02-02,2028-05-02,Lyon,active,69000,1,3,good)
-(14,"Sacoche de VTT","Sacoche de guidon pratique et résistante, idéale pour transporter l’essentiel en toute sécurité tout en restant facilement accessible pendant vos sorties à vélo.",30,2026-02-02,NULL,2026-02-03,2032-08-04,Lyon,active,69000,3,3,fair)
-(15,"Paire de skis","Paire de skis polyvalente et performante, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.",250,2026-02-02,NULL,2026-02-25,2028-04-12,Paris,active,75020,4,3,excellent)
-(16,"Snowboard","Snowboard design polyvalent et performant, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.",200,2026-02-02,NULL,2026-02-26,2026-12-14,Paris,active,75020,1,3,good)
-(17,"VTT","VTT robuste et polyvalent, conçu pour offrir un excellent contrôle et un confort optimal sur tous les sentiers, des chemins roulants aux terrains les plus techniques.",250,2026-02-02,NULL,2026-03-23,2030-12-31,Lille,active,59000,3,3,good)
--- Announces Images (3 images)
+(1, "Giant Talon Mountain Bike", "Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.", 200, '2024-10-09', '2024-10-31', '2024-12-01', '2025-03-31', "Lille, Nord", 'active', 59000, 7, 1, 'excellent'),
+(2, "Quiksilver Surfboard", "surfboard, ideal for beginners and intermediates. Includes protective cover.", 150, '2024-11-25', NULL, '2024-12-01', '2025-09-30', "Biarritz, Pyrénées-Atlantiques", 'active', 64200, 6, 2, 'good'),
+(3, "Raquette de Tennis Wilson Pro Staff", "Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.", 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', "Lyon, Rhône", 'active', 69000, 5, 3, 'new'),
+(6, "Paddle Gonflable Itiwit", "Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.", 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', "Annecy, Haute-Savoie", 'active', 74000, 6, 1, 'new'),
+(9, "Rollers en ligne Rollerblade", "Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.", 30, '2024-12-12', NULL, '2024-12-15', '2025-12-31', "Montpellier, Hérault", 'active', 34000, 7, 3, 'new'),
+(11, "Ballon de piscine", "Très beau ballon de piscine tout neuf pour surfer dans la joie et la bonne humeur", 5, '2026-01-30', '2026-01-30', '2026-01-30', '2026-02-28', 'Paris', 'active', 75018, 6, 3, 'good'),
+(12, "Bike helmet", "Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.", 50, '2026-02-02', NULL, '2026-02-02', '2027-08-05', 'Lyon', 'active', 59000, 7, 3, 'excellent'),
+(13, "Raquettes de randonnée", "Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.", 80, '2026-02-02', '2026-02-02', '2026-02-02', '2028-05-02', 'Lyon', 'active', 69000, 1, 3, 'good'),
+(14, "Sacoche de VTT", "Sacoche de guidon pratique et résistante, idéale pour transporter l’essentiel en toute sécurité tout en restant facilement accessible pendant vos sorties à vélo.", 30, '2026-02-02', NULL, '2026-02-03', '2032-08-04', 'Lyon', 'active', 69000, 3, 3, 'fair'),
+(15, "Paire de skis", "Paire de skis polyvalente et performante, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 250, '2026-02-02', NULL, '2026-02-25', '2028-04-12', 'Paris', 'active', 75020, 4, 3, 'excellent'),
+(16, "Snowboard", "Snowboard design polyvalent et performant, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 200, '2026-02-02', NULL, '2026-02-26', '2026-12-14', 'Paris', 'active', 75020, 1, 3, 'good'),
+(17, "VTT", "VTT robuste et polyvalent, conçu pour offrir un excellent contrôle et un confort optimal sur tous les sentiers, des chemins roulants aux terrains les plus techniques.", 250, '2026-02-02', NULL, '2026-03-23', '2030-12-31', 'Lille', 'active', 59000, 3, 3, 'good');
+
+-- Announces Images (25 images)
 INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
 (1, '2025-Giant-Talon-2.jpeg.webp', 1),
 (2, 'ART000146698002.jpg', 2),
@@ -329,6 +330,8 @@ INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
 (23, 'd3901914-b20d-4140-bb61-964e18f0240c.jpg', 15),
 (24, 'f0ad4a2b-c309-467b-be61-7c41a0a160c9.jpg', 16),
 (25, '38f72c65-1a1a-44a6-b1d1-9bf4e4a9895f.jpg', 17);
+
+
 -- Borrows (2 bookings)
 INSERT IGNORE INTO borrows (id, borrow_date, announces_id, owner_id, borrower_id, return_date, status, deposit_status, borrow) VALUES
 (1, '2024-12-20 10:00:00', 2, 2, 1, '2024-12-22 18:00:00', 'confirmed', 'paid', 0),

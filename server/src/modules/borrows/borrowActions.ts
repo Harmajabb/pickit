@@ -1,11 +1,11 @@
+import path from "node:path";
 import type { Request, RequestHandler, Response } from "express";
 import type { FieldPacket, RowDataPacket } from "mysql2";
+import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import databaseClient from "../../../database/client";
-import borrowRepository from "./borrowRepository";
 import userRepository from "../user/userRepository";
-import nodemailer from "nodemailer";
-import path from "node:path";
+import borrowRepository from "./borrowRepository";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
 const logoPath = path.join(process.cwd(), "../client/public/Logo_top.png");
@@ -282,13 +282,13 @@ const createPaymentIntent: RequestHandler = async (req, res) => {
 };
 
 const declarereturnedDeposit: RequestHandler = async (req, res) => {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
   try {
     const { borrowId } = req.body;
 
@@ -410,13 +410,13 @@ const declarereturnedDeposit: RequestHandler = async (req, res) => {
 };
 
 const declaredepositconformed: RequestHandler = async (req, res) => {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
   try {
     const { borrowId } = req.body;
     const borrowRows = await borrowRepository.getBorrowById(borrowId);
@@ -544,13 +544,13 @@ const declaredepositconformed: RequestHandler = async (req, res) => {
   }
 };
 const declaredepositbroken: RequestHandler = async (req, res) => {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
   try {
     const { borrowId, amount, reason } = req.body;
     const borrowRows = await borrowRepository.getBorrowById(borrowId);
@@ -682,6 +682,51 @@ const declaredepositbroken: RequestHandler = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+const browseByOwner: RequestHandler = async (req, res, next) => {
+  try {
+    const authReq = req as unknown as AuthenticatedRequest;
+
+    const ownerId = authReq.auth?.sub;
+
+    console.log("Searching borrows for Owner ID:", ownerId);
+
+    if (!ownerId) {
+      res
+        .status(401)
+        .json({ message: "User not identified. Check the session." });
+      return;
+    }
+
+    const borrows = await borrowRepository.readAllByOwner(Number(ownerId));
+
+    console.log(
+      `Number of requests found in database: ${Array.isArray(borrows) ? borrows.length : 0}`,
+    );
+
+    res.json(borrows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const editStatus: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { status } = req.body;
+
+    console.log(`update request ${id} to state: ${status}`);
+
+    const result = await borrowRepository.updateStatus(id, status);
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: "Request not found." });
+    } else {
+      res.json({ message: `Status updated to: ${status}` });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
 
 export default {
   secureDeposit,
@@ -691,4 +736,6 @@ export default {
   declarereturnedDeposit,
   declaredepositconformed,
   declaredepositbroken,
+  browseByOwner,
+  editStatus,
 };

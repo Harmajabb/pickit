@@ -1,15 +1,15 @@
 import CatalogCard from "../../components/CatalogCard/CatalogCard.tsx";
 import "./Catalog.css";
-import { useEffect, useState, useCallback } from "react";
+import { ChevronDown, Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { Search, ChevronDown } from "lucide-react";
 import SearchBar from "../../components/SearchBar/SearchBar.tsx";
 import { useAnnounces } from "../../context/AnnouncesContext.tsx";
-import type { Announce } from "../../types/Announce.ts";
-import type { SearchResult, Tab } from "../../types/Search";
-import type { AnnounceFilters } from "../../types/AnnounceFilters.ts";
 import { fetchCategories } from "../../services/ServiceSearchApi";
+import type { Announce } from "../../types/Announce.ts";
+import type { AnnounceFilters } from "../../types/AnnounceFilters.ts";
 import type { Category } from "../../types/Category.ts";
+import type { SearchResult, Tab } from "../../types/Search";
 
 function Catalog() {
   const navigate = useNavigate();
