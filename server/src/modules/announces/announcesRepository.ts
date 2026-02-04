@@ -61,13 +61,22 @@ class AnnouncesRepository {
     }
 
     if (filters.category_id) {
-      conditions.push("announces.category_id = ?");
+      conditions.push(`(
+    announces.category_id = ? 
+    OR announces.category_id IN (SELECT id FROM categories WHERE parent_id = ?)
+  )`);
+
       sqlValues.push(filters.category_id);
+      sqlValues.push(filters.category_id); // two times because two "?" on lines 82 and 83
     }
 
     if (conditions.length > 0) {
       sql += ` WHERE ${conditions.join(" AND ")}`;
     }
+    // console.log("---------------------------------------");
+    // console.log("SQL ENVOYÉ :", sql);
+    // console.log("VALEURS :", sqlValues);
+    // console.log("---------------------------------------");
 
     sql += " GROUP BY announces.id ORDER BY creation_date DESC";
 

@@ -12,10 +12,6 @@
   max-width: 250px;
   text-decoration: none;
   color: var(--color-primary-text);
-  transition: transform 0.2s ease;
-  &:hover {
-    transform: translateY(-4px);
-  }
 }
 
 .catalogCard-image-container {
@@ -74,4 +70,10 @@
   bottom: 0.5rem;
   right: 0.5rem;
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .catalogCard-section {
+    margin: auto;
+  }
 }

@@ -337,6 +337,11 @@ input[type="number"] {
 .image-upload-btn:active {
   transform: translate(1.5px, 1.5px);
 }
+
+.create-annonce-submit-btn {
+  align-self: flex-start;
+}
+
 @media (max-width: 768px) {
   .form-container {
     display: flex;

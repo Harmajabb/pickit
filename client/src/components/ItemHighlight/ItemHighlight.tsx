@@ -1,9 +1,11 @@
 import "./ItemHighlight.css";
 import { useEffect, useState } from "react";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 import CatalogCard from "../CatalogCard/CatalogCard";
 import type { Announces } from "./Ts-ItemHighlight.ts";
 
 function ItemHighlight() {
+  const { ref, isVisible } = useRevealOnScroll<HTMLElement>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const [data, setData] = useState<Announces[]>([]);
@@ -37,16 +39,18 @@ function ItemHighlight() {
   }
 
   return (
-    <>
+    <main ref={ref} className={`reveal ${isVisible ? "is-visible" : ""}`}>
       <header className="itemHighlight-title">
-        <h2>Our featured listing</h2>
+        <h2>Ready to Borrow</h2>
       </header>
-      <div className="ItemHighlight-container">
+      <div
+        className={`ItemHighlight-container reveal-stagger ${isVisible ? "is-visible" : ""}`}
+      >
         {data.map((item) => (
           <CatalogCard key={item.id} data={item} />
         ))}
       </div>
-    </>
+    </main>
   );
 }
 

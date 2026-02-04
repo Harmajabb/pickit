@@ -174,7 +174,7 @@ export default function ProductSheet() {
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">Caution</p>
+                    <p className="info-label">Deposit</p>
                     <p className="info-value">{announce.amount_deposit}€</p>
                   </div>
 
