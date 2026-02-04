@@ -10,8 +10,8 @@ function Home() {
     <>
       <Hero />
       <ItemHighlight />
-      <About />
       <Testimony />
+      <About />
     </>
   );
 }

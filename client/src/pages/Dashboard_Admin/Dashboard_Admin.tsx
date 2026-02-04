@@ -9,9 +9,16 @@ import {
   User,
   UserCog,
 } from "lucide-react";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 import type { Stats } from "./TS-Dashboard_Admin";
 
 const Dashboard_Admin = () => {
+  const { ref: headerRef, isVisible: headerVisible } =
+    useRevealOnScroll<HTMLElement>();
+  const { ref: statsRef, isVisible: statsVisible } =
+    useRevealOnScroll<HTMLDivElement>();
+  const { ref: controlsRef, isVisible: controlsVisible } =
+    useRevealOnScroll<HTMLDivElement>();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -33,7 +40,10 @@ const Dashboard_Admin = () => {
 
   return (
     <div className="dashboard-admin">
-      <header className="dashboard-admin-header">
+      <header
+        ref={headerRef}
+        className={`dashboard-admin-header reveal ${headerVisible ? "is-visible" : ""}`}
+      >
         <h1>Admin Dashboard</h1>
         <p>
           Welcome back, <strong>{user?.firstname}</strong>!
@@ -41,7 +51,10 @@ const Dashboard_Admin = () => {
       </header>
 
       <section className="admin-cockpit">
-        <div className="stats-items">
+        <div
+          ref={statsRef}
+          className={`stats-items reveal-stagger ${statsVisible ? "is-visible" : ""}`}
+        >
           <div className="stats-item">
             <h5>Active Users</h5>
             <span className="stat-value">{stats?.userCount ?? 0}</span>
@@ -61,7 +74,10 @@ const Dashboard_Admin = () => {
 
       <section>
         <h2 className="title-controls">Admin Controls</h2>
-        <div className="list-btn">
+        <div
+          ref={controlsRef}
+          className={`list-btn reveal-stagger ${controlsVisible ? "is-visible" : ""}`}
+        >
           <button
             onClick={() => navigate("/profile/me")}
             className="secondary btnusers"

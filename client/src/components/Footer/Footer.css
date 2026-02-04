@@ -12,7 +12,7 @@
   bottom: 0;
   width: 100%; */
   padding: 1rem;
-  background-color: var(--color-card);
+  background-color: var(--color-bg);
   color: var(--color-primary-text);
   display: flex;
   flex-direction: column; /* mobile: sections empilées */

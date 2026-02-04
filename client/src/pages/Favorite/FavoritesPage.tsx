@@ -4,12 +4,17 @@ import CatalogCard from "../../components/CatalogCard/CatalogCard";
 import { AuthContext } from "../../context/AuthContext";
 import type { Announce } from "../../types/Announce";
 import "./FavoritesPage.css";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 type FavoritesPageProps = { mode: "me" } | { mode: "member"; userId?: string };
 
 function FavoritesPage(props: FavoritesPageProps) {
+  const { ref: headerRef, isVisible: headerVisible } =
+    useRevealOnScroll<HTMLElement>();
+  const { ref: gridRef, isVisible: gridVisible } =
+    useRevealOnScroll<HTMLUListElement>();
   const { id: paramUserId } = useParams();
   const { user: authUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -142,7 +147,10 @@ function FavoritesPage(props: FavoritesPageProps) {
 
   return (
     <section className="favorites-page" aria-labelledby="favorites-title">
-      <header className="favorites-header">
+      <header
+        ref={headerRef}
+        className={`favorites-header reveal ${headerVisible ? "is-visible" : ""}`}
+      >
         <h1 id="favorites-title">{title}</h1>
         {favorites.length > 0 && (
           <p>
@@ -169,7 +177,10 @@ function FavoritesPage(props: FavoritesPageProps) {
           <h2 id="favorites-list-title" className="sr-only">
             Favorites list
           </h2>
-          <ul className="favorites-grid">
+          <ul
+            ref={gridRef}
+            className={`favorites-grid reveal-stagger ${gridVisible ? "is-visible" : ""}`}
+          >
             {favorites.map((favorite) => (
               <li key={favorite.id}>
                 <CatalogCard data={favorite} />
