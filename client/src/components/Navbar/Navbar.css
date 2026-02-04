@@ -78,11 +78,6 @@
   stroke: none;
 }
 
-.nav-user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 @media (min-width: 740px) {
   .mobile-nav,
   .mobile-nav_logo {
@@ -131,4 +126,16 @@
   top: 0;
   left: 0;
   width: 70px;
+}
+
+.user-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-color);
+}
+
+.user-greeting {
+  font-weight: 500;
+  cursor: default;
 }
