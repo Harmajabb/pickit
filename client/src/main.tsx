@@ -1,11 +1,13 @@
-// Import necessary modules from React and React Router
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+// ICI : "create" vient avant "Router"
 import { createBrowserRouter, RouterProvider } from "react-router";
+
 import App from "./App";
 import CategoryManager from "./components/CategoryManager/CategoryManager";
 import ForgotPassword from "./components/ForgotPassword/ForgotPassword";
 import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
+import MyRequests from "./components/MyRequest/MyRequest";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 import UserManager from "./components/UserManager/UserManager";
@@ -28,8 +30,7 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/catalog", element: <Catalog /> },
       { path: "/login", element: <Login /> },
-      //{ path: "/product", element: <ProductSheet /> },
-      { path: "/announce/:announceId", element: <ProductSheet /> }, // add your page Teddy here
+      { path: "/announce/:announceId", element: <ProductSheet /> },
       { path: "/create-annonce", element: <CreateAnnoncePage /> },
       { path: "/my-announces", element: <MyAnnouncesList /> },
       { path: "/register", element: <Register /> },
@@ -38,6 +39,9 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
       { path: "/profile/me", element: <Profile mode="me" /> },
       { path: "/profile/:id", element: <Profile mode="member" /> },
+      { path: "/profile/requests", element: <MyRequests /> },
+      { path: "/ad-dashboard/categories", element: <CategoryManager /> },
+      { path: "/ad-dashboard/users", element: <UserManager /> },
       { path: "/favorites/:id", element: <FavoritesPage mode="member" /> },
       { path: "/my-favorites", element: <FavoritesPage mode="me" /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
@@ -53,11 +57,11 @@ if (rootElement == null) {
 }
 
 createRoot(rootElement).render(
-  <AuthProvider>
-    <AnnouncesProvider>
-      <StrictMode>
+  <StrictMode>
+    <AuthProvider>
+      <AnnouncesProvider>
         <RouterProvider router={router} />
-      </StrictMode>
-    </AnnouncesProvider>
-  </AuthProvider>,
+      </AnnouncesProvider>
+    </AuthProvider>
+  </StrictMode>,
 );

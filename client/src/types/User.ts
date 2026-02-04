@@ -31,3 +31,11 @@ export interface MyProfileData {
 
 // Type union: it help to decide between Public or Private profile.
 export type ProfileData = PublicProfileData | MyProfileData;
+
+export interface ProfileItem extends Announce {
+  is_borrowed: boolean;
+}
+
+export interface ProfileFavorite extends Announce {
+  favorited_at: string;
+}

@@ -1,4 +1,4 @@
-import { Heart, Package } from "lucide-react";
+import { Handshake, Heart, Package } from "lucide-react";
 import { Link } from "react-router";
 import type { Announce } from "../../types/Announce";
 import type { UserPrivate, UserPublic } from "../../types/User";
@@ -9,7 +9,12 @@ import CatalogCard from "../CatalogCard/CatalogCard";
 //If mode is "me": user must be UserPrivate (with email, address)
 //If mode is "member": user must be UserPublic + items + favorites
 type ProfileViewProps =
-  | { mode: "me"; user: UserPrivate; onEditClick?: () => void }
+  | {
+      mode: "me";
+      user: UserPrivate;
+      onEditClick?: () => void;
+      onStatusUpdate?: (borrowId: number, newStatus: string) => Promise<void>;
+    }
   | {
       mode: "member";
       user: UserPublic;
@@ -106,6 +111,14 @@ function ProfileView(props: ProfileViewProps) {
               </div>
               <h4>My Favorites</h4>
               <p>Find your favorites</p>
+            </Link>
+
+            <Link to="/profile/requests" className="profile-action-card">
+              <div className="profile-action-icon">
+                <Handshake size={40} strokeWidth={1.5} />
+              </div>
+              <h4>My Requests</h4>
+              <p>Manage borrow requests</p>
             </Link>
           </div>
         </section>
