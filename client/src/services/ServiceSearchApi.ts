@@ -1,7 +1,7 @@
 import type { Announce } from "../types/Announce";
+import type { Category } from "../types/Category";
 import type { Tab } from "../types/Search";
 import type { UserPublic } from "../types/User";
-import type { Category } from "../types/Category";
 
 // function to perform search based on query and tab (announces or users)
 export async function searchApi(

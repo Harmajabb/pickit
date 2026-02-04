@@ -1,4 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
+import type { PoolConnection } from "mysql2/promise";
+import type { Rows } from "../../../database/client";
 import databaseClient from "../../../database/client";
 
 // Types pour les données de prêt
@@ -70,6 +72,81 @@ const borrowRepository = {
 
     // Si unavailable_days > 0, alors au moins un jour n'est pas disponible
     return (rows as AvailabilityCount[])[0].unavailable_days === 0;
+  },
+  async getBorrowById(borrowId: number): Promise<Rows | null> {
+    const [rows] = await databaseClient.query(
+      "SELECT * FROM borrows WHERE id = ?",
+      [borrowId],
+    );
+    return (rows as Rows[])[0] || null;
+  },
+  async beginTransaction(connection: PoolConnection): Promise<void> {
+    await connection.query("START TRANSACTION");
+  },
+  async commit(connection: PoolConnection): Promise<void> {
+    await connection.query("COMMIT");
+  },
+  async rollback(connection: PoolConnection): Promise<void> {
+    await connection.query("ROLLBACK");
+  },
+  async updateDeposit(
+    connection: PoolConnection,
+    borrowId: number,
+    paymentIntentId: string,
+    status: string,
+  ): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET payment_intent_id = ?, deposit_status = ? 
+          WHERE id = ?
+        `;
+    const [result] = await connection.query<ResultSetHeader>(query, [
+      paymentIntentId,
+      status,
+      borrowId,
+    ]);
+    return result;
+  },
+  async updateAvailability(
+    connection: PoolConnection,
+    availabilityRows: (string | number)[][],
+  ): Promise<ResultSetHeader> {
+    const query = `
+    INSERT INTO availability (announce_id, date, status) 
+    VALUES ? 
+    ON DUPLICATE KEY UPDATE status = VALUES(status);
+        `;
+
+    const [result] = await connection.query<ResultSetHeader>(query, [
+      availabilityRows,
+    ]);
+    return result;
+  },
+
+  async readAllByOwner(ownerId: number) {
+    const [rows] = await databaseClient.query(
+      `SELECT 
+        b.id, 
+        b.status, 
+        b.borrow_date, 
+        b.return_date,
+        COALESCE(a.title, 'Annonce supprimée') AS item_title, 
+        COALESCE(u.firstname, 'Utilisateur inconnu') AS borrower_name 
+     FROM borrows b
+     LEFT JOIN announces a ON b.announces_id = a.id
+     LEFT JOIN users u ON b.borrower_id = u.id
+     WHERE b.owner_id = ?`,
+      [ownerId],
+    );
+    return rows;
+  },
+
+  async updateStatus(id: number, status: string) {
+    const [result] = await databaseClient.query<ResultSetHeader>(
+      "UPDATE borrows SET status = ? WHERE id = ?",
+      [status, id],
+    );
+    return result;
   },
 };
 

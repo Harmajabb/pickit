@@ -8,7 +8,7 @@ function CreateAnnonce() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // ✅ TOUS les hooks AVANT le early return
+  // TOUS les hooks AVANT le early return
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedPath, setSelectedPath] = useState<Category[]>([]);
 

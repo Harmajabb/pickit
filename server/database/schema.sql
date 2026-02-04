@@ -85,7 +85,8 @@ CREATE TABLE IF NOT EXISTS borrows (
     borrower_id INT NOT NULL COMMENT 'Borrower',
     return_date DATETIME NOT NULL,
     status ENUM('pending', 'confirmed', 'ongoing', 'completed', 'cancelled', 'rejected') DEFAULT 'pending',
-    deposit_status ENUM('not_paid', 'paid', 'refunded', 'kept') DEFAULT 'not_paid',
+    deposit_status ENUM('not_paid', 'authorized', 'refunded', 'kept') DEFAULT 'not_paid',
+    payment_intent_id varchar(255) DEFAULT NULL COMMENT 'Stripe session number for payment tracking',
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_date DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     
@@ -93,11 +94,12 @@ CREATE TABLE IF NOT EXISTS borrows (
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (borrower_id) REFERENCES users(id) ON DELETE CASCADE,
     
-    INDEX idx_announce (announces_id),
+    INDEX idx_payment_intent_id (payment_intent_id),
     INDEX idx_borrower (borrower_id),
     INDEX idx_owner (owner_id),
     INDEX idx_status (status),
     INDEX idx_dates (borrow_date, return_date),
+
     INDEX idx_announce_dates (announces_id, borrow_date, return_date, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -286,29 +288,49 @@ INSERT IGNORE INTO categories (id, category, parent_id) VALUES
 (7, 'Mountain Biking', 3);
 
 -- Announces (2 listings)
+
 INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, status, zipcode, category_id, owner_id, state_of_product) VALUES
-(1, 'Giant Talon Mountain Bike', 'Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.', 200, '2024-10-09', '2024-10-31','2024-12-01', '2025-03-31', 'Lille, Nord', 'active', 59000, 7, 1, 'excellent'),
-(2, 'Quiksilver Surfboard', '6''2" surfboard, ideal for beginners and intermediates. Includes protective cover.', 150, '2024-11-25', '', '2024-12-01', '2025-09-30', 'Biarritz, Pyrénées-Atlantiques', 'active', 64200, 6, 2, 'good'),
-(3, 'Raquette de Tennis Wilson Pro Staff', 'Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.', 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', 'Lyon, Rhône', 'active', 69000, 5, 3, 'new'),
-(4, 'Pack Ski Alpin Rossignol', 'Skis de piste performants + bâtons. Taille 175cm. Idéal pour skieur confirmé.', 300, '2024-11-15', '', '2024-12-20', '2025-04-15', 'Grenoble, Isère', 'active', 38000, 8, 4, ''),
-(5, 'Banc de musculation pliable', 'Banc réglable avec support barre. Très peu encombrant une fois plié. État neuf.', 80, '2024-12-10', '', '2024-12-15', '', '', '', '', '', '', ''),
-(6, 'Paddle Gonflable Itiwit', 'Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.', 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', 'Annecy, Haute-Savoie', 'active', 74000, 6, 1, ''),
-(7, 'Sac à dos de randonnée 70L', 'Sac de trekking avec système de portage ventilé. Nombreuses poches, housse de pluie incluse.', 40, '2024-12-05', '', '2024-12-15', '2025-10-31', 'Chamonix, Haute-Savoie', 'active', 74400, 10, 2, ''),
-(8, 'Série de fers Callaway (5-PW)', 'Série complète pour droitier, shaft acier régulier. Très tolérant pour progresser.', 250, '2024-11-30', '', '2024-12-01', '2025-08-30', 'Bordeaux, Gironde', 'active', 33000, 11, 6, ''),
-(9, 'Rollers en ligne Rollerblade', 'Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.', 30, '2024-12-12', '', '2024-12-15', '2025-12-31', 'Montpellier, Hérault', 'active', 34000, 7, 3, ''),
-(10, 'Crashpad d''escalade Black Diamond', 'Tapis de réception pour le bloc en extérieur. Mousse haute densité, bretelles de transport.', 70, '2024-12-08', '', '2025-03-01', '','', '', '', '', '', '');
--- Announces Images (3 images)
+(1, "Giant Talon Mountain Bike", "Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.", 200, '2024-10-09', '2024-10-31', '2024-12-01', '2025-03-31', "Lille, Nord", 'active', 59000, 7, 1, 'excellent'),
+(2, "Quiksilver Surfboard", "surfboard, ideal for beginners and intermediates. Includes protective cover.", 150, '2024-11-25', NULL, '2024-12-01', '2025-09-30', "Biarritz, Pyrénées-Atlantiques", 'active', 64200, 6, 2, 'good'),
+(3, "Raquette de Tennis Wilson Pro Staff", "Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.", 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', "Lyon, Rhône", 'active', 69000, 5, 3, 'new'),
+(6, "Paddle Gonflable Itiwit", "Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.", 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', "Annecy, Haute-Savoie", 'active', 74000, 6, 1, 'new'),
+(9, "Rollers en ligne Rollerblade", "Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.", 30, '2024-12-12', NULL, '2024-12-15', '2025-12-31', "Montpellier, Hérault", 'active', 34000, 7, 3, 'new'),
+(11, "Ballon de piscine", "Très beau ballon de piscine tout neuf pour surfer dans la joie et la bonne humeur", 5, '2026-01-30', '2026-01-30', '2026-01-30', '2026-02-28', 'Paris', 'active', 75018, 6, 3, 'good'),
+(12, "Bike helmet", "Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.", 50, '2026-02-02', NULL, '2026-02-02', '2027-08-05', 'Lyon', 'active', 59000, 7, 3, 'excellent'),
+(13, "Raquettes de randonnée", "Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.", 80, '2026-02-02', '2026-02-02', '2026-02-02', '2028-05-02', 'Lyon', 'active', 69000, 1, 3, 'good'),
+(14, "Sacoche de VTT", "Sacoche de guidon pratique et résistante, idéale pour transporter l’essentiel en toute sécurité tout en restant facilement accessible pendant vos sorties à vélo.", 30, '2026-02-02', NULL, '2026-02-03', '2032-08-04', 'Lyon', 'active', 69000, 3, 3, 'fair'),
+(15, "Paire de skis", "Paire de skis polyvalente et performante, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 250, '2026-02-02', NULL, '2026-02-25', '2028-04-12', 'Paris', 'active', 75020, 4, 3, 'excellent'),
+(16, "Snowboard", "Snowboard design polyvalent et performant, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 200, '2026-02-02', NULL, '2026-02-26', '2026-12-14', 'Paris', 'active', 75020, 1, 3, 'good'),
+(17, "VTT", "VTT robuste et polyvalent, conçu pour offrir un excellent contrôle et un confort optimal sur tous les sentiers, des chemins roulants aux terrains les plus techniques.", 250, '2026-02-02', NULL, '2026-03-23', '2030-12-31', 'Lille', 'active', 59000, 3, 3, 'good');
+
+-- Announces Images (25 images)
 INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
 (1, '2025-Giant-Talon-2.jpeg.webp', 1),
 (2, 'ART000146698002.jpg', 2),
 (3, 'ART000146698001.jpg', 2),
 (4, 'raquette-de-tennis-adulte-wilson-pro-staff-97-ls-v14-noir-290g.avif', 3),
 (5, 'e77cbda607bdd5b645676d59cfc78e3bf9d6bfd7_H26ROSSSKI513763_0.webp', 4),
-(6, 'stand-up-paddle-gonflable-debutant-compact-m-blanc-et-vert-4282237345.jpg',6),
-(7, 'sac-a-dos-de-randonnee-trekking-70-litres-noir-bleu-4283248734.jpg',7),
-(8, 'callaway-série-de-fers-rogue-st-max-5-pw-droitier-shaft-acier-regulier-4284058731.jpg',8),
-(9, 'Rollers-Rollerblade.webp',9),
-(10, 'escalade.jpg',10);
+(6, 'stand-up-paddle-gonflable-debutant-compact-m-blanc-et-vert-4282237345.jpg', 6),
+(7, 'sac-a-dos-de-randonnee-trekking-70-litres-noir-bleu-4283248734.jpg', 7),
+(8, 'callaway-série-de-fers-rogue-st-max-5-pw-droitier-shaft-acier-regulier-4284058731.jpg', 8),
+(9, 'Rollers-Rollerblade.webp', 9),
+(10, 'escalade.jpg', 10),
+(11, 'c0af78e9-ed53-4b62-994b-9506f37aae7c.jpg', 11),
+(12, '218f2549-79c1-47d6-9a59-350cc82c2fb5.jpg', 11),
+(13, '0bdbaffd-9d50-45c9-a22b-e51400adcd97.jpg', 12),
+(14, 'ae359153-6ff4-4e62-8b1c-db3c71453610.jpg', 12),
+(15, '7d60b14d-6ccd-4e6c-b921-5269307aa5b2.jpg', 12),
+(16, 'aa0e6120-c43a-44f6-822b-3863ee0da2de.jpg', 13),
+(17, '57a6eaf5-c927-4aae-9c92-47b358ad3153.jpg', 13),
+(18, '531480ce-eb84-4e84-a272-6b5adeb681b1.jpg', 14),
+(19, 'bdea04d5-a866-4bdd-a9cd-cd6a81734e2d.jpg', 14),
+(20, 'b4c132fc-ca65-4268-8e76-3c15e4df5309.jpg', 14),
+(21, '2327a81f-4308-41cb-b097-8e694dec75d8.jpg', 15),
+(22, 'be97103e-989c-4f6b-bdb0-bd7566831a2a.jpg', 15),
+(23, 'd3901914-b20d-4140-bb61-964e18f0240c.jpg', 15),
+(24, 'f0ad4a2b-c309-467b-be61-7c41a0a160c9.jpg', 16),
+(25, '38f72c65-1a1a-44a6-b1d1-9bf4e4a9895f.jpg', 17);
+
 
 -- Borrows (2 bookings)
 INSERT IGNORE INTO borrows (id, borrow_date, announces_id, owner_id, borrower_id, return_date, status, deposit_status, borrow) VALUES
