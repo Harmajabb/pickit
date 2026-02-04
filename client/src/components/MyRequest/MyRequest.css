@@ -1,0 +1,93 @@
+.my-requests-page {
+  /* Uses the global background (black for dark, white for light) */
+  background-color: var(--color-bg);
+  color: var(--color-primary-text);
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.my-requests-title {
+  color: var(--color-title);
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.requests-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.borrow-card {
+  /* Use the card color from your theme */
+  background-color: var(--color-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--b-radius);
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.borrow-card:hover {
+  transform: translateX(5px);
+}
+
+.borrow-info h3 {
+  color: var(--color-title);
+  margin: 0 0 0.5rem 0;
+}
+
+.borrow-info p {
+  opacity: 0.8;
+  margin: 0.2rem 0;
+}
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Status colors */
+.status-pending {
+  background: #ffd700;
+  color: #000;
+}
+.status-confirmed {
+  background: #ccff33;
+  color: #000;
+}
+.status-completed {
+  background: #4a90e2;
+  color: #fff;
+}
+
+.actions-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-accept {
+  background-color: #ccff33;
+  color: #000;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--b-radius);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-refuse {
+  background-color: transparent;
+  color: #ff4444;
+  border: 1px solid #ff4444;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--b-radius);
+  cursor: pointer;
+}

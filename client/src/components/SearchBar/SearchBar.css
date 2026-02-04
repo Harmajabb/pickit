@@ -14,7 +14,7 @@
   align-items: center;
   overflow: hidden;
   background: var(--color-bg);
-  border: 1px solid var(--color-primary-text);
+  border: 0.13rem solid var(--color-primary-text);
   border-radius: var(--b-radius);
 }
 
@@ -22,14 +22,14 @@
 .searchbar-selectWrap {
   display: flex;
   align-items: center;
-  border-right: solid 1px var(--color-primary-text);
+  border-right: solid 0.13rem var(--color-primary-text);
 }
 
 .searchbar-select {
   height: 2.5rem;
   padding: 0 1rem;
   border: none;
-  border-right: solid 1px var(--color-primary-text);
+  border-right: solid 0.13rem var(--color-primary-text);
   background: var(--color-bg);
   cursor: pointer;
   color: var(--color-primary-text);
@@ -60,11 +60,12 @@
 .searchbar-input::placeholder {
   opacity: 0.3;
   font-style: italic;
+  font-size: 0.8rem;
 }
 
 /* Search Button */
 .searchbar-btn {
-  padding: 0.88rem;
+  padding: 0.92rem;
   background-color: var(--color-btn);
   border: none;
   cursor: pointer;
@@ -77,6 +78,10 @@
   width: 20px;
   height: 20px;
   color: black;
+}
+
+[data-theme="light"] .searchbar-btn svg {
+  color: white;
 }
 
 /* Dropdown */
@@ -142,5 +147,5 @@
 /* Focus a11y */
 .searchbar-control:focus-within {
   box-shadow: 0 0 0 2px var(--color-btn);
-  border: 1px solid var(--color-btn);
+  border: 0.05rem solid var(--color-btn);
 }

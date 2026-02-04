@@ -1,3 +1,5 @@
+import type { Announce } from "./Announce";
+
 // public user
 export interface UserPublic {
   id: number;
@@ -15,27 +17,11 @@ export interface UserPrivate extends UserPublic {
   address: string;
 }
 
-// announcement Item
-export interface ProfileItem {
-  id: number;
-  title: string;
-  location: string;
-  image_url: string | null;
-}
-
-// Favorite
-export interface ProfileFavorite {
-  id: number;
-  title: string;
-  location: string;
-  image_url: string | null;
-}
-
 // Public user with item and favorites
 export interface PublicProfileData {
   user: UserPublic;
-  items: ProfileItem[];
-  favorites: ProfileFavorite[];
+  items: Announce[];
+  favorites: Announce[];
 }
 
 // Private profile with only user
@@ -45,3 +31,11 @@ export interface MyProfileData {
 
 // Type union: it help to decide between Public or Private profile.
 export type ProfileData = PublicProfileData | MyProfileData;
+
+export interface ProfileItem extends Announce {
+  is_borrowed: boolean;
+}
+
+export interface ProfileFavorite extends Announce {
+  favorited_at: string;
+}

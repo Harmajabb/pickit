@@ -1,27 +1,36 @@
-import { Heart, Package } from "lucide-react";
+import { Handshake, Heart, Package } from "lucide-react";
 import { Link } from "react-router";
-import type {
-  ProfileFavorite,
-  ProfileItem,
-  UserPrivate,
-  UserPublic,
-} from "../../types/User";
-import ItemCard from "../ItemCard/ItemCard";
+import type { Announce } from "../../types/Announce";
+import type { UserPrivate, UserPublic } from "../../types/User";
 import "./ProfileView.css";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
+import CatalogCard from "../CatalogCard/CatalogCard";
 
 //discriminated union for profileView props.
 //If mode is "me": user must be UserPrivate (with email, address)
 //If mode is "member": user must be UserPublic + items + favorites
 type ProfileViewProps =
-  | { mode: "me"; user: UserPrivate; onEditClick?: () => void }
+  | {
+      mode: "me";
+      user: UserPrivate;
+      onEditClick?: () => void;
+      onStatusUpdate?: (borrowId: number, newStatus: string) => Promise<void>;
+    }
   | {
       mode: "member";
       user: UserPublic;
-      items: ProfileItem[];
-      favorites: ProfileFavorite[];
+      items: Announce[];
+      favorites: Announce[];
     };
 
 function ProfileView(props: ProfileViewProps) {
+  const { ref: headerRef, isVisible: headerVisible } =
+    useRevealOnScroll<HTMLElement>();
+  const { ref: infoRef, isVisible: infoVisible } =
+    useRevealOnScroll<HTMLElement>();
+  const { ref: actionsRef, isVisible: actionsVisible } =
+    useRevealOnScroll<HTMLElement>();
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   // user avatar
@@ -39,8 +48,10 @@ function ProfileView(props: ProfileViewProps) {
         className="profile profile--me"
         aria-labelledby="profile-header-title"
       >
-        {" "}
-        <header className="profile-header">
+        <header
+          ref={headerRef}
+          className={`profile-header reveal ${headerVisible ? "is-visible" : ""}`}
+        >
           <h1 id="profile-header-title">My account</h1>
           <p className="profile-subtitle">
             Everything you need to manage your account
@@ -60,7 +71,11 @@ function ProfileView(props: ProfileViewProps) {
             Edit profile
           </button>
         </header>
-        <section className="profile-info" aria-labelledby="personal-info-title">
+        <section
+          ref={infoRef}
+          className={`profile-info reveal ${infoVisible ? "is-visible" : ""}`}
+          aria-labelledby="personal-info-title"
+        >
           <h3 id="personal-info-title" className="sr-only">
             Personal Information
           </h3>
@@ -88,14 +103,15 @@ function ProfileView(props: ProfileViewProps) {
           </dl>
         </section>
         <section
-          className="profile-actions"
+          ref={actionsRef}
+          className={`profile-actions reveal ${actionsVisible ? "is-visible" : ""}`}
           aria-labelledby="account-actions-title"
         >
           <h3 id="account-actions-title" className="sr-only">
             Quick Actions
           </h3>
 
-          <div className="profile-actions-grid">
+          <div className="profile-actions-grid reveal-stagger is-visible">
             <Link to="/my-announces" className="profile-action-card">
               <div className="profile-action-icon">
                 <Package size={40} strokeWidth={1.5} />
@@ -111,6 +127,14 @@ function ProfileView(props: ProfileViewProps) {
               <h4>My Favorites</h4>
               <p>Find your favorites</p>
             </Link>
+
+            <Link to="/profile/requests" className="profile-action-card">
+              <div className="profile-action-icon">
+                <Handshake size={40} strokeWidth={1.5} />
+              </div>
+              <h4>My Requests</h4>
+              <p>Manage borrow requests</p>
+            </Link>
           </div>
         </section>
       </section>
@@ -125,8 +149,10 @@ function ProfileView(props: ProfileViewProps) {
       className="profile profile--member"
       aria-labelledby="profile-header-title"
     >
-      {" "}
-      <header className="profile-header">
+      <header
+        ref={headerRef}
+        className={`profile-header reveal ${headerVisible ? "is-visible" : ""}`}
+      >
         <h1 id="profile-header-title">Profile information</h1>
         <img
           src={avatarSrc}
@@ -143,7 +169,8 @@ function ProfileView(props: ProfileViewProps) {
         </p>
       </header>
       <section
-        className="profile-section"
+        ref={infoRef}
+        className={`profile-section reveal ${infoVisible ? "is-visible" : ""}`}
         aria-labelledby="announcements-title"
       >
         <h2 id="announcements-title">
@@ -160,21 +187,20 @@ function ProfileView(props: ProfileViewProps) {
             {items.slice(0, 6).map((item) => (
               <li key={item.id}>
                 {" "}
-                <ItemCard
-                  id={item.id}
-                  title={item.title}
-                  location={item.location}
-                  all_images={item.image_url ?? undefined}
-                />
+                <CatalogCard data={item} />
               </li>
             ))}
           </ul>
         )}
       </section>
-      <section className="profile-section" aria-labelledby="favorites-title">
+      <section
+        ref={actionsRef}
+        className={`profile-section reveal ${actionsVisible ? "is-visible" : ""}`}
+        aria-labelledby="favorites-title"
+      >
         <h2 id="favorites-title">
           His favorites ({favorites.length})
-          <Link to="/" className="profile-see-all">
+          <Link to={`/favorites/${user.id}`} className="profile-see-all">
             See all favorites
           </Link>
         </h2>
@@ -187,12 +213,7 @@ function ProfileView(props: ProfileViewProps) {
               <li key={fav.id}>
                 {" "}
                 <Link to={`/announce/${fav.id}`}>
-                  <ItemCard
-                    id={fav.id}
-                    title={fav.title}
-                    location={fav.location}
-                    all_images={fav.image_url ?? undefined}
-                  />
+                  <CatalogCard data={fav} />
                 </Link>
               </li>
             ))}

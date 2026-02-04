@@ -61,20 +61,59 @@ class SearchRepository {
     return rows as SearchUserRow[];
   }
 
-  async searchFullAnnounces(q: string) {
+  async searchFullAnnounces(filters: {
+    q: string;
+    zipcode?: string;
+    category_id?: string;
+  }) {
+    const { q, zipcode, category_id } = filters;
     const likeQuery = `%${q}%`;
-    const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.*, GROUP_CONCAT(announces_images.url) AS all_images FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id JOIN users ON users.id = announces.owner_id WHERE announces.title LIKE ? OR announces.description LIKE ? OR announces.location LIKE ? OR users.firstname LIKE ? OR users.lastname LIKE ? OR CONCAT(firstname, ' ', lastname) LIKE ? OR CONCAT(lastname, ' ', firstname) LIKE ? GROUP BY announces.id ORDER BY creation_date DESC",
-      [
-        likeQuery,
-        likeQuery,
-        likeQuery,
-        likeQuery,
-        likeQuery,
-        likeQuery,
-        likeQuery,
-      ],
-    );
+
+    let sql = `
+    SELECT 
+      announces.id,
+      announces.title,
+      announces.description,
+      announces.amount_deposit,
+      announces.location,
+      announces.status,
+      announces.category_id,
+      announces.creation_date,
+      GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
+    FROM announces 
+    LEFT JOIN announces_images ON announces.id = announces_images.announce_id 
+    JOIN users ON users.id = announces.owner_id 
+    WHERE (announces.title LIKE ? 
+       OR announces.description LIKE ? 
+       OR announces.location LIKE ? 
+       OR users.firstname LIKE ? 
+       OR users.lastname LIKE ? 
+       OR CONCAT(firstname, ' ', lastname) LIKE ? 
+       OR CONCAT(lastname, ' ', firstname) LIKE ?)
+  `;
+
+    const sqlValues: (string | number)[] = [
+      likeQuery,
+      likeQuery,
+      likeQuery,
+      likeQuery,
+      likeQuery,
+      likeQuery,
+      likeQuery,
+    ];
+
+    if (zipcode) {
+      sql += " AND users.zipcode LIKE ?";
+      sqlValues.push(`${zipcode}%`);
+    }
+
+    if (category_id) {
+      sql += " AND announces.category_id = ?";
+      sqlValues.push(category_id);
+    }
+
+    sql += " GROUP BY announces.id ORDER BY creation_date DESC";
+    const [rows] = await databaseClient.query<Rows>(sql, sqlValues);
     return rows as FullAnnounceRow[];
   }
 }

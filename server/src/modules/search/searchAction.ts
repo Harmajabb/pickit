@@ -27,12 +27,18 @@ const search: RequestHandler = async (req, res, next) => {
 const searchFullAnnounces: RequestHandler = async (req, res, next) => {
   try {
     const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    const filters = {
+      q,
+      zipcode: req.query.zipcode as string,
+      category_id: req.query.category_id as string,
+    };
+
     if (q === "") {
       res.json([]);
       return;
     }
 
-    const announcesFromDB = await searchRepository.searchFullAnnounces(q);
+    const announcesFromDB = await searchRepository.searchFullAnnounces(filters);
     const formattedAnnounces = announcesFromDB.map((announce) => ({
       ...announce,
       all_images: announce.all_images ? announce.all_images.split(",") : [],

@@ -53,7 +53,7 @@ function CatalogCard({ data }: CatalogCardProps) {
             <MapPin size={14} strokeWidth={2} />
             {data.location}
           </p>
-          <p>{data.amount_deposit}€</p>
+          <p>deposit: {data.amount_deposit}€</p>
         </div>
       </article>
     </Link>

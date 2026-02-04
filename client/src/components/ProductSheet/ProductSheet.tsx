@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { AuthContext } from "../../context/AuthContext";
 import type { AnnounceDetail } from "../../types/Announce";
 import ButtonDelete from "../Btn-Delete/ButtonDelete";
+import ContactLenderButton from "../ContactLenderButton/ContactLenderButton";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
 import "./ProductSheet.css";
@@ -25,8 +26,8 @@ interface Announce {
   total_likes: number;
   lastname: string;
   firstname: string;
-  zipcode: number;
-  categorie_id: number;
+  zipcode: string;
+  category_id: number;
 }
 
 export default function ProductSheet() {
@@ -78,6 +79,10 @@ export default function ProductSheet() {
   const handleSave = (updatedAnnounce: AnnounceDetail) => {
     setAnnounce(updatedAnnounce);
     setIsEditing(false);
+  };
+
+  const handleLoanRequestSuccess = () => {
+    console.log("Demande de prêt envoyée avec succès !");
   };
 
   return (
@@ -169,7 +174,7 @@ export default function ProductSheet() {
                   </div>
 
                   <div className="info-field">
-                    <p className="info-label">Caution</p>
+                    <p className="info-label">Deposit</p>
                     <p className="info-value">{announce.amount_deposit}€</p>
                   </div>
 
@@ -201,9 +206,16 @@ export default function ProductSheet() {
                   </div>
                 </div>
 
-                <button type="button" className="primary">
-                  Contact the borrower
-                </button>
+                {/* Bouton de demande de prêt */}
+                <ContactLenderButton
+                  announceId={announce.id}
+                  ownerId={announce.owner_id}
+                  currentUserId={user?.id || null}
+                  isAuthenticated={!!user}
+                  onSuccess={handleLoanRequestSuccess}
+                  availableFrom={announce.start_borrow_date}
+                  availableUntil={announce.end_borrow_date}
+                />
               </>
             )}
           </div>

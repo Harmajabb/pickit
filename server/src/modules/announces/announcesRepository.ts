@@ -9,8 +9,9 @@ export type CreateAnnounceInput = {
   amount_deposit: number;
   start_borrow_date: string;
   end_borrow_date: string;
+  zipcode: string;
   location: string;
-  categorie_id: number;
+  category_id: number;
   owner_id: number;
   state_of_product: string;
 };
@@ -24,30 +25,28 @@ export type Announces = {
   update_date?: Date;
   start_borrow_date?: string;
   end_borrow_date?: string;
+  zipcode?: string;
   location?: string;
   status?: string;
   all_images?: string | null;
-  categorie_id?: number;
+  category_id?: number;
   owner_id?: number;
   state_of_product?: string;
   total_likes?: number;
 };
 
-export type Favorite = {
-  id: number;
-  title: string;
-  location: string;
-  image_url: string | null;
-};
 type AnnouncesFilter = {
   zipcode?: string;
-  categorie_id?: number;
+  category_id?: string;
 };
 
 // DISTINCT to avoid carthesian products (= similar entries)
 class AnnouncesRepository {
   async readAll(filters: AnnouncesFilter = {}) {
-    let sql = `SELECT announces.*, users.zipcode, COUNT(favorites.id) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
+    let sql = `SELECT 
+    announces.*,
+    COUNT(DISTINCT favorites.id) AS total_likes,
+    GROUP_CONCAT(DISTINCT announces_images.url) AS all_images 
     FROM announces 
     LEFT JOIN announces_images ON announces.id = announces_images.announce_id
     LEFT JOIN users ON owner_id = users.id
@@ -61,14 +60,23 @@ class AnnouncesRepository {
       sqlValues.push(`%${filters.zipcode}%`); // filters the two first numbers of the zipcode
     }
 
-    if (filters.categorie_id) {
-      conditions.push("announces.categorie_id = ?");
-      sqlValues.push(filters.categorie_id);
+    if (filters.category_id) {
+      conditions.push(`(
+    announces.category_id = ? 
+    OR announces.category_id IN (SELECT id FROM categories WHERE parent_id = ?)
+  )`);
+
+      sqlValues.push(filters.category_id);
+      sqlValues.push(filters.category_id); // two times because two "?" on lines 82 and 83
     }
 
     if (conditions.length > 0) {
-      sql += `WHERE ${conditions.join(" AND ")}`;
+      sql += ` WHERE ${conditions.join(" AND ")}`;
     }
+    // console.log("---------------------------------------");
+    // console.log("SQL ENVOYÉ :", sql);
+    // console.log("VALEURS :", sqlValues);
+    // console.log("---------------------------------------");
 
     sql += " GROUP BY announces.id ORDER BY creation_date DESC";
 
@@ -102,27 +110,26 @@ class AnnouncesRepository {
   // Announce by owner ID.
   async readByOwnerId(ownerId: number) {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT announces.id, announces.title, announces.location, MIN(announces_images.url) AS image_url FROM announces LEFT JOIN announces_images ON announces.id = announces_images.announce_id WHERE announces.owner_id = ? AND announces.status = 'active' GROUP BY announces.id ORDER BY announces.creation_date DESC",
+      `SELECT announces.*, COUNT(favorites.id) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
+      FROM announces
+      LEFT JOIN announces_images ON announces.id = announces_images.announce_id
+      LEFT JOIN favorites ON announces.id = favorites.announces_id
+      AND favorites.is_favorite = 1
+      WHERE announces.owner_id = ?
+      AND announces.status = 'active'
+      GROUP BY announces.id
+      ORDER BY announces.creation_date DESC;
+      `,
       [ownerId],
     );
     return rows as Announces[];
-  }
-
-  //Favorite by user id.
-  async readFavoritesByUserId(userId: number) {
-    const [rows] = await databaseClient.query<Rows>(
-      "SELECT a.id, a.title, a.location, MIN(ai.url) AS image_url FROM favorites f JOIN announces a ON a.id = f.announces_id LEFT JOIN announces_images ai ON ai.announce_id = a.id WHERE f.user_id = ? AND f.is_favorite = 1 AND a.status = 'active' GROUP BY a.id",
-      [userId],
-    );
-
-    return rows as Favorite[];
   }
 
   // Récupérer une seule annonce par son ID
   async getOne(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `
-      SELECT announces.*, users.zipcode, users.lastname, users.firstname, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
+      SELECT announces.*, users.lastname, users.firstname, COUNT(DISTINCT is_favorite) AS total_likes, GROUP_CONCAT(DISTINCT announces_images.url) AS all_images
       FROM announces
       LEFT JOIN announces_images ON announces.id = announces_images.announce_id
       LEFT JOIN users ON owner_id = users.id
@@ -137,8 +144,8 @@ class AnnouncesRepository {
   }
 
   async saveAvailability(
-    announceId: number,
-    rows: any[][],
+    _announceId: number,
+    rows: (string | number)[][],
     connection: PoolConnection,
   ): Promise<void> {
     const sql = "INSERT INTO availability (announce_id, date) VALUES ?";
@@ -159,8 +166,8 @@ class AnnouncesRepository {
       const [result] = await connection.query<ResultSetHeader>(
         `
       INSERT INTO announces
-      (title, description, amount_deposit, creation_date, start_borrow_date, end_borrow_date, location, categorie_id, owner_id, state_of_product)
-      VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?)
+      (title, description, amount_deposit, creation_date, start_borrow_date, end_borrow_date, zipcode, location, category_id, owner_id, state_of_product)
+      VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)
       `,
         [
           form.title,
@@ -168,8 +175,9 @@ class AnnouncesRepository {
           form.amount_deposit,
           form.start_borrow_date,
           form.end_borrow_date,
+          form.zipcode,
           form.location,
-          form.categorie_id,
+          form.category_id,
           form.owner_id,
           form.state_of_product,
         ],
@@ -187,7 +195,7 @@ class AnnouncesRepository {
       }
 
       const availabilityRows = [];
-      let curr = new Date(form.start_borrow_date);
+      const curr = new Date(form.start_borrow_date);
       const end = new Date(form.end_borrow_date);
 
       while (curr <= end) {
@@ -207,7 +215,7 @@ class AnnouncesRepository {
     } catch (err) {
       await connection.rollback();
 
-      // cleanup fichiers
+      // cleanup files
       const fs = await import("node:fs/promises");
       const path = await import("node:path");
 
@@ -236,7 +244,7 @@ class AnnouncesRepository {
   ) {
     const query = `
       UPDATE announces
-      SET title = ?, description = ?, amount_deposit = ?, location = ?, start_borrow_date = ?, end_borrow_date = ?, categorie_id = ?, update_date = NOW()
+      SET title = ?, description = ?, amount_deposit = ?, zipcode = ?, location = ?, start_borrow_date = ?, end_borrow_date = ?, category_id = ?, update_date = NOW()
       WHERE id = ?
     `;
 
@@ -244,10 +252,11 @@ class AnnouncesRepository {
       form.title,
       form.description,
       form.amount_deposit,
+      form.zipcode,
       form.location,
       form.start_borrow_date,
       form.end_borrow_date,
-      form.categorie_id,
+      form.category_id,
       id,
     ];
 
@@ -260,6 +269,7 @@ class AnnouncesRepository {
       announces.id, 
       announces.title, 
       announces.description,
+      announces.zipcode,
       announces.location,
       announces.start_borrow_date,
       announces.end_borrow_date,

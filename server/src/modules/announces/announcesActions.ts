@@ -9,7 +9,7 @@ const browse: RequestHandler = async (req, res, next) => {
       zipcode:
         typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
       category_id:
-        typeof req.query.category_id === "number"
+        typeof req.query.category_id === "string"
           ? req.query.category_id
           : undefined,
     };
@@ -62,8 +62,9 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       amount_deposit,
       start_borrow_date,
       end_borrow_date,
+      zipcode,
       location,
-      categorie_id,
+      category_id,
       owner_id,
       state_of_product,
     } = req.body;
@@ -74,8 +75,9 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       !amount_deposit ||
       !start_borrow_date ||
       !end_borrow_date ||
+      !zipcode ||
       !location ||
-      !categorie_id ||
+      !category_id ||
       !owner_id ||
       !state_of_product
     ) {
@@ -92,8 +94,9 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
       amount_deposit: Number(amount_deposit),
       start_borrow_date: String(start_borrow_date),
       end_borrow_date: String(end_borrow_date),
+      zipcode: String(zipcode),
       location: String(location),
-      categorie_id: Number(categorie_id),
+      category_id: Number(category_id),
       owner_id: Number(owner_id),
       state_of_product: String(state_of_product),
     };
@@ -101,7 +104,7 @@ const createAnnounce: RequestHandler = async (req, res, next) => {
     const announceId = await announcesRepository.sendCreateAnnounce(
       payload,
       files,
-    );    
+    );
 
     res.status(201).json({
       success: true,
@@ -148,10 +151,11 @@ const updateAnnounce: RequestHandler = async (req, res, next) => {
       title: req.body.title,
       description: req.body.description,
       amount_deposit: Number(req.body.amount_deposit),
+      zipcode: req.body.zipcode,
       location: req.body.location,
       start_borrow_date: req.body.start_borrow_date,
       end_borrow_date: req.body.end_borrow_date,
-      categorie_id: Number(req.body.categorie_id),
+      category_id: Number(req.body.category_id),
       state_of_product: req.body.state_of_product,
     };
 
