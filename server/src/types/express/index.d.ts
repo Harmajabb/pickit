@@ -5,10 +5,15 @@ declare global {
   namespace Express {
     export interface Request {
       /* ************************************************************************* */
-      // Add your custom properties here, for example:
-      //
-      // user?: { ... }
+      // Custom properties added by middlewares
       /* ************************************************************************* */
+
+      // Added by authActions.checkAuth middleware
+      user?: {
+        id: number;
+        email: string;
+        role: number;
+      };
     }
   }
 }

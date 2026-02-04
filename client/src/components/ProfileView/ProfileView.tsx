@@ -1,36 +1,29 @@
 import { Handshake, Heart, Package } from "lucide-react";
 import { Link } from "react-router";
-import type {
-  ProfileFavorite,
-  ProfileItem,
-  UserPrivate,
-  UserPublic,
-} from "../../types/User";
-import ItemCard from "../ItemCard/ItemCard";
+import type { Announce } from "../../types/Announce";
+import type { UserPrivate, UserPublic } from "../../types/User";
 import "./ProfileView.css";
+import CatalogCard from "../CatalogCard/CatalogCard";
 
+//discriminated union for profileView props.
+//If mode is "me": user must be UserPrivate (with email, address)
+//If mode is "member": user must be UserPublic + items + favorites
 type ProfileViewProps =
   | {
       mode: "me";
       user: UserPrivate;
       onEditClick?: () => void;
-      onStatusUpdate: (id: number, status: string) => void;
+      onStatusUpdate?: (borrowId: number, newStatus: string) => Promise<void>;
     }
   | {
       mode: "member";
       user: UserPublic;
-      items: ProfileItem[];
-      favorites: ProfileFavorite[];
-      onStatusUpdate?: (id: number, status: string) => void;
+      items: Announce[];
+      favorites: Announce[];
     };
 
 function ProfileView(props: ProfileViewProps) {
   const API_URL = import.meta.env.VITE_API_URL;
-
-  // --- SÉCURITÉ : On vérifie si user existe avant de continuer ---
-  if (!props.user) {
-    return <div className="text-white p-8 text-center">Loading profile...</div>;
-  }
 
   // user avatar
   const avatarSrc = props.user.profile_picture
@@ -47,6 +40,7 @@ function ProfileView(props: ProfileViewProps) {
         className="profile profile--me"
         aria-labelledby="profile-header-title"
       >
+        {" "}
         <header className="profile-header">
           <h1 id="profile-header-title">My account</h1>
           <p className="profile-subtitle">
@@ -63,18 +57,10 @@ function ProfileView(props: ProfileViewProps) {
             {user.firstname} {user.lastname}
           </h2>
 
-          <div
-            className="flex gap-2"
-            style={{ display: "flex", justifyContent: "center", gap: "10px" }}
-          >
-            <button type="button" className="cta" onClick={onEditClick}>
-              Edit profile
-            </button>
-          </div>
-
-          {/* Le bloc de simulation a été supprimé car tu as maintenant une page dédiée */}
+          <button type="button" className="cta" onClick={onEditClick}>
+            Edit profile
+          </button>
         </header>
-
         <section className="profile-info" aria-labelledby="personal-info-title">
           <h3 id="personal-info-title" className="sr-only">
             Personal Information
@@ -85,21 +71,23 @@ function ProfileView(props: ProfileViewProps) {
               <dt>Email:</dt>
               <dd>{user.email}</dd>
             </div>
+
             <div className="profile-info-item">
               <dt>Address:</dt>
               <dd>{user.address}</dd>
             </div>
+
             <div className="profile-info-item">
               <dt>City:</dt>
               <dd>{user.city}</dd>
             </div>
+
             <div className="profile-info-item">
               <dt>Zipcode:</dt>
               <dd>{user.zipcode}</dd>
             </div>
           </dl>
         </section>
-
         <section
           className="profile-actions"
           aria-labelledby="account-actions-title"
@@ -125,7 +113,6 @@ function ProfileView(props: ProfileViewProps) {
               <p>Find your favorites</p>
             </Link>
 
-            {/* Ton 3ème bloc qui pointe vers la nouvelle route */}
             <Link to="/profile/requests" className="profile-action-card">
               <div className="profile-action-icon">
                 <Handshake size={40} strokeWidth={1.5} />
@@ -147,6 +134,7 @@ function ProfileView(props: ProfileViewProps) {
       className="profile profile--member"
       aria-labelledby="profile-header-title"
     >
+      {" "}
       <header className="profile-header">
         <h1 id="profile-header-title">Profile information</h1>
         <img
@@ -163,8 +151,6 @@ function ProfileView(props: ProfileViewProps) {
           {user.city} ({user.zipcode})
         </p>
       </header>
-
-      {/* Sections Announcements & Favorites restent identiques */}
       <section
         className="profile-section"
         aria-labelledby="announcements-title"
@@ -172,41 +158,41 @@ function ProfileView(props: ProfileViewProps) {
         <h2 id="announcements-title">
           Announcement ({items.length}){" "}
           <Link to="/" className="profile-see-all">
-            See all
+            See all announcements
           </Link>
         </h2>
+
         {items.length === 0 ? (
-          <p className="profile-empty">No announcement published</p>
+          <p className="profile-empty">No announcement has been published</p>
         ) : (
           <ul className="profile-items-grid">
             {items.slice(0, 6).map((item) => (
               <li key={item.id}>
-                <ItemCard
-                  id={item.id}
-                  title={item.title}
-                  location={item.location}
-                  all_images={item.image_url ?? undefined}
-                />
+                {" "}
+                <CatalogCard data={item} />
               </li>
             ))}
           </ul>
         )}
       </section>
-
       <section className="profile-section" aria-labelledby="favorites-title">
-        <h2 id="favorites-title">His favorites ({favorites.length})</h2>
+        <h2 id="favorites-title">
+          His favorites ({favorites.length})
+          <Link to={`/favorites/${user.id}`} className="profile-see-all">
+            See all favorites
+          </Link>
+        </h2>
+
         {favorites.length === 0 ? (
           <p className="profile-empty">No favorite for the moment</p>
         ) : (
           <ul className="profile-items-grid">
             {favorites.slice(0, 6).map((fav) => (
               <li key={fav.id}>
-                <ItemCard
-                  id={fav.id}
-                  title={fav.title}
-                  location={fav.location}
-                  all_images={fav.image_url ?? undefined}
-                />
+                {" "}
+                <Link to={`/announce/${fav.id}`}>
+                  <CatalogCard data={fav} />
+                </Link>
               </li>
             ))}
           </ul>

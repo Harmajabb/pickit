@@ -11,12 +11,8 @@ const router = express.Router();
 // Define Category-related routes
 import categoryActions from "./modules/categories/categoryActions";
 
-router.get(
-  "/api/categories",
-  authActions.checkAuth,
-  authActions.verifyAdmin,
-  categoryActions.browse,
-);
+router.get("/api/categories", categoryActions.browse);
+
 router.post(
   "/api/categories",
   authActions.checkAuth,
@@ -48,6 +44,34 @@ router.get(
   authActions.verifyAdmin,
   adminActions.getDashboardStats,
 );
+
+// Define Borrow-related routes
+import borrowActions from "./modules/borrows/borrowActions";
+
+router.post(
+  "/api/borrows/secure-deposit",
+  authActions.checkAuth,
+  borrowActions.secureDeposit,
+);
+
+router.get(
+  "/api/borrows/:id",
+  authActions.checkAuth,
+  borrowActions.getBorrowById,
+);
+
+router.post(
+  "/api/borrows/create-payment-intent",
+  borrowActions.createPaymentIntent,
+);
+
+router.post(
+  "/api/loan-requests",
+  authActions.checkAuth,
+  borrowActions.createLoanRequest,
+);
+
+/* ************************************************************************* */
 
 // Define Authentication-related routes
 import authActions from "./modules/authentication/authActions";
@@ -89,6 +113,13 @@ router.delete(
   "/api/announces/:id",
   authActions.checkAuth,
   announcesActions.destroy,
+);
+
+// Créer une demande de prêt
+router.post(
+  "/api/loan-requests",
+  authActions.checkAuth,
+  borrowActions.createLoanRequest,
 );
 
 // Define item-related routes
@@ -157,6 +188,16 @@ router.put(
 // Define favorites routes
 import favoriteAction from "./modules/favorites/favoriteAction";
 
+router.get(
+  "/api/favorites/me",
+  authActions.checkAuth,
+  favoriteAction.getMyFavorites,
+);
+router.get(
+  "/api/favorites/:id",
+  authActions.checkAuth,
+  favoriteAction.getFavoritesByUserId,
+);
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 

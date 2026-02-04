@@ -114,7 +114,6 @@ function Profile({ mode }: { mode: "me" | "member" }) {
       user={data.user}
       items={"items" in data ? data.items : []}
       favorites={"favorites" in data ? data.favorites : []}
-      onStatusUpdate={handleStatusUpdate} // Connexion faite ici aussi !
     />
   );
 }
