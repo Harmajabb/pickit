@@ -20,7 +20,7 @@ import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import DepositPage from "./pages/Deposit/DepositPage";
 import FavoritesPage from "./pages/Favorite/FavoritesPage";
 import Home from "./pages/Home";
-import Profile from "./pages/Profile/Profile";
+// import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
 
 const router = createBrowserRouter([
@@ -37,8 +37,8 @@ const router = createBrowserRouter([
       { path: "/reset-password/:token", element: <ResetPassword /> },
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
-      { path: "/profile/me", element: <Profile mode="me" /> },
-      { path: "/profile/:id", element: <Profile mode="member" /> },
+      // { path: "/profile/me", element: <Profile mode="me" /> },
+      // { path: "/profile/:id", element: <Profile mode="member" /> },
       { path: "/profile/requests", element: <MyRequests /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> },
       { path: "/ad-dashboard/users", element: <UserManager /> },

@@ -7,6 +7,7 @@ import borrowActions from "./modules/borrows/borrowActions";
 import categoryActions from "./modules/categories/categoryActions";
 import favoriteAction from "./modules/favorites/favoriteAction";
 import itemActions from "./modules/item/itemActions";
+import reportAction from "./modules/reports/reportAction";
 import searchActions from "./modules/search/searchAction";
 import userAction from "./modules/user/userActions";
 
@@ -186,5 +187,7 @@ router.get(
 );
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
+
+router.post("/api/reports", authActions.checkAuth, reportAction.report);
 
 export default router;

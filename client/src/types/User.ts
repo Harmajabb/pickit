@@ -19,6 +19,7 @@ export interface UserPrivate extends UserPublic {
 
 // Public user with item and favorites
 export interface PublicProfileData {
+  type: "public";
   user: UserPublic;
   items: Announce[];
   favorites: Announce[];
@@ -26,11 +27,12 @@ export interface PublicProfileData {
 
 // Private profile with only user
 export interface MyProfileData {
+  type: "private";
   user: UserPrivate;
 }
 
 // Type union: it help to decide between Public or Private profile.
-export type ProfileData = PublicProfileData | MyProfileData;
+export type ProfileData = PublicProfileData | MyProfileData | UserPublic;
 
 export interface ProfileItem extends Announce {
   is_borrowed: boolean;

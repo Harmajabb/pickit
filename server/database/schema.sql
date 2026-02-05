@@ -193,7 +193,8 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE TABLE IF NOT EXISTS reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reporter_id INT NOT NULL COMMENT 'User reporting',
-    description TEXT NOT NULL,
+    reason VARCHAR(100) NOT NULL,
+    description VARCHAR(203),
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     status ENUM('pending', 'in_progress', 'resolved', 'rejected') DEFAULT 'pending',
     handled_by INT DEFAULT NULL COMMENT 'Admin handling the report',
@@ -210,6 +211,8 @@ CREATE TABLE IF NOT EXISTS reports (
     FOREIGN KEY (reported_message_id) REFERENCES messages(id) ON DELETE CASCADE,
     FOREIGN KEY (reported_announce_id) REFERENCES announces(id) ON DELETE CASCADE,
     
+    INDEX idx_description (description),
+    INDEX idx_reason (reason),
     INDEX idx_reporter (reporter_id),
     INDEX idx_status (status),
     INDEX idx_date (creation_date)

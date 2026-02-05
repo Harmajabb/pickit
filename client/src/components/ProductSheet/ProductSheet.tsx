@@ -8,34 +8,35 @@ import ContactLenderButton from "../ContactLenderButton/ContactLenderButton";
 import EditAnnonce from "../EditAnnonce/EditAnnonce";
 import FavoriteBtn from "../FavoriteBtn/FavoriteBtn";
 import "./ProductSheet.css";
+import ButtonReport from "../btn-report/ButtonReport";
 
-interface Announce {
-  id: number;
-  title: string;
-  description: string;
-  location: string;
-  state: string;
-  owner_id: number;
-  all_images: string[];
-  favourites?: number;
-  start_borrow_date: Date;
-  end_borrow_date: Date;
-  amount_deposit: number;
-  state_of_product: string;
-  name: string;
-  total_likes: number;
-  lastname: string;
-  firstname: string;
-  zipcode: string;
-  category_id: number;
-}
+// interface Announce {
+//   id: number;
+//   title: string;
+//   description: string;
+//   location: string;
+//   state: string;
+//   owner_id: number;
+//   all_images: string[];
+//   favourites?: number;
+//   start_borrow_date: Date;
+//   end_borrow_date: Date;
+//   amount_deposit: number;
+//   state_of_product: string;
+//   name: string;
+//   total_likes: number;
+//   lastname: string;
+//   firstname: string;
+//   zipcode: string;
+//   category_id: number;
+// }
 
 export default function ProductSheet() {
   const { user } = useContext(AuthContext);
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const { announceId } = useParams();
 
-  const [announce, setAnnounce] = useState<Announce | null>(null);
+  const [announce, setAnnounce] = useState<AnnounceDetail | null>(null);
   const [currentImage, setCurrentImage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -61,6 +62,7 @@ export default function ProductSheet() {
   const isOwner = user?.id && Number(user.id) === Number(announce.owner_id);
   const isAdmin = user?.role === 1;
   const showActionButtons = isOwner || isAdmin;
+  const showReportButtons = user;
 
   const DateStartshort = announce.start_borrow_date.toLocaleDateString("fr-FR");
   const DateEndShort = announce.end_borrow_date.toLocaleDateString("fr-FR");
@@ -164,7 +166,6 @@ export default function ProductSheet() {
                     </div>
                   </div>
                 )}
-
                 <div className="info-fields">
                   <div className="info-field">
                     <p className="info-label">Location</p>
@@ -207,15 +208,24 @@ export default function ProductSheet() {
                 </div>
 
                 {/* Bouton de demande de prêt */}
-                <ContactLenderButton
-                  announceId={announce.id}
-                  ownerId={announce.owner_id}
-                  currentUserId={user?.id || null}
-                  isAuthenticated={!!user}
-                  onSuccess={handleLoanRequestSuccess}
-                  availableFrom={announce.start_borrow_date}
-                  availableUntil={announce.end_borrow_date}
-                />
+                <div className="double-button">
+                  <ContactLenderButton
+                    announceId={announce.id}
+                    ownerId={announce.owner_id}
+                    currentUserId={user?.id || null}
+                    isAuthenticated={!!user}
+                    onSuccess={handleLoanRequestSuccess}
+                    availableFrom={announce.start_borrow_date}
+                    availableUntil={announce.end_borrow_date}
+                  />
+                  {showReportButtons && (
+                    <ButtonReport
+                      targetType="annonce"
+                      data={announce}
+                      userId={user?.id}
+                    />
+                  )}
+                </div>
               </>
             )}
           </div>
