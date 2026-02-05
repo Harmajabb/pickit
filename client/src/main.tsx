@@ -13,7 +13,9 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 import UserManager from "./components/UserManager/UserManager";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
+import { ChatProvider } from "./context/ChatContext";
 import Catalog from "./pages/Catalog/Catalog";
+import ChatPage from "./pages/Chat/ChatPage";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
@@ -48,6 +50,7 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
       { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
       { path: "/inbox", element: <Inbox /> },
+      { path: "/chat", element: <ChatPage /> },
       { path: "/deposit/:id", element: <DepositPage /> },
     ],
   },
@@ -62,7 +65,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <AuthProvider>
       <AnnouncesProvider>
-        <RouterProvider router={router} />
+        <ChatProvider>
+          <RouterProvider router={router} />
+        </ChatProvider>
       </AnnouncesProvider>
     </AuthProvider>
   </StrictMode>,

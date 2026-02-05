@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS borrows (
     amount_refunded DECIMAL(10, 2) DEFAULT NULL COMMENT 'Amount refunded when object is broken',
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_date DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    
     FOREIGN KEY (announces_id) REFERENCES announces(id) ON DELETE CASCADE,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (borrower_id) REFERENCES users(id) ON DELETE CASCADE,

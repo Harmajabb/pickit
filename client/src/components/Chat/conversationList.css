@@ -1,0 +1,150 @@
+/**
+ * Conversation List CSS
+ */
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.conversation-list-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--color-card);
+}
+
+.conversation-list-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-title);
+  margin: 0;
+}
+
+.conversation-list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background-color 200ms var(--smooth-ease);
+}
+
+.conversation-item:hover {
+  background-color: var(--color-card-hover);
+}
+
+.conversation-item.active {
+  background-color: var(--color-primary);
+}
+
+.conversation-item.active .conversation-info-name,
+.conversation-item.active .conversation-info-preview {
+  color: white;
+}
+
+.conversation-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--b-radius-full);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.conversation-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.conversation-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.conversation-info-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary-text);
+  margin: 0;
+}
+
+.conversation-info-time {
+  font-size: 12px;
+  color: var(--color-secondary-text);
+  margin: 0;
+}
+
+.conversation-info-preview {
+  font-size: 13px;
+  color: var(--color-secondary-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conversation-unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-btn-secondary);
+  color: white;
+  border-radius: var(--b-radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.conversation-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-secondary-text);
+}
+
+.conversation-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+  color: var(--color-secondary-text);
+}
+
+/* Dark theme adjustments */
+:root[data-theme="dark"] .conversation-item:hover {
+  background-color: var(--color-card-hover);
+}
+
+:root[data-theme="dark"] .conversation-item.active {
+  background-color: var(--color-btn-primary);
+}
