@@ -21,6 +21,19 @@ interface AvailabilityCount extends RowDataPacket {
   unavailable_days: number;
 }
 
+interface BorrowWithDetails extends RowDataPacket {
+  id: number;
+  borrower_id: number;
+  owner_id: number;
+  announces_id: number;
+  borrower_email: string;
+  borrower_name: string;
+  owner_email: string;
+  owner_name: string;
+  announce_title: string;
+  amount_deposit: number;
+}
+
 const borrowRepository = {
   // Créer une demande de prêt
   async create(borrowData: BorrowData): Promise<number> {
@@ -74,6 +87,9 @@ const borrowRepository = {
     return (rows as AvailabilityCount[])[0].unavailable_days === 0;
   },
   async getBorrowById(borrowId: number): Promise<Rows | null> {
+    if (Number.isNaN(borrowId) || borrowId <= 0) {
+      return null;
+    }
     const [rows] = await databaseClient.query(
       "SELECT * FROM borrows WHERE id = ?",
       [borrowId],
@@ -122,15 +138,51 @@ const borrowRepository = {
     ]);
     return result;
   },
+  async declarereturnedDeposit(borrowId: number): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET status = 'returned' 
+          WHERE id = ?
+        `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query, [
+      borrowId,
+    ]);
+    return result;
+  },
+  async declareborrowconformed(borrowId: number): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET status = 'completed'
+          WHERE id = ?
+        `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query, [
+      borrowId,
+    ]);
+    return result;
+  },
+  async declareborrowrejected(borrowId: number): Promise<ResultSetHeader> {
+    const query = `
+          UPDATE borrows 
+          SET status = 'object_broken'
+          WHERE id = ?
+        `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query, [
+      borrowId,
+    ]);
+    return result;
+  },
 
   async readAllByOwner(ownerId: number) {
     const [rows] = await databaseClient.query(
       `SELECT 
         b.id, 
         b.status, 
+        b.deposit_status,
         b.borrow_date, 
         b.return_date,
-        COALESCE(a.title, 'Annonce supprimée') AS item_title, 
+        COALESCE(a.title, 'Annonce supprimée') AS item_title,
+        COALESCE(a.amount_deposit, 0) AS amount_deposit,
+        b.amount_refunded,
         COALESCE(u.firstname, 'Utilisateur inconnu') AS borrower_name 
      FROM borrows b
      LEFT JOIN announces a ON b.announces_id = a.id
@@ -141,12 +193,97 @@ const borrowRepository = {
     return rows;
   },
 
-  async updateStatus(id: number, status: string) {
+  async readAllByBorrower(borrowerId: number) {
+    const [rows] = await databaseClient.query(
+      `SELECT 
+        b.id, 
+        b.status, 
+        b.deposit_status,
+        b.borrow_date, 
+        b.return_date,
+        COALESCE(a.title, 'Annonce supprimée') AS item_title,
+        COALESCE(a.amount_deposit, 0) AS amount_deposit,
+        b.amount_refunded,
+        COALESCE(u.firstname, 'Utilisateur inconnu') AS owner_name 
+     FROM borrows b
+     LEFT JOIN announces a ON b.announces_id = a.id
+     LEFT JOIN users u ON b.owner_id = u.id
+     WHERE b.borrower_id = ?`,
+      [borrowerId],
+    );
+    return rows;
+  },
+
+  async getBorrowWithDetails(
+    borrowId: number,
+  ): Promise<BorrowWithDetails | null> {
+    const [rows] = await databaseClient.query(
+      `SELECT 
+        b.id,
+        b.borrower_id,
+        b.owner_id,
+        b.announces_id,
+        u.email as borrower_email,
+        u.firstname as borrower_name,
+        o.email as owner_email,
+        o.firstname as owner_name,
+        a.title as announce_title,
+        a.amount_deposit
+       FROM borrows b
+       LEFT JOIN users u ON b.borrower_id = u.id
+       LEFT JOIN users o ON b.owner_id = o.id
+       LEFT JOIN announces a ON b.announces_id = a.id
+       WHERE b.id = ?`,
+      [borrowId],
+    );
+    const rowsArray = (rows as BorrowWithDetails[]) || [];
+    return rowsArray.length > 0 ? rowsArray[0] : null;
+  },
+
+  async updateStatus(
+    id: number,
+    status: string,
+    depositStatus: string,
+  ): Promise<ResultSetHeader> {
     const [result] = await databaseClient.query<ResultSetHeader>(
-      "UPDATE borrows SET status = ? WHERE id = ?",
-      [status, id],
+      "UPDATE borrows SET status = ?, deposit_status = ? WHERE id = ?",
+      [status, depositStatus, id],
     );
     return result;
+  },
+
+  async updateStatusWithRefundAmount(
+    id: number,
+    status: string,
+    amountRefunded: number,
+  ): Promise<ResultSetHeader> {
+    const [result] = await databaseClient.query<ResultSetHeader>(
+      "UPDATE borrows SET status = ?, amount_refunded = ? WHERE id = ?",
+      [status, amountRefunded, id],
+    );
+    return result;
+  },
+
+  // Mettre à jour les borrows "confirmed" avec "paid" en "in_progress" après 1 minute
+  async updateConfirmedToInProgress(): Promise<number> {
+    const query = `
+      UPDATE borrows 
+      SET status = 'in_progress'
+      WHERE status = 'confirmed' 
+      AND deposit_status = 'paid'
+      AND TIMESTAMPDIFF(MINUTE, update_date, NOW()) >= 1
+    `;
+    const [result] = await databaseClient.query<ResultSetHeader>(query);
+    return result.affectedRows;
+  },
+
+  // Libérer la disponibilité quand l'article est retourné avant la date prévue
+  async releaseAvailability(borrowId: number): Promise<void> {
+    const query = `
+      DELETE FROM availability
+      WHERE borrow_id = ? AND date > CURDATE()
+    `;
+    await databaseClient.query(query, [borrowId]);
   },
 };
 
