@@ -11,7 +11,7 @@
 
 .conversation-list-header {
   padding: 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--color-btn-secondary);
   background-color: var(--color-card);
 }
 
@@ -28,21 +28,32 @@
   padding: 0;
 }
 
-.conversation-item {
+.conversation-item-wrapper {
   display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  cursor: pointer;
+  align-items: stretch;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.1);
   transition: background-color 200ms var(--smooth-ease);
 }
 
-.conversation-item:hover {
+.conversation-item-wrapper:hover {
   background-color: var(--color-card-hover);
 }
 
-.conversation-item.active {
+.conversation-item-wrapper.active {
   background-color: var(--color-primary);
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 200ms var(--smooth-ease);
+  border: none;
+  background: none;
+  width: 100%;
 }
 
 .conversation-item.active .conversation-info-name,
@@ -50,19 +61,44 @@
   color: white;
 }
 
+.conversation-delete-btn {
+  padding: 8px;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--color-secondary-text);
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 200ms var(--smooth-ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 100%;
+  opacity: 0;
+  transition:
+    opacity 200ms var(--smooth-ease),
+    color 200ms var(--smooth-ease);
+}
+
+.conversation-item-wrapper:hover .conversation-delete-btn {
+  opacity: 1;
+}
+
+.conversation-delete-btn:hover {
+  color: #dc3545;
+}
+
+/* Avatar styles moved to avatar.css, keeping this for backwards compatibility */
 .conversation-avatar {
   width: 48px;
   height: 48px;
   border-radius: var(--b-radius-full);
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-secondary)
-  );
+  background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--color-btn-primary-text);
   font-weight: 600;
   font-size: 18px;
   flex-shrink: 0;
@@ -90,6 +126,10 @@
   font-weight: 600;
   color: var(--color-primary-text);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .conversation-info-time {
@@ -138,6 +178,16 @@
   padding: 40px;
   text-align: center;
   color: var(--color-secondary-text);
+}
+
+.conversation-list-empty p:first-child {
+  font-weight: 500;
+  margin: 0;
+}
+
+.conversation-list-empty p:last-child {
+  font-size: 12px;
+  margin: 4px 0 0 0;
 }
 
 /* Dark theme adjustments */

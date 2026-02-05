@@ -35,7 +35,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         credentials: "include",
       });
@@ -51,28 +50,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
-  // Initialize Socket.IO connection
+  // Cleanup on logout
   useEffect(() => {
-    if (!user) return;
-
-    const initializeSocket = async () => {
-      try {
-        // Socket.IO will use cookies automatically for authentication
-        await ChatSocketService.connect();
-        setSocketConnected(true);
-        await loadConversations();
-      } catch (error) {
-        console.error("Failed to connect socket:", error);
-      }
-    };
-
-    initializeSocket();
-
-    return () => {
+    if (!user) {
+      setConversations([]);
+      setCurrentConversation(null);
+      setMessages([]);
       ChatSocketService.disconnect();
       setSocketConnected(false);
-    };
-  }, [user, loadConversations]);
+    }
+  }, [user]);
 
   // Setup Socket.IO event listeners
   useEffect(() => {
@@ -80,6 +67,15 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
 
     // Listen for new messages
     const unsubscribeNewMessage = ChatSocketService.onNewMessage(
+      (message: Message) => {
+        if (currentConversation?.id === message.conversation_id) {
+          setMessages((prev) => [...prev, message]);
+        }
+      },
+    );
+
+    // Listen for message sent confirmation (for immediate feedback)
+    const unsubscribeMessageSent = ChatSocketService.onMessageSent(
       (message: Message) => {
         if (currentConversation?.id === message.conversation_id) {
           setMessages((prev) => [...prev, message]);
@@ -119,12 +115,20 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     // Listen for new conversations
     const unsubscribeNewConv = ChatSocketService.onNewConversation(
       (newConv: Conversation) => {
-        setConversations((prev) => [newConv, ...prev]);
+        setConversations((prev) => {
+          // Vérifier si la conversation existe déjà
+          const exists = prev.some((conv) => conv.id === newConv.id);
+          if (exists) {
+            return prev; // Ne pas ajouter si elle existe déjà
+          }
+          return [newConv, ...prev]; // Ajouter au début
+        });
       },
     );
 
     return () => {
       unsubscribeNewMessage();
+      unsubscribeMessageSent();
       unsubscribeTyping();
       unsubscribeConvUpdate();
       unsubscribeNewConv();
@@ -231,7 +235,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         if (!response.ok) throw new Error("Failed to create conversation");
 
         const conversation = await response.json();
-        setConversations((prev) => [conversation, ...prev]);
+
+        // Vérifier si cette conversation existe déjà pour éviter les doublons
+        setConversations((prev) => {
+          const exists = prev.some((conv) => conv.id === conversation.id);
+          if (exists) {
+            return prev; // La conversation existe déjà, ne pas l'ajouter
+          }
+          return [conversation, ...prev]; // Ajouter la nouvelle conversation
+        });
+
         return conversation;
       } catch (error) {
         console.error("Error creating conversation:", error);
@@ -239,6 +252,41 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       }
     },
     [],
+  );
+
+  const deleteConversation = useCallback(
+    async (conversationId: number) => {
+      try {
+        const response = await fetch(
+          `${Base_URL}/api/chat/conversations/${conversationId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            credentials: "include",
+          },
+        );
+
+        if (!response.ok) throw new Error("Failed to delete conversation");
+
+        // Supprimer la conversation de la liste
+        setConversations((prev) =>
+          prev.filter((conv) => conv.id !== conversationId),
+        );
+
+        // Si c'est la conversation actuelle, la fermer
+        if (currentConversation?.id === conversationId) {
+          setCurrentConversation(null);
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error("Error deleting conversation:", error);
+        throw error;
+      }
+    },
+    [currentConversation?.id],
   );
 
   return (
@@ -264,6 +312,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setIsTyping,
         markAsRead,
         createConversation,
+        deleteConversation,
       }}
     >
       {children}

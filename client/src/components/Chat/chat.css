@@ -10,7 +10,7 @@
 
 .chat-sidebar {
   width: 320px;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid var(--color-btn-secondary);
   background-color: var(--color-card);
   display: flex;
   flex-direction: column;
@@ -46,6 +46,12 @@
   margin-bottom: 8px;
 }
 
+.chat-empty-state-text + p {
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 0;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .chat-container {
@@ -57,7 +63,7 @@
     height: auto;
     max-height: 200px;
     border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--color-btn-secondary);
   }
 
   .chat-main {

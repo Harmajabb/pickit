@@ -34,8 +34,8 @@ function ProfileView(props: ProfileViewProps) {
   const API_URL = import.meta.env.VITE_API_URL;
 
   // user avatar
-  const avatarSrc = props.user.profile_picture
-    ? `${API_URL}${props.user.profile_picture}`
+  const avatarSrc = props.user.profil_picture
+    ? `${API_URL}${props.user.profil_picture}`
     : `${API_URL}/assets/images/avatar-default.png`;
 
   // private profile (me mode)

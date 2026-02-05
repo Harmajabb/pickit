@@ -29,5 +29,6 @@ export interface Conversation {
   requester?: User;
   announce_title?: string;
   announce_image?: string;
+  unread_count?: number;
   created_at?: string;
 }

@@ -82,6 +82,11 @@ const create: RequestHandler = async (req, res, next) => {
       announce_id,
     );
 
+    if (!conversation) {
+      res.status(404).json({ error: "Announcement not found" });
+      return;
+    }
+
     res.status(201).json(conversation);
   } catch (error) {
     next(error);
@@ -188,12 +193,41 @@ const markRead: RequestHandler = async (req, res, next) => {
   }
 };
 
+// DELETE /api/chat/conversations/:id
+const deleteConversation: RequestHandler = async (req, res, next) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const conversationId = Number.parseInt(String(req.params.id), 10);
+
+    const conversation =
+      await chatRepository.getConversationById(conversationId);
+    if (
+      conversation.user_id_owner !== userId &&
+      conversation.user_id_requester !== userId
+    ) {
+      res.status(403).json({ error: "Forbidden" });
+      return;
+    }
+
+    await chatRepository.deleteConversation(conversationId);
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const chatActions = {
   browse,
   create,
   read,
   getMessages,
   markRead,
+  deleteConversation,
 };
 
 export default chatActions;

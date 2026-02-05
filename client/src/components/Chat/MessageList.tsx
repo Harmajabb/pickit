@@ -3,12 +3,15 @@
  */
 
 import { type FC, useCallback, useEffect, useRef } from "react";
-import type { Message, User } from "../../types/Chat";
+import type { Message as MessageType, User } from "../../types/Chat";
+import MessageComponent from "../Message/Message";
+import AvatarImage from "./AvatarImage";
 import TypingIndicator from "./TypingIndicator";
 import "./messageList.css";
+import "./avatar.css";
 
 interface MessageListProps {
-  messages: Message[];
+  messages: MessageType[];
   currentUser: User | null;
   otherUser: User | undefined;
   typingUsers: Map<number, boolean>;
@@ -42,19 +45,12 @@ const MessageList: FC<MessageListProps> = ({
     return `${hours}:${minutes}`;
   };
 
-  const getInitials = (user: User | undefined) => {
-    if (!user) return "?";
-    return `${user.firstname[0]}${user.lastname[0]}`.toUpperCase();
-  };
-
   return (
     <div className="message-list-container">
       {/* Header */}
       <div className="message-list-header">
         <div className="message-list-header-info">
-          <div className="message-list-header-avatar">
-            {getInitials(otherUser)}
-          </div>
+          <AvatarImage user={otherUser} size="medium" />
           <div className="message-list-header-details">
             {otherUser && (
               <>
@@ -75,37 +71,26 @@ const MessageList: FC<MessageListProps> = ({
       {/* Messages */}
       <div className="message-list-content">
         {isLoading ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-            }}
-          >
-            Chargement...
-          </div>
+          <div className="message-list-loading">Loading...</div>
         ) : messages.length === 0 ? (
           <div className="message-list-empty">
-            <p>Aucun message pour le moment</p>
-            <p style={{ fontSize: "12px", opacity: 0.6 }}>
-              Commencez la conversation
-            </p>
+            <p>No messages yet</p>
+            <p>Start the conversation</p>
           </div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`message-group ${message.sender_id === currentUser?.id ? "own" : "other"}`}
-            >
-              <div className="message-bubble">
-                <p className="message-bubble-content">{message.content}</p>
-                <p className="message-bubble-time">
-                  {formatTime(message.created_at)}
-                </p>
-              </div>
-            </div>
-          ))
+          messages.map((message) => {
+            return (
+              <MessageComponent
+                key={message.id}
+                content={message.content}
+                receivedOrSent={
+                  message.sender_id === currentUser?.id ? "sent" : "received"
+                }
+                createdAt={formatTime(message.created_at)}
+                sender={message.sender}
+              />
+            );
+          })
         )}
 
         {/* Typing Indicator */}

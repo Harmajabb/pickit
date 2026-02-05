@@ -5,7 +5,6 @@ import "./Dashboard_Admin.css";
 import {
   ChartBarStacked,
   FlagTriangleRight,
-  MessageCircle,
   User,
   UserCog,
 } from "lucide-react";
@@ -105,10 +104,6 @@ const Dashboard_Admin = () => {
           >
             <ChartBarStacked size={32} strokeWidth={2} />
             Manage Category
-          </button>
-          <button className="secondary btnusers" type="button">
-            <MessageCircle size={32} strokeWidth={2} />
-            Chats
           </button>
         </div>
       </section>

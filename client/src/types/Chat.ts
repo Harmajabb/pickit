@@ -56,6 +56,7 @@ export interface ChatContextType {
     requesterId: number,
     announceId: number,
   ) => Promise<Conversation>;
+  deleteConversation: (conversationId: number) => Promise<void>;
 }
 
 export interface SocketEvents {

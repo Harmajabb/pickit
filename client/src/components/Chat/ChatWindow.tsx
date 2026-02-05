@@ -23,6 +23,7 @@ const ChatWindow: FC = () => {
     loadConversations,
     setIsTyping,
     markAsRead,
+    deleteConversation,
   } = useChat();
 
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -40,8 +41,10 @@ const ChatWindow: FC = () => {
   useEffect(() => {
     if (currentConversation) {
       void markAsRead(currentConversation.id);
+      // Reload conversations to update unread count
+      void loadConversations();
     }
-  }, [currentConversation, markAsRead]);
+  }, [currentConversation, markAsRead, loadConversations]);
 
   const handleSelectConversation = useCallback(
     (conversation: Conversation) => {
@@ -68,6 +71,18 @@ const ChatWindow: FC = () => {
     [currentConversation, currentUser?.id, setIsTyping],
   );
 
+  const handleDeleteConversation = useCallback(
+    async (conversationId: number) => {
+      try {
+        await deleteConversation(conversationId);
+      } catch (error) {
+        console.error("Error deleting conversation:", error);
+        alert("Error deleting conversation");
+      }
+    },
+    [deleteConversation],
+  );
+
   // Get the other user in the conversation
   const getOtherUser = () => {
     if (!currentConversation || !currentUser) return undefined;
@@ -87,6 +102,7 @@ const ChatWindow: FC = () => {
           currentConversation={currentConversation}
           currentUser={currentUser}
           onSelectConversation={handleSelectConversation}
+          onDeleteConversation={handleDeleteConversation}
           isLoading={isLoading && conversations.length === 0}
         />
       </div>
@@ -96,12 +112,8 @@ const ChatWindow: FC = () => {
         {!currentConversation ? (
           <div className="chat-empty-state">
             <div className="chat-empty-state-icon">💬</div>
-            <p className="chat-empty-state-text">
-              Sélectionnez une conversation
-            </p>
-            <p style={{ fontSize: "12px", opacity: 0.6 }}>
-              pour commencer à communiquer
-            </p>
+            <p className="chat-empty-state-text">Select a conversation</p>
+            <p>to start communicating</p>
           </div>
         ) : (
           <>

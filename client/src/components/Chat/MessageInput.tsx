@@ -105,7 +105,7 @@ const MessageInput: FC<MessageInputProps> = ({
         <textarea
           ref={textareaRef}
           className="message-input-field"
-          placeholder="Écrivez votre message..."
+          placeholder="Write your message..."
           value={content}
           onChange={handleInput}
           onKeyDown={handleKeyDown}

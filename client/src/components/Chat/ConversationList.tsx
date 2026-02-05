@@ -4,13 +4,16 @@
 
 import { type FC, useMemo } from "react";
 import type { Conversation, User } from "../../types/Chat";
+import AvatarImage from "./AvatarImage";
 import "./conversationList.css";
+import "./avatar.css";
 
 interface ConversationListProps {
   conversations: Conversation[];
   currentConversation: Conversation | null;
   currentUser: User | null;
   onSelectConversation: (conversation: Conversation) => void;
+  onDeleteConversation?: (conversationId: number) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -19,17 +22,13 @@ const ConversationList: FC<ConversationListProps> = ({
   currentConversation,
   currentUser,
   onSelectConversation,
+  onDeleteConversation,
   isLoading = false,
 }) => {
   // Get the other user in each conversation
   const getOtherUser = (conv: Conversation) => {
-    if (!currentUser) return null;
+    if (!currentUser) return undefined;
     return currentUser.id === conv.user_id_owner ? conv.requester : conv.owner;
-  };
-
-  const getInitials = (user: User | undefined) => {
-    if (!user) return "?";
-    return `${user.firstname[0]}${user.lastname[0]}`.toUpperCase();
   };
 
   const formatTime = (dateString: string | undefined) => {
@@ -45,12 +44,12 @@ const ConversationList: FC<ConversationListProps> = ({
       return `${hours}:${minutes}`;
     }
     if (diffDays === 1) {
-      return "Hier";
+      return "Yesterday";
     }
     if (diffDays < 7) {
-      return `${diffDays}j`;
+      return `${diffDays}d`;
     }
-    return `${Math.floor(diffDays / 7)}s`;
+    return `${Math.floor(diffDays / 7)}w`;
   };
 
   const sortedConversations = useMemo(() => {
@@ -65,6 +64,23 @@ const ConversationList: FC<ConversationListProps> = ({
     });
   }, [conversations]);
 
+  const handleDeleteClick = async (
+    e: React.MouseEvent,
+    conversationId: number,
+  ) => {
+    e.stopPropagation();
+    if (
+      onDeleteConversation &&
+      window.confirm("Are you sure you want to delete this conversation?")
+    ) {
+      try {
+        await onDeleteConversation(conversationId);
+      } catch (error) {
+        console.error("Error deleting conversation:", error);
+      }
+    }
+  };
+
   return (
     <div className="conversation-list">
       <div className="conversation-list-header">
@@ -74,14 +90,12 @@ const ConversationList: FC<ConversationListProps> = ({
       <div className="conversation-list-content">
         {isLoading ? (
           <div className="conversation-list-loading">
-            Chargement des conversations...
+            Loading conversations...
           </div>
         ) : sortedConversations.length === 0 ? (
           <div className="conversation-list-empty">
-            <p>Aucune conversation</p>
-            <p style={{ fontSize: "12px" }}>
-              Les conversations apparaîtront ici
-            </p>
+            <p>No conversations</p>
+            <p>Conversations will appear here</p>
           </div>
         ) : (
           sortedConversations.map((conv) => {
@@ -89,51 +103,55 @@ const ConversationList: FC<ConversationListProps> = ({
             const isActive = currentConversation?.id === conv.id;
 
             return (
-              <button
+              <div
                 key={conv.id}
-                className={`conversation-item ${isActive ? "active" : ""}`}
-                onClick={() => onSelectConversation(conv)}
-                type="button"
+                className={`conversation-item-wrapper ${isActive ? "active" : ""}`}
               >
-                <img
-                  src={otherUser?.profil_picture || ""}
-                  alt={otherUser?.firstname}
-                  className="conversation-avatar"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                    const initials = otherUser ? getInitials(otherUser) : "?";
-                    (e.currentTarget as HTMLDivElement).textContent = initials;
-                  }}
-                />
+                <button
+                  className={`conversation-item ${isActive ? "active" : ""}`}
+                  onClick={() => onSelectConversation(conv)}
+                  type="button"
+                >
+                  <AvatarImage
+                    user={otherUser}
+                    size="large"
+                    className="conversation-avatar"
+                  />
 
-                {!otherUser?.profil_picture && (
-                  <div className="conversation-avatar">
-                    {otherUser ? getInitials(otherUser) : "?"}
-                  </div>
-                )}
-
-                <div className="conversation-info">
-                  <div className="conversation-info-top">
-                    <h3 className="conversation-info-name">
-                      {otherUser?.firstname} {otherUser?.lastname}
-                    </h3>
-                    <p className="conversation-info-time">
-                      {formatTime(conv.last_message_time)}
+                  <div className="conversation-info">
+                    <div className="conversation-info-top">
+                      <h3 className="conversation-info-name">
+                        {otherUser?.firstname} {otherUser?.lastname}
+                      </h3>
+                      <p className="conversation-info-time">
+                        {formatTime(conv.last_message_time)}
+                      </p>
+                    </div>
+                    <p className="conversation-info-preview">
+                      {conv.last_message_time
+                        ? "Recent message"
+                        : "No messages"}
                     </p>
                   </div>
-                  <p className="conversation-info-preview">
-                    {conv.last_message_time
-                      ? "Message récent"
-                      : "Aucun message"}
-                  </p>
-                </div>
 
-                {conv.unread_count && conv.unread_count > 0 && (
-                  <div className="conversation-unread-badge">
-                    {Math.min(conv.unread_count, 99)}
-                  </div>
+                  {conv.unread_count && conv.unread_count > 0 && (
+                    <div className="conversation-unread-badge">
+                      {Math.min(conv.unread_count, 99)}
+                    </div>
+                  )}
+                </button>
+
+                {onDeleteConversation && (
+                  <button
+                    className="conversation-delete-btn"
+                    onClick={(e) => handleDeleteClick(e, conv.id)}
+                    title="Delete this conversation"
+                    type="button"
+                  >
+                    ✕
+                  </button>
                 )}
-              </button>
+              </div>
             );
           })
         )}
