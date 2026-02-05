@@ -43,7 +43,7 @@ export function AnnouncesProvider({ children }: { children: ReactNode }) {
       // Call to the fetchAnnounces function to retrieve announcements from the API
       try {
         const data = await fetchAllAnnounces(filters);
-        // console.log("Fetched announces:", data);
+        console.log("Fetched announces:", data);
         setAnnounces(data);
       } catch {
         // console.error("Error fetching announces");

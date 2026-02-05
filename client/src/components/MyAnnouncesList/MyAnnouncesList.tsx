@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import ButtonDelete from "../Btn-Delete/ButtonDelete";
 import "./MyAnnouncesList.css";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 
 interface MyAnnounce {
   id: number;
@@ -17,6 +18,10 @@ interface MyAnnounce {
 }
 
 export default function MyAnnouncesList() {
+  const { ref: headerRef, isVisible: headerVisible } =
+    useRevealOnScroll<HTMLDivElement>();
+  const { ref: gridRef, isVisible: gridVisible } =
+    useRevealOnScroll<HTMLDivElement>();
   const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
   const navigate = useNavigate();
   const [announces, setAnnounces] = useState<MyAnnounce[]>([]);
@@ -79,7 +84,10 @@ export default function MyAnnouncesList() {
 
   return (
     <div className="my-announces-container">
-      <div className="my-announces-header">
+      <div
+        ref={headerRef}
+        className={`my-announces-header reveal ${headerVisible ? "is-visible" : ""}`}
+      >
         <h1>My ads</h1>
         <button
           type="button"
@@ -102,7 +110,10 @@ export default function MyAnnouncesList() {
           </button>
         </div>
       ) : (
-        <div className="announces-grid">
+        <div
+          ref={gridRef}
+          className={`announces-grid reveal-stagger ${gridVisible ? "is-visible" : ""}`}
+        >
           {announces.map((announce) => (
             <div key={announce.id} className="announce-card">
               <div className="announce-image">

@@ -1,8 +1,14 @@
 import "./Testimony.css";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 
 const Testimony = () => {
+  const { ref, isVisible } = useRevealOnScroll<HTMLDivElement>();
+
   return (
-    <div className="container-temoignage">
+    <div
+      ref={ref}
+      className={`container-temoignage reveal ${isVisible ? "is-visible" : ""}`}
+    >
       <div className="wrapper-avis">
         <h2 className="titre-section">Testimony</h2>
 

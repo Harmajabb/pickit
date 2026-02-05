@@ -9,7 +9,7 @@ const browse: RequestHandler = async (req, res, next) => {
       zipcode:
         typeof req.query.zipcode === "string" ? req.query.zipcode : undefined,
       category_id:
-        typeof req.query.category_id === "number"
+        typeof req.query.category_id === "string"
           ? req.query.category_id
           : undefined,
     };

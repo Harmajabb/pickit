@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router";
-import logo from "../../assets/icons/logo.svg";
-import roundedLogo from "../../assets/icons/rounded-logo.svg";
+// import roundedLogo from "../../assets/icons/rounded-logo.svg";
+import pickitDark from "../../assets/icons/pickit-dark.png";
+import pickitLight from "../../assets/icons/pickit-light.png";
 import type { SearchResult, Tab } from "../../types/Search";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
@@ -40,7 +41,8 @@ function Navbar() {
     <>
       <nav className="desktop-nav">
         <Link to="/">
-          <img src={logo} alt="logo PICKIT" />
+          <img src={pickitDark} alt="logo PICKIT" className="logo-dark" />
+          <img src={pickitLight} alt="logo PICKIT" className="logo-light" />
         </Link>
         <Link to="/create-annonce" className="cta">
           List an item
@@ -88,35 +90,55 @@ function Navbar() {
         {/* CHANGE CONDITION : IF USER IS LOGGED IN -> SHOW PROFILE ICON AND DISCONNECT BTN (FIST DIV) IF HES NOT LOGGED IN -> SHOW LOG IN / SIGN IN BTN */}
         {isLogged ? (
           <>
-            <Link to={user?.role === 1 ? "/ad-dashboard" : "/profile/me"}>
-              <svg aria-hidden="true" viewBox="0 0 14 20" className="nav-icons">
-                <path
-                  d="M3 5C3 6.06087 3.42143 7.07828 4.17157 7.82843C4.92172 8.57857 5.93913 9 7 9C8.06087 9 9.07828 8.57857 9.82843 7.82843C10.5786 7.07828 11 6.06087 11 5C11 3.93913 10.5786 2.92172 9.82843 2.17157C9.07828 1.42143 8.06087 1 7 1C5.93913 1 4.92172 1.42143 4.17157 2.17157C3.42143 2.92172 3 3.93913 3 5Z"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M1 19V17C1 15.9391 1.42143 14.9217 2.17157 14.1716C2.92172 13.4214 3.93913 13 5 13H9C10.0609 13 11.0783 13.4214 11.8284 14.1716C12.5786 14.9217 13 15.9391 13 17V19"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
+            {/* Conteneur pour grouper l'icône et le nom sans que tout soit un lien */}
+            <div className="user-profile-section">
+              <Link to={user?.role === 1 ? "/ad-dashboard" : "/profile/me"}>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 14 20"
+                  className="nav-icons"
+                >
+                  <path
+                    d="M3 5C3 6.06087 3.42143 7.07828 4.17157 7.82843C4.92172 8.57857 5.93913 9 7 9C8.06087 9 9.07828 8.57857 9.82843 7.82843C10.5786 7.07828 11 6.06087 11 5C11 3.93913 10.5786 2.92172 9.82843 2.17157C9.07828 1.42143 8.06087 1 7 1C5.93913 1 4.92172 1.42143 4.17157 2.17157C3.42143 2.92172 3 3.93913 3 5Z"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M1 19V17C1 15.9391 1.42143 14.9217 2.17157 14.1716C2.92172 13.4214 3.93913 13 5 13H9C10.0609 13 11.0783 13.4214 11.8284 14.1716C12.5786 14.9217 13 15.9391 13 17V19"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+
+              {/* Le texte est ici, en dehors du composant Link */}
+              <span className="user-greeting">Hello, {user?.firstname}</span>
+            </div>
+
             <Link onClick={logout} to="/" className="secondary">
               Log out
             </Link>
           </>
         ) : (
-          <Link to="/login" className="primary">
+          <Link to="/login" className="primary navbar-login-btn">
             Log In
           </Link>
         )}
         <ThemeToggle />
       </nav>
       <Link to="/">
-        <img src={roundedLogo} alt="PICKIT logo" className="mobile-nav_logo" />
+        <img
+          src={pickitDark}
+          alt="PICKIT logo"
+          className="mobile-nav_logo logo-dark"
+        />
+        <img
+          src={pickitLight}
+          alt="PICKIT logo"
+          className="mobile-nav_logo logo-light"
+        />
       </Link>
       <nav className="mobile-nav">
         <Link to="/">
@@ -200,7 +222,8 @@ function Navbar() {
               strokeLinejoin="round"
             />
           </svg>
-          <span>Profile</span>
+          {/* Mobile : Le texte reste dans le Link car c'est la navigation principale sur smartphone */}
+          <span>{isLogged ? `Bonjour, ${user?.firstname}` : "Profile"}</span>
         </Link>
       </nav>
     </>

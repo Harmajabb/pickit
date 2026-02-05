@@ -318,7 +318,7 @@ function CreateAnnonce() {
             </div>
           </div>
 
-          <button type="submit" className="cta">
+          <button type="submit" className="primary create-annonce-submit-btn">
             Create Ad
           </button>
         </form>

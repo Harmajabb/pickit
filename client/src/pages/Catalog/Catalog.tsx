@@ -1,17 +1,22 @@
 import CatalogCard from "../../components/CatalogCard/CatalogCard.tsx";
 import "./Catalog.css";
-import { useEffect, useState, useCallback } from "react";
+import { Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { Search, ChevronDown } from "lucide-react";
+import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 import SearchBar from "../../components/SearchBar/SearchBar.tsx";
 import { useAnnounces } from "../../context/AnnouncesContext.tsx";
-import type { Announce } from "../../types/Announce.ts";
-import type { SearchResult, Tab } from "../../types/Search";
-import type { AnnounceFilters } from "../../types/AnnounceFilters.ts";
 import { fetchCategories } from "../../services/ServiceSearchApi";
+import type { Announce } from "../../types/Announce.ts";
+import type { AnnounceFilters } from "../../types/AnnounceFilters.ts";
 import type { Category } from "../../types/Category.ts";
+import type { SearchResult, Tab } from "../../types/Search";
 
 function Catalog() {
+  const { ref: headerRef, isVisible: headerVisible } =
+    useRevealOnScroll<HTMLElement>();
+  const { ref: gridRef, isVisible: gridVisible } =
+    useRevealOnScroll<HTMLDivElement>();
   const navigate = useNavigate();
   const { announces, isLoading, error, refreshAnnounces } = useAnnounces();
   const [searchParams] = useSearchParams(); // Hook to read URL query parameters (e.g. ?q=bike)
@@ -102,7 +107,10 @@ function Catalog() {
 
   return (
     <div className="catalog-page">
-      <header className="catalog-header">
+      <header
+        ref={headerRef}
+        className={`catalog-header reveal ${headerVisible ? "is-visible" : ""}`}
+      >
         <h1>Item catalog</h1>
         <div className="catalog-search">
           <SearchBar
@@ -125,9 +133,6 @@ function Catalog() {
                 </option>
               ))}
             </select>
-            <div className="select-icon">
-              <ChevronDown size={18} strokeWidth={1.5} />
-            </div>
           </div>
 
           <div className="filter-item zipcode-filter">
@@ -154,7 +159,10 @@ function Catalog() {
         )}
       </header>
 
-      <div className="catalog-container">
+      <div
+        ref={gridRef}
+        className={`catalog-container reveal-stagger ${gridVisible ? "is-visible" : ""}`}
+      >
         {data.map((announce) => (
           <CatalogCard key={announce.id} data={announce} />
         ))}
