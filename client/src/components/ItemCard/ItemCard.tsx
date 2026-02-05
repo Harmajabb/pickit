@@ -11,7 +11,7 @@ const BASE_URL = `${import.meta.env.VITE_API_URL}/assets/images/`;
 
 function ItemCard({ id, title, location, all_images }: Props) {
   return (
-    <Link to={`/announce/${id}`} className="item-link">
+    <Link to={`/announce/${id}`} className="item-link" tabIndex={0}>
       <article className="itemCard-section">
         <div className="itemCard-image-container" key={id}>
           <img

@@ -1,4 +1,4 @@
-import { Heart, Package } from "lucide-react";
+import { Handshake, Heart, Package } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import type { UserPrivate } from "../../types/User";
@@ -332,7 +332,7 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
         </h3>
 
         <div className="profile-actions-grid">
-          <Link to="/my-announces" className="profile-action-card">
+          <Link to="/my-announces" className="profile-action-card" tabIndex={0}>
             <div className="profile-action-icon">
               <Package size={40} strokeWidth={1.5} />
             </div>
@@ -340,12 +340,23 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
             <p>Manage your items</p>
           </Link>
 
-          <Link to="/my-favorites" className="profile-action-card">
+          <Link to="/my-favorites" className="profile-action-card" tabIndex={0}>
             <div className="profile-action-icon">
               <Heart size={40} strokeWidth={1.5} />
             </div>
             <h4>My Favorites</h4>
             <p>Find your favorites</p>
+          </Link>
+          <Link
+            to="/profile/requests"
+            className="profile-action-card"
+            tabIndex={0}
+          >
+            <div className="profile-action-icon">
+              <Handshake size={40} strokeWidth={1.5} />
+            </div>
+            <h4>My Requests</h4>
+            <p>Manage borrow requests</p>
           </Link>
         </div>
       </section>

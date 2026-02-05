@@ -35,6 +35,7 @@
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.2s ease;
+  border: none;
 }
 
 .profile-info-item--edit::before {
@@ -68,7 +69,6 @@
   font-weight: 600;
   color: var(--color-primary-text);
   background: transparent;
-  border: none;
   outline: none;
   transition: box-shadow 0.2s;
 }

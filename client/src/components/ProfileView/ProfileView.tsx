@@ -112,7 +112,11 @@ function ProfileView(props: ProfileViewProps) {
           </h3>
 
           <div className="profile-actions-grid reveal-stagger is-visible">
-            <Link to="/my-announces" className="profile-action-card">
+            <Link
+              to="/my-announces"
+              className="profile-action-card"
+              tabIndex={0}
+            >
               <div className="profile-action-icon">
                 <Package size={40} strokeWidth={1.5} />
               </div>
@@ -120,7 +124,11 @@ function ProfileView(props: ProfileViewProps) {
               <p>Manage your items</p>
             </Link>
 
-            <Link to="/my-favorites" className="profile-action-card">
+            <Link
+              to="/my-favorites"
+              className="profile-action-card"
+              tabIndex={0}
+            >
               <div className="profile-action-icon">
                 <Heart size={40} strokeWidth={1.5} />
               </div>
@@ -128,7 +136,11 @@ function ProfileView(props: ProfileViewProps) {
               <p>Find your favorites</p>
             </Link>
 
-            <Link to="/profile/requests" className="profile-action-card">
+            <Link
+              to="/profile/requests"
+              className="profile-action-card"
+              tabIndex={0}
+            >
               <div className="profile-action-icon">
                 <Handshake size={40} strokeWidth={1.5} />
               </div>
@@ -175,7 +187,7 @@ function ProfileView(props: ProfileViewProps) {
       >
         <h2 id="announcements-title">
           Announcement ({items.length}){" "}
-          <Link to="/" className="profile-see-all">
+          <Link to="/" className="profile-see-all" tabIndex={0}>
             See all announcements
           </Link>
         </h2>
@@ -200,7 +212,11 @@ function ProfileView(props: ProfileViewProps) {
       >
         <h2 id="favorites-title">
           His favorites ({favorites.length})
-          <Link to={`/favorites/${user.id}`} className="profile-see-all">
+          <Link
+            to={`/favorites/${user.id}`}
+            className="profile-see-all"
+            tabIndex={0}
+          >
             See all favorites
           </Link>
         </h2>
@@ -212,7 +228,7 @@ function ProfileView(props: ProfileViewProps) {
             {favorites.slice(0, 6).map((fav) => (
               <li key={fav.id}>
                 {" "}
-                <Link to={`/announce/${fav.id}`}>
+                <Link to={`/announce/${fav.id}`} tabIndex={0}>
                   <CatalogCard data={fav} />
                 </Link>
               </li>
