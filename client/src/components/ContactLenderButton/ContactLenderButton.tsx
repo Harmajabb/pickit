@@ -128,8 +128,6 @@ const ContactLenderButton = ({
     setError(null);
 
     try {
-      const token = localStorage.getItem("token");
-
       const requestData: LoanRequestData = {
         announces_id: announceId,
         borrow_date: borrowDate,
@@ -142,8 +140,8 @@ const ContactLenderButton = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
+          credentials: "include", // ← IMPORTANT : envoie les cookies automatiquement
           body: JSON.stringify(requestData),
         },
       );

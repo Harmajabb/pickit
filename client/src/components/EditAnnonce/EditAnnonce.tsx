@@ -151,9 +151,7 @@ function EditAnnonce({ announce, onCancel, onSave }: EditAnnonceProps) {
             className="info-value"
           />
         </div>
-      </div>
 
-      <div className="info-fields">
         <div className="info-field">
           <p className="info-label">Location</p>
           <input
