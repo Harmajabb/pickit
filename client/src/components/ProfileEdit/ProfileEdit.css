@@ -19,7 +19,47 @@
 
 /* Inputs inside infos */
 .profile-info-item--edit {
+  position: relative;
+  border-bottom: 2px solid transparent;
+  border-radius: 0 0 1rem 0;
+}
+
+.profile-info-item--edit::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 97%;
+  background: var(--color-btn);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+  border: none;
+}
+
+.profile-info-item--edit::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1rem;
+  height: 1rem;
+  border-right: 2px solid var(--color-btn);
   border-bottom: 2px solid var(--color-btn);
+  border-radius: 0 0 1rem 0;
+
+  opacity: 0;
+  transition: opacity 0.15s ease 0.1s;
+}
+
+.profile-info-item--edit:has(input:focus)::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.profile-info-item--edit:has(input:focus)::before {
+  opacity: 1;
 }
 
 .profile-edit-input {
@@ -29,7 +69,6 @@
   font-weight: 600;
   color: var(--color-primary-text);
   background: transparent;
-  border: none;
   outline: none;
   transition: box-shadow 0.2s;
 }

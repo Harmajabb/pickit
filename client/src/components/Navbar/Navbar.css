@@ -1,17 +1,27 @@
-.desktop-nav .nav-icons {
-  fill: none;
-  stroke: var(--color-primary-text);
-  cursor: pointer;
-  border-radius: var(--b-radius);
-  height: 39px;
-  padding: 0.4rem;
-  aspect-ratio: 1 / 1;
+/* ==== Theme switching logo and icon ==== */
+
+.logo-light,
+.icon-light {
+  display: none;
 }
-.desktop-nav .nav-icons:hover {
-  stroke: var(--color-bg);
-  background: var(--color-btn);
-  box-shadow: 0 0 0 2px var(--color-btn);
+
+.logo-dark,
+.icon-dark {
+  display: block;
 }
+
+:root[data-theme="dark"] .logo-dark,
+:root[data-theme="dark"] .icon-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .logo-light,
+:root[data-theme="dark"] .icon-light {
+  display: block;
+}
+
+/* ==== Desktop Navigation ==== */
+
 .desktop-nav {
   z-index: 10;
   background-color: var(--color-bg);
@@ -43,33 +53,133 @@
     transform: scaleX(1);
   }
 }
-@media (max-width: 740px) {
-  .desktop-nav {
-    display: none;
-  }
-}
-@media (max-width: 1200px) {
-  .desktop-nav {
-    gap: 1rem;
-    padding: 1rem 1rem;
-  }
-}
-.desktop-nav img {
-  height: 55px;
+
+/* Logo */
+
+.navbar-logo {
+  background: transparent;
+  border: 0;
+  padding: 0;
   cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.2s ease;
 }
-.desktop-nav input {
-  min-width: 200px;
-  width: 60%;
+
+.navbar-logo:hover {
+  opacity: 0.8;
 }
+
+.navbar-logo:focus-visible {
+  outline: 2px solid var(--color-btn);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.navbar-logo img {
+  width: 50px;
+  margin: 0;
+}
+
+/* CTA */
 .desktop-nav .cta {
   font-size: 14px;
+  white-space: nowrap;
 }
-.desktop-nav .heart {
-  padding: 0.3rem;
+
+/* SearchBar */
+.desktop-nav .searchbar,
+.desktop-nav .searchbar-wrapper,
+.desktop-nav form {
+  width: 100%;
 }
+
+.desktop-nav input {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Action group (icons + profile + logout + theme) */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.icon-btn {
+  position: relative;
+  background: transparent;
+  border: 0;
+  padding: 0.35rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s ease;
+}
+
+.icon-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background-color: var(--color-btn);
+  transition: transform 0.2s ease;
+}
+
+.icon-btn:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--color-btn);
+  outline-offset: 2px;
+}
+
+.icon-btn img {
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+}
+
+/* User section */
+.user-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.user-greeting {
+  font-weight: 500;
+  cursor: default;
+  white-space: nowrap;
+}
+
+/* Login Button */
 .navbar-login-btn {
   color: black;
+}
+
+/* ==== Mobile Navigation ==== */
+
+.mobile-nav_logo {
+  position: absolute;
+  margin: calc(env(safe-area-inset-top) + 1rem) 0 0
+    calc(env(safe-area-inset-left) + 1rem);
+  top: 0;
+  left: 0;
+  width: 50px;
+}
+
+.mobile-nav_logo img {
+  width: 50px;
+  height: auto;
 }
 
 .mobile-nav {
@@ -81,53 +191,46 @@
   padding: 1rem 0 calc(env(safe-area-inset-bottom) + 1rem) 0;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-}
-.mobile-nav .nav-icons {
-  fill: none;
-  stroke: var(--color-primary-text);
-  cursor: pointer;
-  height: 39px;
-  padding: 0.4rem;
-  aspect-ratio: 1 / 1;
-  transition: none;
-}
-.nav-icons.add {
-  fill: var(--color-primary-text);
-  stroke: none;
+  gap: 0;
 }
 
-@media (min-width: 740px) {
-  .mobile-nav,
-  .mobile-nav_logo {
-    display: none;
-  }
-}
-@media (min-width: 530px) {
-  .mobile-nav {
-    padding: 0.5rem 13% calc(env(safe-area-inset-bottom) + 0.5rem) 13%;
-  }
-}
-.mobile-nav > a {
+.mobile-nav-btn {
+  position: relative;
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  border-radius: 50%;
-  aspect-ratio: 1 / 1;
   padding: 0.2rem;
   color: var(--color-primary-text);
   display: grid;
-  grid-template-columns: 1fr;
   grid-template-rows: 2fr 1fr;
-  max-height: 100px;
   place-items: center;
+  max-height: 100px;
+
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-btn::after,
+.nav-chat-button::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background-color: var(--color-btn);
+  transition: transform 0.2s ease;
+}
+.mobile-nav-btn:is(:hover, :active, :focus-visible)::after,
+.nav-chat-button:is(:hover, :active, :focus-visible)::after {
+  transform: translateX(-50%) scaleX(1);
 }
 
 .nav-chat-button {
   cursor: pointer;
-  border-radius: 50%;
-  aspect-ratio: 1 / 1;
   padding: 0.2rem;
   color: var(--color-primary-text);
   display: grid;
-  grid-template-columns: 1fr;
   grid-template-rows: 2fr 1fr;
   max-height: 100px;
   place-items: center;
@@ -135,30 +238,6 @@
   border: none;
   position: relative;
   transition: all 0.2s ease;
-}
-
-@media (max-width: 300px) {
-  .mobile-nav > a {
-    padding: 0;
-  }
-}
-.mobile-nav > a:is(:active, :focus, :focus-visible) {
-  background: var(--color-btn);
-  box-shadow: 0 0 0 2px var(--color-btn);
-  color: #282727;
-}
-.mobile-nav > a:is(:active, :focus, :focus-visible) .nav-icons {
-  stroke: #282727;
-}
-.mobile-nav > a:is(:active, :focus, :focus-visible) .nav-icons.add {
-  fill: #282727;
-  stroke: none;
-}
-
-.nav-chat-button:is(:active, :focus, :focus-visible) {
-  background: var(--color-btn);
-  box-shadow: 0 0 0 2px var(--color-btn);
-  color: #282727;
 }
 
 .nav-chat-badge {
@@ -177,43 +256,90 @@
   font-weight: 700;
 }
 
-/* Masquer le bouton chat sur desktop */
-@media (min-width: 769px) {
-  .nav-chat-button {
+.nav-chat-button:is(:active, :focus, :focus-visible) svg {
+  stroke: #282727;
+}
+
+/* .nav-chat-button:is(:active, :focus, :focus-visible) {
+  background: var(--color-btn);
+  box-shadow: 0 0 0 2px var(--color-btn);
+  color: #282727;
+} 
+   .mobile-nav > a:is(:active, :focus, :focus-visible) {
+  background: var(--color-btn);
+  box-shadow: 0 0 0 2px var(--color-btn);
+  color: #282727;
+}
+.mobile-nav > a:is(:active, :focus, :focus-visible) .nav-icons {
+  stroke: #282727;
+}
+.mobile-nav > a:is(:active, :focus, :focus-visible) .nav-icons.add {
+  fill: #282727;
+  stroke: none;
+} 
+  .mobile-nav-btn:is(:hover, :active, :focus-visible) {
+  outline: none;
+} */
+
+img {
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+}
+
+.mobile-nav-btn,
+.nav-chat-button span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ==== Responsive Design ==== */
+@media (min-width: 850px) {
+  .mobile-nav,
+  .mobile-nav_logo {
     display: none;
   }
 }
 
-.mobile-nav_logo {
-  position: absolute;
-  margin: calc(env(safe-area-inset-top) + 1rem) 0 0
-    calc(env(safe-area-inset-left) + 1rem);
-  top: 0;
-  left: 0;
-  width: 50px;
+@media (max-width: 850px) {
+  .desktop-nav {
+    display: none;
+  }
 }
 
-/* Logo theme switching */
-.logo-light {
-  display: none;
+@media (max-width: 1200px) {
+  .desktop-nav {
+    grid-template-columns: auto auto minmax(180px, 1fr) auto;
+  }
 }
 
-:root[data-theme="dark"] .logo-dark {
-  display: none;
+@media (max-width: 980px) {
+  .user-greeting {
+    display: none;
+  }
 }
 
-:root[data-theme="dark"] .logo-light {
-  display: block;
+@media (max-width: 860px) {
+  .desktop-nav .cta {
+    padding: 0.55rem 1.1rem;
+  }
 }
 
-.user-profile-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-color);
+@media (min-width: 530px) {
+  .mobile-nav {
+    padding: 0.5rem 13% calc(env(safe-area-inset-bottom) + 0.5rem) 13%;
+  }
 }
 
-.user-greeting {
-  font-weight: 500;
-  cursor: default;
+@media (max-width: 300px) {
+  .mobile-nav-btn {
+    padding: 0;
+  }
+}
+
+/* Masquer le bouton chat sur desktop */
+@media (min-width: 849px) {
+  .nav-chat-button {
+    display: none;
+  }
 }

@@ -33,7 +33,11 @@ function CatalogCard({ data }: CatalogCardProps) {
 
   const firstImage = getFirstImage();
   return (
-    <Link to={`/announce/${data.id}`} className="catalogCard-button">
+    <Link
+      to={`/announce/${data.id}`}
+      className="catalogCard-button"
+      tabIndex={0}
+    >
       <article className="catalogCard-section">
         <div className="catalogCard-image-container">
           <img

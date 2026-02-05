@@ -185,11 +185,19 @@ button {
   font-weight: 600;
   transform-origin: center;
   border: none;
+  background: none;
 }
 
-button:focus-visible {
+button:focus-visible,
+a:focus-visible {
   outline: solid 3px var(--color-btn) !important;
   outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Ensure links are always interactive (fix for reveal animations) */
+a {
+  pointer-events: auto !important;
 }
 
 /* cta class for main call-to-action buttons */
@@ -363,10 +371,16 @@ textarea:hover {
 
 /* ==== Animation scroll reveal ==== */
 
-.reveal {
+.reveal:not(a):not(button) {
   opacity: 0;
   transform: translateY(24px);
   pointer-events: none;
+}
+
+a.reveal,
+button.reveal {
+  opacity: 0;
+  transform: translateY(24px);
 }
 
 .reveal.is-visible {
@@ -374,10 +388,16 @@ textarea:hover {
   pointer-events: auto;
 }
 
-.reveal-stagger > * {
+.reveal-stagger > *:not(a):not(button) {
   opacity: 0;
   transform: translateY(24px);
   pointer-events: none;
+}
+
+.reveal-stagger > a,
+.reveal-stagger > button {
+  opacity: 0;
+  transform: translateY(24px);
 }
 
 .reveal-stagger.is-visible > * {

@@ -1,69 +1,38 @@
-.switch {
-  box-shadow:
-    inset 0px -1px 0px 1px
-    color-mix(in lab, var(--color-primary-text) 30%, var(--color-bg)),
-    0px 1px 0 1px
-    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg)),
-    0px -1px 0 1px
-    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg)),
-    0px 1px 10px 1px
-    color-mix(in lab, var(--color-primary-text) 10%, var(--color-bg));
+.theme-toggle-btn {
   position: relative;
-  height: 39px;
-  width: 75px;
-  padding: 0.3rem 0.8rem;
-  border-radius: 999px;
-  background: var(--color-bg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  border: none;
+  background: transparent;
+  border: 0;
+  padding: 0.35rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s ease;
 }
 
-.switch::after {
-  box-shadow:
-    inset 0px -1px 0px 1px
-    color-mix(in lab, var(--color-primary-text) 30%, var(--color-bg)),
-    0px 1px 0 1px
-    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg)),
-    0px -0.5px 0 1px
-    color-mix(in lab, var(--color-primary-text) 5%, var(--color-bg));
+.theme-toggle-btn::after {
   content: "";
-  border-radius: 50%;
   position: absolute;
-  height: 31px;
-  width: 31px;
-  top: 50%;
+  bottom: 0;
   left: 50%;
-  transform: translate(0%, -50%);
-  display: inline-block;
-  transition: 0.5s var(--bouncy-cubicBezier);
-}
-.switch.light::after {
-  transform: translate(0%, -50%);
-}
-.switch.dark::after {
-  transform: translate(-100%, -50%);
+  transform: translateX(-50%) scaleX(0);
+  width: 60%;
+  height: 2px;
+  background-color: var(--color-btn);
+  transition: transform 0.2s ease;
 }
 
-.iconSwitch {
+.theme-toggle-btn:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-btn);
+  outline-offset: 2px;
+}
+
+.theme-icon {
+  width: 26px;
+  height: 26px;
   fill: var(--color-primary-text);
-  height: 70%;
-  width: fit-content;
-  z-index: 2;
-  transition: fill 0.5s ease-in-out;
-}
-.switch.light .sun.iconSwitch {
-  opacity: 1;
-}
-.switch.light .moon.iconSwitch {
-  opacity: 0.5;
-}
-.switch.dark .sun.iconSwitch {
-  opacity: 0.5;
-}
-
-.switch.dark .moon.iconSwitch {
-  opacity: 1;
+  transition: fill 0.3s ease;
 }
