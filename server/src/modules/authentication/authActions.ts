@@ -152,6 +152,11 @@ const checkAuth: RequestHandler = (req, res, next) => {
       req.auth = decoded as jwt.JwtPayload & { role: number } & {
         firstname: string;
       };
+      req.user = {
+        id: Number(decoded.sub),
+        email: decoded.email || "",
+        role: decoded.role,
+      };
     }
 
     next();

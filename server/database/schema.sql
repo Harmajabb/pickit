@@ -100,7 +100,6 @@ CREATE TABLE IF NOT EXISTS borrows (
     INDEX idx_owner (owner_id),
     INDEX idx_status (status),
     INDEX idx_dates (borrow_date, return_date),
-
     INDEX idx_announce_dates (announces_id, borrow_date, return_date, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
