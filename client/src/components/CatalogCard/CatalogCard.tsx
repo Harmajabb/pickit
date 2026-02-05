@@ -35,9 +35,8 @@ function CatalogCard({ data }: CatalogCardProps) {
   return (
     <Link to={`/announce/${data.id}`} className="catalogCard-button">
       <article className="catalogCard-section">
-        <div className="catalogCard-image-container" key={data.id}>
+        <div className="catalogCard-image-container">
           <img
-            key={`${data.id}-${String(data.all_images)}`}
             src={
               firstImage
                 ? `${BASE_URL}${firstImage}`
@@ -47,7 +46,7 @@ function CatalogCard({ data }: CatalogCardProps) {
           />
           <FavoriteBtn total_likes={data.total_likes} announce_id={data.id} />
         </div>
-        <div className="catalogCard-info" key={data.id}>
+        <div className="catalogCard-info">
           <h3>{data.title}</h3>
           <p>
             <MapPin size={14} strokeWidth={2} />

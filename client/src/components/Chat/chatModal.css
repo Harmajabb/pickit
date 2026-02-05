@@ -1,0 +1,113 @@
+/* Chat Modal Styles - Mobile Chat Interface */
+
+.chat-modal-overlay {
+  display: none;
+}
+
+/* Afficher sur mobile (< 769px) */
+@media (max-width: 768px) {
+  .chat-modal-overlay {
+    display: fixed;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .chat-modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-card);
+    display: flex;
+    flex-direction: column;
+    z-index: 100000;
+    animation: slideInUp 0.3s ease;
+  }
+
+  @keyframes slideInUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .chat-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid rgba(111, 165, 54, 0.1);
+    background: var(--color-card);
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .chat-modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .chat-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-primary);
+    padding: 8px;
+    border-radius: var(--b-radius);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .chat-modal-close:hover {
+    background: rgba(111, 165, 54, 0.1);
+  }
+
+  .chat-modal-close:active {
+    transform: scale(0.95);
+  }
+
+  .chat-modal-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 60px;
+  }
+}
+
+/* Desktop - ne pas afficher */
+@media (min-width: 769px) {
+  .chat-modal-overlay {
+    display: none;
+  }
+
+  .chat-modal-container {
+    display: none;
+  }
+}

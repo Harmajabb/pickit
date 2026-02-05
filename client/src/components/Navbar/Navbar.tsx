@@ -1,3 +1,4 @@
+import { MessageCircle } from "lucide-react";
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router";
 // import roundedLogo from "../../assets/icons/rounded-logo.svg";
@@ -8,10 +9,12 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
 import SearchBar from "../SearchBar/SearchBar.tsx";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const chatContext = useContext(ChatContext);
   const isLogged = !!user;
 
   const navigate = useNavigate();
@@ -36,6 +39,13 @@ function Navbar() {
       navigate(`/catalog?q=${encodeURIComponent(result.item.title)}`);
     }
   };
+
+  const unreadCount = chatContext
+    ? chatContext.conversations.reduce(
+        (total, conv) => total + (conv.unread_count || 0),
+        0,
+      )
+    : 0;
 
   return (
     <>
@@ -171,6 +181,24 @@ function Navbar() {
           </svg>
           <span>Add</span>
         </Link>
+        <button
+          type="button"
+          className="nav-chat-button"
+          onClick={() => {
+            if (chatContext) {
+              chatContext.setIsChatOpen(true);
+              chatContext.loadConversations();
+            }
+          }}
+          aria-label="Open chat"
+          title="Messages"
+        >
+          <MessageCircle size={24} />
+          {unreadCount > 0 && (
+            <span className="nav-chat-badge">{unreadCount}</span>
+          )}
+          <span>Messages</span>
+        </button>
         <Link to={user?.role === 1 ? "/ad-dashboard" : "/profile/me"}>
           <svg viewBox="0 0 14 20" aria-hidden="true" className="nav-icons">
             <path

@@ -43,6 +43,7 @@ export interface ChatContextType {
   isLoading: boolean;
   isTyping: Map<number, boolean>;
   currentUser: User | null;
+  isChatOpen: boolean;
 
   // Methods
   selectConversation: (conversation: Conversation) => void;
@@ -57,6 +58,7 @@ export interface ChatContextType {
     announceId: number,
   ) => Promise<Conversation>;
   deleteConversation: (conversationId: number) => Promise<void>;
+  setIsChatOpen: (isOpen: boolean) => void;
 }
 
 export interface SocketEvents {

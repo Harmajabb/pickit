@@ -7,11 +7,21 @@ import { MessageCircle, X } from "lucide-react";
 function ChatWidget() {
   const chatContext = useContext(ChatContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 769);
 
   const { conversations, currentConversation } = chatContext || {
     conversations: [],
     currentConversation: null,
   };
+
+  // Détecter les changements de taille d'écran
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 769);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (currentConversation) {
@@ -19,7 +29,7 @@ function ChatWidget() {
     }
   }, [currentConversation]);
 
-  if (!chatContext) {
+  if (!chatContext || isMobile) {
     return null;
   }
 

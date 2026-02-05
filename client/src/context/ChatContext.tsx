@@ -25,6 +25,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTypingMap] = useState<Map<number, boolean>>(new Map());
   const [socketConnected, setSocketConnected] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const loadConversations = useCallback(async () => {
     if (!user) return;
@@ -313,6 +314,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         markAsRead,
         createConversation,
         deleteConversation,
+        isChatOpen,
+        setIsChatOpen,
       }}
     >
       {children}

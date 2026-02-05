@@ -120,23 +120,70 @@
   place-items: center;
 }
 
+.nav-chat-button {
+  cursor: pointer;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  padding: 0.2rem;
+  color: var(--color-primary-text);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2fr 1fr;
+  max-height: 100px;
+  place-items: center;
+  background: transparent;
+  border: none;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
 @media (max-width: 300px) {
   .mobile-nav > a {
     padding: 0;
   }
 }
-.mobile-nav > a:is(:hover, :active, :focus, :focus-visible) {
+.mobile-nav > a:is(:active, :focus, :focus-visible) {
   background: var(--color-btn);
   box-shadow: 0 0 0 2px var(--color-btn);
   color: #282727;
 }
-.mobile-nav > a:is(:hover, :active, :focus, :focus-visible) .nav-icons {
+.mobile-nav > a:is(:active, :focus, :focus-visible) .nav-icons {
   stroke: #282727;
 }
-.mobile-nav > a:is(:hover, :active, :focus, :focus-visible) .nav-icons.add {
+.mobile-nav > a:is(:active, :focus, :focus-visible) .nav-icons.add {
   fill: #282727;
   stroke: none;
 }
+
+.nav-chat-button:is(:active, :focus, :focus-visible) {
+  background: var(--color-btn);
+  box-shadow: 0 0 0 2px var(--color-btn);
+  color: #282727;
+}
+
+.nav-chat-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-btn-secondary);
+  color: white;
+  border-radius: var(--b-radius-full);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Masquer le bouton chat sur desktop */
+@media (min-width: 769px) {
+  .nav-chat-button {
+    display: none;
+  }
+}
+
 .mobile-nav_logo {
   position: absolute;
   margin: calc(env(safe-area-inset-top) + 1rem) 0 0
