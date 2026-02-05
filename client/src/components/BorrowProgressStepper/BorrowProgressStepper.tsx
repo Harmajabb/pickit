@@ -1,3 +1,4 @@
+import { AlertTriangle, CheckCircle, CreditCard, X } from "lucide-react";
 import type { FC } from "react";
 import "./BorrowProgressStepper.css";
 
@@ -69,9 +70,24 @@ const BorrowProgressStepper: FC<BorrowProgressStepperProps> = ({
     <div className="stepper">
       {isErrorStatus ? (
         <div className="error-status">
-          {status === "rejected" && "❌ Rejected"}
-          {status === "cancelled" && "❌ Cancelled"}
-          {status === "object_broken" && "⚠️ Object Broken"}
+          {status === "rejected" && (
+            <>
+              <X size={18} className="alert-icon" />
+              Rejected
+            </>
+          )}
+          {status === "cancelled" && (
+            <>
+              <X size={18} className="alert-icon" />
+              Cancelled
+            </>
+          )}
+          {status === "object_broken" && (
+            <>
+              <AlertTriangle size={18} className="alert-icon" />
+              Object Broken
+            </>
+          )}
         </div>
       ) : (
         <>
@@ -99,26 +115,36 @@ const BorrowProgressStepper: FC<BorrowProgressStepperProps> = ({
           </div>
 
           {status === "confirmed" && depositStatus === "not_paid" && (
-            <div className="deposit-alert">💳 Awaiting deposit payment</div>
+            <div className="deposit-alert">
+              <CreditCard size={18} className="alert-icon" />
+              Awaiting deposit payment
+            </div>
           )}
 
           {status === "completed" && depositStatus === "refunded" && (
             <div className="deposit-alert">
-              ✅ Deposit Refunded (€{amountDeposit})
+              <CheckCircle size={18} className="alert-icon" />
+              Deposit Refunded (€{amountDeposit})
             </div>
           )}
 
           {status === "completed" && depositStatus === "kept" && (
             <div className="deposit-alert">
-              📌 Deposit Kept (€{amountKept}) - Refunded: €
+              <CheckCircle size={18} className="alert-icon" />
+              Deposit Kept (€{amountKept}) - Refunded: €
               {(amountDeposit - amountKept).toFixed(2)}
             </div>
           )}
 
           {status === "object_broken" && (
             <div className="warning-alert">
-              ⚠️ Object Broken - Amount refunded to borrower: €
-              {amountRefunded > 0 ? amountRefunded.toFixed(2) : amountDeposit}
+              <AlertTriangle size={18} className="alert-icon" />
+              Object Broken - Amount refunded to borrower: €
+              {typeof amountRefunded === "number" && amountRefunded > 0
+                ? amountRefunded.toFixed(2)
+                : typeof amountDeposit === "number"
+                  ? amountDeposit.toFixed(2)
+                  : "0.00"}
             </div>
           )}
         </>

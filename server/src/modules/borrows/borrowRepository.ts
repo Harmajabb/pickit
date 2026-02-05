@@ -37,6 +37,16 @@ interface BorrowWithDetails extends RowDataPacket {
 const borrowRepository = {
   // Créer une demande de prêt
   async create(borrowData: BorrowData): Promise<number> {
+    // Convertir les dates au format datetime (ajout de 00:00:00)
+    const borrowDateTime = new Date(borrowData.borrow_date)
+      .toISOString()
+      .replace("T", " ")
+      .slice(0, 19);
+    const returnDateTime = new Date(borrowData.return_date)
+      .toISOString()
+      .replace("T", " ")
+      .slice(0, 19);
+
     const [result] = await databaseClient.query(
       `INSERT INTO borrows 
        (announces_id, owner_id, borrower_id, borrow_date, return_date, status, deposit_status) 
@@ -45,8 +55,8 @@ const borrowRepository = {
         borrowData.announces_id,
         borrowData.owner_id,
         borrowData.borrower_id,
-        borrowData.borrow_date,
-        borrowData.return_date,
+        borrowDateTime,
+        returnDateTime,
       ],
     );
     return (result as ResultSetHeader).insertId;
@@ -176,6 +186,9 @@ const borrowRepository = {
     const [rows] = await databaseClient.query(
       `SELECT 
         b.id, 
+        b.announces_id,
+        b.owner_id,
+        b.borrower_id,
         b.status, 
         b.deposit_status,
         b.borrow_date, 
@@ -197,6 +210,9 @@ const borrowRepository = {
     const [rows] = await databaseClient.query(
       `SELECT 
         b.id, 
+        b.announces_id,
+        b.owner_id,
+        b.borrower_id,
         b.status, 
         b.deposit_status,
         b.borrow_date, 

@@ -1,9 +1,21 @@
+import { createServer } from "node:http";
 import cookieParser from "cookie-parser";
 import express from "express";
+import { Server } from "socket.io";
 
 // Load the express module to create a web application
 
 const app = express();
+const httpServer = createServer(app);
+
+// Socket.IO setup
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  },
+  transports: ["websocket", "polling"],
+});
 
 // Configure it
 
@@ -145,4 +157,24 @@ startScheduler();
 
 /* ************************************************************************* */
 
+// Socket.IO Chat Setup
+import type { Socket } from "socket.io";
+import {
+  authenticateSocket,
+  setupChatHandlers,
+} from "./modules/chat/socketHandlers";
+
+io.use(authenticateSocket);
+
+io.on("connection", (socket: Socket) => {
+  console.log("📱 New socket connection:", socket.id);
+  setupChatHandlers(socket);
+});
+
+// Make io available to routes if needed
+app.locals.io = io;
+
+/* ************************************************************************* */
+
+export { httpServer };
 export default app;

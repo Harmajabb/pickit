@@ -4,6 +4,7 @@ import type { FieldPacket, RowDataPacket } from "mysql2";
 import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import databaseClient from "../../../database/client";
+import chatRepository from "../chat/chatRepository";
 import userRepository from "../user/userRepository";
 import borrowRepository from "./borrowRepository";
 
@@ -119,17 +120,22 @@ const createLoanRequest: RequestHandler = async (
       return_date,
     });
 
-    // Créer une notification pour le prêteur
-    await databaseClient.query(
-      `INSERT INTO messages (subject, message, user_id, announce_id, status)
-         VALUES (?, ?, ?, ?, 'sent')`,
-      [
-        "New loan request",
-        `You have received a loan request for your listing "${announce.title}"`,
+    // Créer automatiquement une conversation de chat entre le prêteur et l'emprunteur
+    try {
+      const conversation = await chatRepository.getOrCreateConversation(
         announce.owner_id,
+        borrower_id,
         announces_id,
-      ],
-    );
+      );
+      if (!conversation) {
+        console.warn(
+          `Could not create chat conversation for announce ${announces_id}`,
+        );
+      }
+    } catch (chatError) {
+      console.error("Error creating chat conversation:", chatError);
+      // Don't return error - let the loan request succeed even if chat creation fails
+    }
 
     return res.status(201).json({
       message: "Loan request sent successfully",
