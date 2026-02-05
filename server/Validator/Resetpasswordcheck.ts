@@ -10,11 +10,6 @@ export const resetPasswordSchema = Joi.object({
       "any.required": "Security token is missing.",
     }),
 
-  currentPassword: Joi.string().required().messages({
-    "string.empty": "Current password is required.",
-    "any.required": "Current password is required.",
-  }),
-
   newPassword: Joi.string()
     .min(12)
     .max(128)
@@ -29,14 +24,5 @@ export const resetPasswordSchema = Joi.object({
       "string.max": "Password is too long.",
       "string.pattern.name": "Password must include at least one {#name}.",
       "any.required": "New password is required.",
-    }),
-
-  confirmPassword: Joi.string()
-    .valid(Joi.ref("newPassword"))
-    .required()
-    .messages({
-      "any.only": "Passwords do not match.",
-      "any.required": "Please confirm your new password.",
-      "string.empty": "Password confirmation is required.",
     }),
 });

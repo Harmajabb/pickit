@@ -41,8 +41,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     if (error) {
       console.log(error.message);
       setMessage(error.message || "An unexpected error occurred.");
-    } else if (paymentIntent && paymentIntent.status === "requires_capture") {
-      console.log("PaymentIntent requires capture, securing deposit...");
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
+      console.log("Payment succeeded, securing deposit...");
 
       try {
         const response = await fetch(
@@ -62,12 +62,47 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         );
 
         if (response.ok) {
+          console.log("Secure deposit succeeded, updating status...");
+          try {
+            // Mettre à jour le statut de dépôt à 'paid'
+            console.log(
+              `Sending PUT request to update borrow ${borrowId} deposit_status to paid`,
+            );
+            const updateResponse = await fetch(
+              `${import.meta.env.VITE_API_URL}/api/borrows/${borrowId}`,
+              {
+                method: "PUT",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  deposit_status: "paid",
+                }),
+              },
+            );
+
+            console.log(`Update response status: ${updateResponse.status}`);
+            const updateData = await updateResponse.json();
+            console.log("Update response data:", updateData);
+
+            if (updateResponse.ok) {
+              console.log("✅ Deposit status updated to 'paid'");
+            } else {
+              console.error(
+                "❌ Failed to update deposit status:",
+                updateResponse.status,
+                updateData,
+              );
+            }
+          } catch (err) {
+            console.error("Error updating deposit status:", err);
+          }
+
           setMessage(
             "Payement success ! Deposit secured successfully! Redirecting...",
           );
           setTimeout(() => {
-            navigate(`/borrows/${borrowId}`);
-          }, 5000);
+            navigate("/profile/requests");
+          }, 3000);
         } else {
           const errorData = await response.json();
           console.error(errorData);

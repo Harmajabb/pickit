@@ -140,6 +140,7 @@ const logout: RequestHandler = (_req, res) => {
 const checkAuth: RequestHandler = (req, res, next) => {
   try {
     const token = req.cookies.access_token;
+
     if (!token) {
       res.sendStatus(401);
       return;
@@ -155,7 +156,7 @@ const checkAuth: RequestHandler = (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error(err);
+    console.error("Auth error:", err);
     res.sendStatus(401);
   }
 };
@@ -280,7 +281,7 @@ const resetPassword: RequestHandler = async (req, res, next) => {
       });
     }
 
-    const { token, currentPassword, newPassword } = value;
+    const { token, newPassword } = value;
 
     // 2. Single JWT verification (Redundancy removed)
     const decoded = jwt.verify(
@@ -293,18 +294,6 @@ const resetPassword: RequestHandler = async (req, res, next) => {
 
     if (!user) {
       return res.status(400).json({ message: "Invalid token." });
-    }
-
-    // 4. Verify current password
-    const isCurrentPasswordValid = await argon2.verify(
-      user.password,
-      currentPassword,
-    );
-
-    if (!isCurrentPasswordValid) {
-      return res
-        .status(400)
-        .json({ message: "Current password is incorrect." });
     }
 
     // 5. Hash and Update

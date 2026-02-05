@@ -120,4 +120,29 @@ app.use(logErrors);
 
 /* ************************************************************************* */
 
+// Scheduler: Mettre à jour les borrows "confirmed" → "in_progress" après 1 minute
+import borrowRepository from "./modules/borrows/borrowRepository";
+
+const startScheduler = () => {
+  const updateBorrows = async () => {
+    try {
+      const updatedCount = await borrowRepository.updateConfirmedToInProgress();
+      if (updatedCount > 0) {
+        console.log(
+          `[Scheduler] ${updatedCount} borrow(s) updated to in_progress`,
+        );
+      }
+    } catch (error) {
+      console.error("[Scheduler] Error updating borrows:", error);
+    }
+  };
+
+  // Exécuter toutes les minutes (première vérification après 60 secondes)
+  setInterval(updateBorrows, 60 * 1000); // 60 secondes
+};
+
+startScheduler();
+
+/* ************************************************************************* */
+
 export default app;

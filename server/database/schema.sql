@@ -84,9 +84,10 @@ CREATE TABLE IF NOT EXISTS borrows (
     owner_id INT NOT NULL COMMENT 'Equipment owner',
     borrower_id INT NOT NULL COMMENT 'Borrower',
     return_date DATETIME NOT NULL,
-    status ENUM('pending', 'confirmed', 'ongoing', 'completed', 'cancelled', 'rejected') DEFAULT 'pending',
-    deposit_status ENUM('not_paid', 'authorized', 'refunded', 'kept') DEFAULT 'not_paid',
+    status ENUM('pending', 'confirmed', 'in_progress', 'completed', 'returned', 'object_broken','cancelled', 'rejected') DEFAULT 'pending',
+    deposit_status ENUM('not_paid', 'authorized', 'refunded', 'kept', 'paid') DEFAULT 'not_paid',
     payment_intent_id varchar(255) DEFAULT NULL COMMENT 'Stripe session number for payment tracking',
+    amount_refunded DECIMAL(10, 2) DEFAULT NULL COMMENT 'Amount refunded when object is broken',
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_date DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     
@@ -284,7 +285,7 @@ INSERT IGNORE INTO users (id, lastname, firstname, zipcode, city, address, email
 (1, 'Dupont', 'Jean', 59000, 'Lille', '15 Peace Street', 'jean.dupont@email.com', '$2y$10$examplehash123456789', 0),
 (2, 'Martin', 'Sophie', 75001, 'Paris', '42 Champs Avenue', 'sophie.martin@email.com', '$2y$10$examplehash987654321', 0),
 (3, 'Admin', 'Super', 59000, 'Lille', '1 Admin Street', 'admin@pikit.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', 1),
-(4, 'Fourdin', 'Pierre', 59000, 'Lille', '1 Admin Street', 'fourdin.pfmg@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', 1);
+(4, 'Fourdin', 'Pierre', 59000, 'Lille', '1 Admin Street', 'fourdin.pfmg@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$ZA4+JPXRjS9Jq6zsd6d3Fw$t2wRQ4TOyKPT5swyogbIhxG8gzeZ/EBpamZNFrBh4uc', 1);
 
 -- Categories (7 hierarchical categories)
 INSERT IGNORE INTO categories (id, category, parent_id) VALUES
@@ -305,8 +306,8 @@ INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_d
 (6, "Paddle Gonflable Itiwit", "Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.", 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', "Annecy, Haute-Savoie", 'active', 74000, 6, 1, 'new'),
 (9, "Rollers en ligne Rollerblade", "Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.", 30, '2024-12-12', NULL, '2024-12-15', '2025-12-31', "Montpellier, Hérault", 'active', 34000, 7, 3, 'new'),
 (11, "Ballon de piscine", "Très beau ballon de piscine tout neuf pour surfer dans la joie et la bonne humeur", 5, '2026-01-30', '2026-01-30', '2026-01-30', '2026-02-28', 'Paris', 'active', 75018, 6, 3, 'good'),
-(12, "Bike helmet", "Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.", 50, '2026-02-02', NULL, '2026-02-02', '2027-08-05', 'Lyon', 'active', 59000, 7, 3, 'excellent'),
-(13, "Raquettes de randonnée", "Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.", 80, '2026-02-02', '2026-02-02', '2026-02-02', '2028-05-02', 'Lyon', 'active', 69000, 1, 3, 'good'),
+(12, "Bike helmet", "Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.", 50, '2026-02-02', NULL, '2026-02-02', '2027-08-05', 'Lyon', 'active', 59000, 7, 4, 'excellent'),
+(13, "Raquettes de randonnée", "Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.", 80, '2026-02-02', '2026-02-02', '2026-02-02', '2028-05-02', 'Lyon', 'active', 69000, 1, 4, 'good'),
 (14, "Sacoche de VTT", "Sacoche de guidon pratique et résistante, idéale pour transporter l’essentiel en toute sécurité tout en restant facilement accessible pendant vos sorties à vélo.", 30, '2026-02-02', NULL, '2026-02-03', '2032-08-04', 'Lyon', 'active', 69000, 3, 3, 'fair'),
 (15, "Paire de skis", "Paire de skis polyvalente et performante, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 250, '2026-02-02', NULL, '2026-02-25', '2028-04-12', 'Paris', 'active', 75020, 4, 3, 'excellent'),
 (16, "Snowboard", "Snowboard design polyvalent et performant, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 200, '2026-02-02', NULL, '2026-02-26', '2026-12-14', 'Paris', 'active', 75020, 1, 3, 'good'),
@@ -388,3 +389,31 @@ INSERT IGNORE INTO admin_logs (id, superuser_id, action_type, target_table, targ
 INSERT IGNORE INTO category_changes (id, category_id, superuser_id, action, old_value, new_value) VALUES
 (1, 7, 3, 'created', NULL, 'Mountain Biking'),
 (2, 4, 3, 'updated', 'Alpine Skiing', 'Skiing');
+
+INSERT IGNORE INTO borrows (id, borrow_date, announces_id, owner_id, borrower_id, return_date, status, deposit_status, borrow) VALUES
+(3, '2026-02-10 09:00:00', 1, 1, 4, '2026-02-12 18:00:00', 'completed', 'refunded', 1),
+(4, '2026-05-15 10:00:00', 6, 1, 4, '2026-05-17 17:00:00', 'confirmed', 'authorized', 0),
+(5, '2026-02-26 08:00:00', 16, 3, 4, '2026-02-28 19:00:00', 'pending', 'not_paid', 0),
+(6, '2026-03-01 10:00:00', 12, 4, 3, '2026-03-05 16:00:00', 'confirmed', 'authorized', 0),
+(7, '2026-03-10 08:30:00', 15, 3, 4, '2026-03-12 17:00:00', 'completed', 'refunded', 1),
+(8, '2026-04-15 11:00:00', 13, 4, 3, '2026-04-18 15:30:00', 'pending', 'not_paid', 0);
+
+INSERT IGNORE INTO availability (announce_id, date, status, borrow_id, daily_price) VALUES
+(1, '2026-02-10', 'booked', 3, 25.00),
+(1, '2026-02-11', 'booked', 3, 25.00),
+(1, '2026-02-12', 'booked', 3, 25.00),
+(6, '2026-05-15', 'booked', 4, 30.00),
+(6, '2026-05-16', 'booked', 4, 30.00),
+(6, '2026-05-17', 'booked', 4, 30.00),
+(12, '2026-03-01', 'booked', 6, 15.00),
+(12, '2026-03-02', 'booked', 6, 15.00),
+(12, '2026-03-03', 'booked', 6, 15.00),
+(12, '2026-03-04', 'booked', 6, 15.00),
+(12, '2026-03-05', 'booked', 6, 15.00),
+(13, '2026-04-15', 'booked', 8, 20.00),
+(13, '2026-04-16', 'booked', 8, 20.00),
+(13, '2026-04-17', 'booked', 8, 20.00),
+(13, '2026-04-18', 'booked', 8, 20.00),
+(15, '2026-03-10', 'booked', 7, 50.00),
+(15, '2026-03-11', 'booked', 7, 50.00),
+(15, '2026-03-12', 'booked', 7, 50.00);
