@@ -1,18 +1,18 @@
 import express from "express";
 import { upload } from "./config/multer";
-import borrowAction from "./modules/borrow/borrowAction";
+import adminActions from "./modules/admin/adminActions";
+import announcesActions from "./modules/announces/announcesActions";
+import authActions from "./modules/authentication/authActions";
+import borrowActions from "./modules/borrows/borrowActions";
+import categoryActions from "./modules/categories/categoryActions";
+import favoriteAction from "./modules/favorites/favoriteAction";
+import itemActions from "./modules/item/itemActions";
+import searchActions from "./modules/search/searchAction";
+import userAction from "./modules/user/userActions";
 
 const router = express.Router();
 
-/* ************************************************************************* */
-// Define Your API Routes Here
-/* ************************************************************************* */
-
-// Define Category-related routes
-import categoryActions from "./modules/categories/categoryActions";
-
 router.get("/api/categories", categoryActions.browse);
-
 router.post(
   "/api/categories",
   authActions.checkAuth,
@@ -35,9 +35,6 @@ router.delete(
   categoryActions.delete,
 );
 
-// Define Admin-related routes
-import adminActions from "./modules/admin/adminActions";
-
 router.get(
   "/api/admin/stats",
   authActions.checkAuth,
@@ -45,64 +42,72 @@ router.get(
   adminActions.getDashboardStats,
 );
 
-// Define Borrow-related routes
-import borrowActions from "./modules/borrows/borrowActions";
-
 router.post(
   "/api/borrows/secure-deposit",
   authActions.checkAuth,
   borrowActions.secureDeposit,
 );
-
-router.get(
-  "/api/borrows/:id",
-  authActions.checkAuth,
-  borrowActions.getBorrowById,
-);
-
 router.post(
   "/api/borrows/create-payment-intent",
   borrowActions.createPaymentIntent,
 );
-
+router.get(
+  "/api/borrows/Owner",
+  authActions.checkAuth,
+  borrowActions.browseByOwner,
+);
+router.get(
+  "/api/borrows/Borrower",
+  authActions.checkAuth,
+  borrowActions.browseByBorrower,
+);
 router.post(
   "/api/loan-requests",
   authActions.checkAuth,
   borrowActions.createLoanRequest,
 );
-
-/* ************************************************************************* */
-
-// Define Authentication-related routes
-import authActions from "./modules/authentication/authActions";
+router.get(
+  "/api/borrows/:id",
+  authActions.checkAuth,
+  borrowActions.getBorrowById,
+);
+router.put("/api/borrows/:id", authActions.checkAuth, borrowActions.editStatus);
+router.post(
+  "/api/borrows/declare-returned-deposit",
+  authActions.checkAuth,
+  borrowActions.declarereturnedDeposit,
+);
+router.post(
+  "/api/borrows/declare-deposit-conformed",
+  authActions.checkAuth,
+  borrowActions.declaredepositconformed,
+);
+router.post(
+  "/api/borrows/declare-deposit-broken",
+  authActions.checkAuth,
+  borrowActions.declaredepositbroken,
+);
 
 router.post("/auth/login", authActions.login);
-router.post("/auth/logout", authActions.logout);
+router.post("/auth/logout", authActions.checkAuth, authActions.logout);
 router.get("/auth/check", authActions.checkAuth, authActions.check);
 router.post("/auth/reset-password", authActions.resetPassword);
 router.post("/auth/init-reset-password", authActions.initResetPassword);
 router.post("/auth/register", authActions.register, authActions.login);
-
-// Define Announced-related routes
-import announcesActions from "./modules/announces/announcesActions";
 
 router.get(
   "/api/announces/my-announces",
   authActions.checkAuth,
   announcesActions.readMyAnnounces,
 );
-
 router.get("/api/announces", announcesActions.browse);
 router.get("/api/announcesFiltered", announcesActions.browseFiltered);
 router.delete("/api/announcesDelete", announcesActions.destroy);
-
 router.post(
   "/api/create_announce",
-  // authActions.checkAuth,
   upload.array("images", 10),
   announcesActions.createAnnounce,
 );
-
 router.get("/api/announces/:id", announcesActions.readOne);
 router.put(
   "/api/announces/:id",
@@ -115,28 +120,12 @@ router.delete(
   announcesActions.destroy,
 );
 
-// Créer une demande de prêt
-router.post(
-  "/api/loan-requests",
-  authActions.checkAuth,
-  borrowActions.createLoanRequest,
-);
-
-// Define item-related routes
-import itemActions from "./modules/item/itemActions";
-
 router.get("/api/items", itemActions.browse);
 router.get("/api/items/:id", itemActions.read);
 router.post("/api/items", itemActions.add);
 
-// Define search-related routes
-import searchActions from "./modules/search/searchAction";
-
 router.get("/api/search", searchActions.search);
 router.get("/api/searchFullAnnounces", searchActions.searchFullAnnounces);
-
-// Define user-related routes
-import userAction from "./modules/user/userActions";
 
 router.get("/api/profile/me", authActions.checkAuth, userAction.readMyProfile);
 router.get(
@@ -185,9 +174,6 @@ router.put(
   userAction.updateMyProfile,
 );
 
-// Define favorites routes
-import favoriteAction from "./modules/favorites/favoriteAction";
-
 router.get(
   "/api/favorites/me",
   authActions.checkAuth,
@@ -200,14 +186,5 @@ router.get(
 );
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
-
-// Define Borrow-related routes
-
-// Routes for loans
-router.get("/api/borrows", authActions.checkAuth, borrowAction.browseByOwner);
-
-router.put("/api/borrows/:id", authActions.checkAuth, borrowAction.editStatus);
-
-/* ************************************************************************* */
 
 export default router;
