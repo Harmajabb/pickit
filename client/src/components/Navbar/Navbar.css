@@ -192,6 +192,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0;
+  box-shadow: var(--shadow-soft-hover);
 }
 
 .mobile-nav-btn {
@@ -281,7 +282,7 @@
   outline: none;
 } */
 
-img {
+.mobile-nav img {
   width: 28px;
   height: 28px;
   pointer-events: none;
@@ -289,7 +290,7 @@ img {
 
 .mobile-nav-btn,
 .nav-chat-button span {
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -329,6 +330,7 @@ img {
   .mobile-nav {
     padding: 0.5rem 13% calc(env(safe-area-inset-bottom) + 0.5rem) 13%;
   }
+  /* safe area it help to protect the photo and mobile button mode */
 }
 
 @media (max-width: 300px) {

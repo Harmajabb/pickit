@@ -10,6 +10,7 @@ import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 import MyRequests from "./components/MyRequest/MyRequest";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
+import UserAnnouncesList from "./components/UserAnnouncesList/UserAnnouncesList";
 import UserManager from "./components/UserManager/UserManager";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
       { path: "/profile/me", element: <Profile mode="me" /> },
       { path: "/profile/:id", element: <Profile mode="member" /> },
+      { path: "/user/:id/announces", element: <UserAnnouncesList /> },
       { path: "/profile/requests", element: <MyRequests /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> },
       { path: "/ad-dashboard/users", element: <UserManager /> },
