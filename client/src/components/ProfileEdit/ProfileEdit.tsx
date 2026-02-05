@@ -34,8 +34,8 @@ function ProfileEdit({ user, onCancel, onSave }: ProfileEditProps) {
 
   const currentAvatarSrc = imagePreview
     ? imagePreview
-    : user.profile_picture
-      ? `${API_URL}${user.profile_picture}`
+    : user.profil_picture
+      ? `${API_URL}${user.profil_picture}`
       : `${API_URL}/assets/images/avatar-default.png`;
 
   // Changing input

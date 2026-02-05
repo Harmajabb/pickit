@@ -1,0 +1,16 @@
+/**
+ * Chat Page CSS
+ */
+
+.chat-page {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+}
+
+.chat-page > * {
+  width: 100%;
+  height: 100%;
+}

@@ -1,3 +1,4 @@
+import { MessageCircle } from "lucide-react";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
 // import roundedLogo from "../../assets/icons/rounded-logo.svg";
@@ -5,8 +6,8 @@ import pickitDark from "../../assets/icons/pickit-dark.png";
 import pickitLight from "../../assets/icons/pickit-light.png";
 import addDark from "../../assets/images/Navbar/add-dark.png";
 import addLight from "../../assets/images/Navbar/add-light.png";
-import chatDark from "../../assets/images/Navbar/chat-dark.png";
-import chatLight from "../../assets/images/Navbar/chat-light.png";
+// import chatDark from "../../assets/images/Navbar/chat-dark.png";
+// import chatLight from "../../assets/images/Navbar/chat-light.png";
 import heartDark from "../../assets/images/Navbar/heart-dark.png";
 import heartLight from "../../assets/images/Navbar/heart-light.png";
 import homeDark from "../../assets/images/Navbar/home-dark.png";
@@ -20,10 +21,12 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 import "./Navbar.css";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
 import SearchBar from "../SearchBar/SearchBar.tsx";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const chatContext = useContext(ChatContext);
   const isLogged = !!user;
 
   const navigate = useNavigate();
@@ -48,6 +51,13 @@ function Navbar() {
       navigate(`/catalog?q=${encodeURIComponent(result.item.title)}`);
     }
   };
+
+  const unreadCount = chatContext
+    ? chatContext.conversations.reduce(
+        (total, conv) => total + (conv.unread_count || 0),
+        0,
+      )
+    : 0;
 
   const handleLogout = () => {
     logout();
@@ -188,13 +198,23 @@ function Navbar() {
         {/* chat */}
         <button
           type="button"
-          onClick={() => navigate("/chat")}
+          onClick={() => {
+            if (chatContext) {
+              chatContext.setIsChatOpen(true);
+              chatContext.loadConversations();
+            }
+          }}
           aria-label="Open chat"
-          className="mobile-nav-btn"
+          className="nav-chat-button"
+          title="Messages"
         >
-          <img src={chatDark} alt="" className="icon-light" />
-          <img src={chatLight} alt="" className="icon-dark" />
-          <span>Chat</span>
+          {/* <img src={chatDark} alt="" className="icon-light" />
+          <img src={chatLight} alt="" className="icon-dark" /> */}
+          <MessageCircle size={24} />
+          {unreadCount > 0 && (
+            <span className="nav-chat-badge">{unreadCount}</span>
+          )}
+          <span>Messages</span>
         </button>
         {/* profile */}
         <button
@@ -209,7 +229,6 @@ function Navbar() {
         >
           <img src={userDark} alt="" className="icon-light" />
           <img src={userLight} alt="" className="icon-dark" />
-          {/* Mobile : Le texte reste dans le Link car c'est la navigation principale sur smartphone */}
           <span>{isLogged ? `Hello, ${user?.firstname}` : "Profile"}</span>
         </button>
       </nav>

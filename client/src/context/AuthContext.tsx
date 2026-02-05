@@ -12,6 +12,8 @@ interface User {
   name: string;
   role: number;
   firstname: string;
+  lastname?: string;
+  profil_picture?: string;
   favoritesIds: number[];
 }
 
