@@ -1,0 +1,130 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  background: rgba(34, 34, 34, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-container {
+  box-sizing: border-box;
+  background-color: var(--color-title);
+  color: var(--color-primary-text);
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border-radius: var(--b-radius);
+  padding: 1.5rem;
+}
+
+[data-theme="light"] .modal-container,
+.modal-content1,
+.modal-content2 {
+  background-color: var(--color-bg);
+}
+
+.modal-li {
+  width: 35rem;
+  border: none;
+  font-size: 1.5rem;
+  display: flex;
+  height: 2rem;
+  padding: 2rem;
+  justify-content: flex-start;
+  align-items: center;
+  background: none;
+}
+
+.fleche-report {
+  background-color: none;
+  height: 1.8rem;
+  position: absolute;
+  left: 85%;
+}
+.modal-overlay1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: rgba(34, 34, 34, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.motif-report {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  font-style: italic;
+}
+.text-report {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  font-size: clamp(1rem, 1.1vw, 1.125rem);
+  height: 5rem;
+  resize: none;
+}
+.close-x {
+  background: none;
+  position: absolute;
+  top: 3%;
+  left: 93%;
+}
+
+.button-popup2 {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.report-btn {
+  background-color: var(--color-btn-secondary);
+  margin-top: 1rem;
+  &:hover {
+    background-color: var(--color-btn-secondary-hover);
+  }
+}
+
+.modal-overlay2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: rgba(34, 34, 34, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content1,
+.modal-content2 {
+  max-width: 650px;
+  padding: 50px;
+  box-sizing: border-box;
+  background-color: var(--color-title);
+  color: var(--color-primary-text);
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .popup-content button {
+    margin: 1.5rem 1rem 1rem 1rem;
+  }
+}

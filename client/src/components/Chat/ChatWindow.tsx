@@ -5,6 +5,7 @@
 import { type FC, useCallback, useEffect, useState } from "react";
 import { useChat } from "../../context/ChatContext";
 import type { Conversation } from "../../types/Chat";
+import ButtonReport from "../btn-report/ButtonReport";
 import ConversationList from "./ConversationList";
 import MessageInput from "./MessageInput";
 import MessageList from "./MessageList";
@@ -117,6 +118,27 @@ const ChatWindow: FC = () => {
           </div>
         ) : (
           <>
+            {/* Chat Header with Report Button */}
+            <div className="chat-header">
+              <div className="chat-header-info">
+                <h3 className="chat-header-title">
+                  {currentConversation.announce_title}
+                </h3>
+                {otherUser && (
+                  <p className="chat-header-user">with {otherUser.firstname}</p>
+                )}
+              </div>
+
+              {/* Report Button Integration */}
+              {otherUser && (
+                <ButtonReport
+                  targetType="message"
+                  data={currentConversation}
+                  userId={currentUser?.id}
+                />
+              )}
+            </div>
+
             <MessageList
               messages={messages}
               currentUser={currentUser}

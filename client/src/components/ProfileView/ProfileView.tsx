@@ -1,9 +1,14 @@
 import { Handshake, Heart, Package } from "lucide-react";
 import { Link } from "react-router";
 import type { Announce } from "../../types/Announce";
-import type { UserPrivate, UserPublic } from "../../types/User";
+import type {
+  PublicProfileData,
+  UserPrivate,
+  UserPublic,
+} from "../../types/User";
 import "./ProfileView.css";
 import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
+import ButtonReport from "../btn-report/ButtonReport";
 import CatalogCard from "../CatalogCard/CatalogCard";
 
 //discriminated union for profileView props.
@@ -21,6 +26,7 @@ type ProfileViewProps =
       user: UserPublic;
       items: Announce[];
       favorites: Announce[];
+      authUserId?: number; // ID of the authenticated user (not the viewed user)
     };
 
 function ProfileView(props: ProfileViewProps) {
@@ -154,7 +160,8 @@ function ProfileView(props: ProfileViewProps) {
   }
 
   // public profile (member mode)
-  const { user, items, favorites } = props;
+  const { user, items, favorites, authUserId } = props;
+  const publicData = { user, items, favorites } as PublicProfileData;
 
   return (
     <section
@@ -179,6 +186,11 @@ function ProfileView(props: ProfileViewProps) {
         <p className="profile-location">
           {user.city} ({user.zipcode})
         </p>
+        <ButtonReport
+          targetType="user"
+          data={publicData.user}
+          userId={authUserId}
+        />
       </header>
       <section
         ref={infoRef}

@@ -30,10 +30,10 @@ function ChatModal() {
   }
 
   return (
-    <div
+    <dialog
       className="chat-modal-overlay"
       onClick={handleClose}
-      role="dialog"
+      // role="dialog"
       onKeyDown={(e) => {
         if (e.key === "Escape") {
           handleClose();
@@ -61,7 +61,7 @@ function ChatModal() {
           <ChatWindow />
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
 

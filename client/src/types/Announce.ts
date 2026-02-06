@@ -33,4 +33,5 @@ export interface AnnounceDetail {
   lastname: string;
   firstname: string;
   zipcode: string;
+  userId: number;
 }
