@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import arrow from "../../assets/icons/fleche.svg";
 import { reportData } from "./reportData";
 import "./ButtonReport.css";
@@ -79,14 +80,18 @@ function ButtonReport({
       if (response.ok) {
         setModalOpens1(false);
         setModalOpens2(true);
-        setConfirmations("Ton report a bien été envoyé");
+        setConfirmations(
+          "Your report has been successfully submitted. Thank you for helping us maintain a safe and respectful community.",
+        );
       } else {
         setModalOpens1(false);
         setModalOpens2(true);
-        setConfirmations("Une erreur est survenue lors de l'envoi.");
+        setConfirmations(
+          "An error occurred while sending your report. Please try again later.",
+        );
       }
     } catch (error) {
-      console.error("Erreur API:", error);
+      console.error("API error:", error);
     }
   };
 
@@ -113,85 +118,90 @@ function ButtonReport({
         Report
       </button>
 
-      {modalOpens && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-bouton">
-              {currentReasons.map((reason) => (
-                <div key={reason.id}>
-                  <button
-                    type="button"
-                    className="modal-li"
-                    onClick={() => handleclickreason(reason)}
-                  >
-                    {reason.label}
+      {modalOpens &&
+        createPortal(
+          <div className="modal-overlay">
+            <div className="modal-container">
+              <div className="modal-bouton">
+                {currentReasons.map((reason) => (
+                  <div key={reason.id}>
+                    <button
+                      type="button"
+                      className="modal-li"
+                      onClick={() => handleclickreason(reason)}
+                    >
+                      {reason.label}
 
-                    <img className="fleche-report" src={arrow} alt="fleche" />
-                  </button>
+                      <img className="fleche-report" src={arrow} alt="fleche" />
+                    </button>
+                    <button
+                      type="button"
+                      className="close-x"
+                      onClick={closeModal}
+                    >
+                      <X size={25} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+      {modalOpens1 &&
+        createPortal(
+          <div className="modal-overlay1">
+            <div className="modal-content1">
+              <div>
+                <div className="motif-report">
+                  {selectedReason?.label}
+                  <textarea
+                    maxLength={203}
+                    placeholder="Please explain the reason for your report as precisely as possible."
+                    className="text-report"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+                <div className="button-modal2">
                   <button
                     type="button"
-                    className="close-x"
-                    onClick={closeModal}
+                    className="primary report-btn"
+                    onClick={handleclickreport}
+                    aria-label="close popup"
                   >
-                    <X size={35} />
+                    report
                   </button>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-      {modalOpens1 && (
-        <div className="modal-overlay1">
-          <div className="modal-content1">
-            <div>
-              <div className="motif-report">
-                {selectedReason?.label}
-                <textarea
-                  maxLength={203}
-                  placeholder="Please explain the reason for your report as precisely as possible."
-                  style={{ fontStyle: "italic" }}
-                  className="text-report"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-              <div className="button-modal2">
-                <button
-                  type="button"
-                  className="secondary poulet"
-                  onClick={handleclickreport}
-                  aria-label="close popup"
-                >
-                  report
-                </button>
-              </div>
-              <button type="button" className="close-x" onClick={closeModal1}>
-                <X size={35} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {modalOpens2 && (
-        <div className="modal-overlay2">
-          <div className="modal-content2">
-            <div>
-              <h4>{confirmations}</h4>
-              <div className="button-modal2">
-                <button
-                  type="button"
-                  className="primary"
-                  onClick={handleclose}
-                  aria-label="close modal"
-                >
-                  thank you
+                <button type="button" className="close-x" onClick={closeModal1}>
+                  <X size={35} />
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
+      {modalOpens2 &&
+        createPortal(
+          <div className="modal-overlay2">
+            <div className="modal-content2">
+              <div>
+                <h4>{confirmations}</h4>
+                <div className="button-modal2">
+                  <button
+                    type="button"
+                    className="primary report-btn"
+                    onClick={handleclose}
+                    aria-label="close modal"
+                  >
+                    thank you
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

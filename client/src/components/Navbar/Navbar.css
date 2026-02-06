@@ -281,7 +281,7 @@
   outline: none;
 } */
 
-img {
+.mobile-nav img {
   width: 28px;
   height: 28px;
   pointer-events: none;
