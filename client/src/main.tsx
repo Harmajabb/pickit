@@ -13,7 +13,9 @@ import ResetPassword from "./components/ResetPassword/ResetPassword";
 import UserManager from "./components/UserManager/UserManager";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
+import { ChatProvider } from "./context/ChatContext";
 import Catalog from "./pages/Catalog/Catalog";
+import ChatPage from "./pages/Chat/ChatPage";
 import Login from "./pages/Connexion/Connexion";
 import CreateAnnoncePage from "./pages/CreateAnnoncePage";
 import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
@@ -23,6 +25,7 @@ import Home from "./pages/Home";
 import GeneralConditions from "./pages/Legal_Notice/GeneralConditions";
 import LegalNotice from "./pages/Legal_Notice/LegalNotice";
 import PrivacyPolicy from "./pages/Legal_Notice/PrivacyPolicy";
+import Inbox from "./pages/Inbox/Inbox";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
 
@@ -49,6 +52,8 @@ const router = createBrowserRouter([
       { path: "/my-favorites", element: <FavoritesPage mode="me" /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
       { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
+      { path: "/inbox", element: <Inbox /> },
+      { path: "/chat", element: <ChatPage /> },
       { path: "/deposit/:id", element: <DepositPage /> },
       { path: "/mentions-legales", element: <LegalNotice /> },
       { path: "/conditions-generales", element: <GeneralConditions /> },
@@ -66,7 +71,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <AuthProvider>
       <AnnouncesProvider>
-        <RouterProvider router={router} />
+        <ChatProvider>
+          <RouterProvider router={router} />
+        </ChatProvider>
       </AnnouncesProvider>
     </AuthProvider>
   </StrictMode>,

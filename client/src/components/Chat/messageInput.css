@@ -1,0 +1,119 @@
+/**
+ * Message Input CSS
+ */
+
+.message-input-container {
+  padding: 12px 16px;
+  background-color: var(--color-card);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.message-input-form {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.message-input-field {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--b-radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-primary-text);
+  background-color: var(--color-bg);
+  resize: vertical;
+  max-height: 120px;
+  min-height: 40px;
+  outline: none;
+  transition: border-color 200ms var(--smooth-ease);
+}
+
+.message-input-field:focus {
+  border-color: var(--color-primary);
+}
+
+.message-input-field::placeholder {
+  color: var(--color-secondary-text);
+}
+
+.message-input-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--b-radius-sm);
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 200ms var(--smooth-ease);
+  flex-shrink: 0;
+}
+
+.message-input-btn:hover:not(:disabled) {
+  background-color: var(--color-btn-primary-hover, #5a8e2a);
+  transform: translateY(-2px);
+}
+
+.message-input-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.message-input-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message-input-counter {
+  font-size: 11px;
+  color: var(--color-secondary-text);
+  margin-top: 4px;
+  padding-left: 14px;
+}
+
+.message-input-counter.warning {
+  color: var(--color-btn-secondary);
+}
+
+.message-input-counter.error {
+  color: #d32f2f;
+}
+
+/* Dark theme */
+:root[data-theme="dark"] .message-input-field {
+  background-color: var(--color-bg);
+  color: var(--color-dark-text);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="dark"] .message-input-field:focus {
+  border-color: var(--color-primary);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .message-input-container {
+    padding: 8px 12px;
+  }
+
+  .message-input-form {
+    gap: 6px;
+  }
+
+  .message-input-field {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-height: 36px;
+  }
+
+  .message-input-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+}

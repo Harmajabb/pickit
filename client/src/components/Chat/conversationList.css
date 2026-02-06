@@ -1,0 +1,200 @@
+/**
+ * Conversation List CSS
+ */
+
+.conversation-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.conversation-list-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--color-btn-secondary);
+  background-color: var(--color-card);
+}
+
+.conversation-list-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-title);
+  margin: 0;
+}
+
+.conversation-list-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.conversation-item-wrapper {
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.1);
+  transition: background-color 200ms var(--smooth-ease);
+}
+
+.conversation-item-wrapper:hover {
+  background-color: var(--color-card-hover);
+}
+
+.conversation-item-wrapper.active {
+  background-color: var(--color-primary);
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 200ms var(--smooth-ease);
+  border: none;
+  background: none;
+  width: 100%;
+}
+
+.conversation-item.active .conversation-info-name,
+.conversation-item.active .conversation-info-preview {
+  color: white;
+}
+
+.conversation-delete-btn {
+  padding: 8px;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--color-secondary-text);
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 200ms var(--smooth-ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 100%;
+  opacity: 0;
+  transition:
+    opacity 200ms var(--smooth-ease),
+    color 200ms var(--smooth-ease);
+}
+
+.conversation-item-wrapper:hover .conversation-delete-btn {
+  opacity: 1;
+}
+
+.conversation-delete-btn:hover {
+  color: #dc3545;
+}
+
+/* Avatar styles moved to avatar.css, keeping this for backwards compatibility */
+.conversation-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--b-radius-full);
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-btn-primary-text);
+  font-weight: 600;
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.conversation-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.conversation-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.conversation-info-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.conversation-info-time {
+  font-size: 12px;
+  color: var(--color-secondary-text);
+  margin: 0;
+}
+
+.conversation-info-preview {
+  font-size: 13px;
+  color: var(--color-secondary-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conversation-unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-btn-secondary);
+  color: white;
+  border-radius: var(--b-radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 8px;
+}
+
+.conversation-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-secondary-text);
+}
+
+.conversation-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+  color: var(--color-secondary-text);
+}
+
+.conversation-list-empty p:first-child {
+  font-weight: 500;
+  margin: 0;
+}
+
+.conversation-list-empty p:last-child {
+  font-size: 12px;
+  margin: 4px 0 0 0;
+}
+
+/* Dark theme adjustments */
+:root[data-theme="dark"] .conversation-item:hover {
+  background-color: var(--color-card-hover);
+}
+
+:root[data-theme="dark"] .conversation-item.active {
+  background-color: var(--color-btn-primary);
+}

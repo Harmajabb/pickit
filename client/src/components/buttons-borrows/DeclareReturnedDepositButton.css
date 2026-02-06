@@ -2,8 +2,8 @@
   padding: 0.65rem 1.4rem;
   font-size: 0.875rem;
   font-weight: 600;
-  color: white;
-  background-color: #4a90e2;
+  color: var(--color-btn-primary-text);
+  background-color: var(--color-btn-primary);
   border: none;
   border-radius: var(--b-radius-sm);
   cursor: pointer;
@@ -12,7 +12,7 @@
 }
 
 .button:hover:not(:disabled) {
-  background-color: #357abd;
+  background-color: var(--color-btn-hover);
   box-shadow: var(--shadow-soft-hover);
   filter: brightness(1.1);
 }

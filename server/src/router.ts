@@ -5,8 +5,10 @@ import announcesActions from "./modules/announces/announcesActions";
 import authActions from "./modules/authentication/authActions";
 import borrowActions from "./modules/borrows/borrowActions";
 import categoryActions from "./modules/categories/categoryActions";
+import chatActions from "./modules/chat/chatActions";
 import favoriteAction from "./modules/favorites/favoriteAction";
 import itemActions from "./modules/item/itemActions";
+import reportAction from "./modules/reports/reportAction";
 import searchActions from "./modules/search/searchAction";
 import userAction from "./modules/user/userActions";
 
@@ -186,5 +188,38 @@ router.get(
 );
 router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
+
+router.post("/api/reports", authActions.checkAuth, reportAction.report);
+// Chat routes
+router.get(
+  "/api/chat/conversations",
+  authActions.checkAuth,
+  chatActions.browse,
+);
+router.post(
+  "/api/chat/conversations",
+  authActions.checkAuth,
+  chatActions.create,
+);
+router.get(
+  "/api/chat/conversations/:id",
+  authActions.checkAuth,
+  chatActions.read,
+);
+router.get(
+  "/api/chat/conversations/:id/messages",
+  authActions.checkAuth,
+  chatActions.getMessages,
+);
+router.post(
+  "/api/chat/conversations/:id/mark-read",
+  authActions.checkAuth,
+  chatActions.markRead,
+);
+router.delete(
+  "/api/chat/conversations/:id",
+  authActions.checkAuth,
+  chatActions.deleteConversation,
+);
 
 export default router;

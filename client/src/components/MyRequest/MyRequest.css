@@ -132,8 +132,8 @@
   padding: 0.65rem 1.4rem;
   border-radius: var(--b-radius-sm);
   border: none;
-  background-color: #4a90e2;
-  color: white;
+  background-color: var(--color-btn-primary);
+  color: var(--color-btn-primary-text);
   cursor: pointer;
   font-weight: 600;
   font-size: 0.875rem;
@@ -141,7 +141,7 @@
 }
 
 .btn-pay-deposit:hover {
-  background-color: #357abd;
+  background-color: var(--color-btn-hover);
   box-shadow: var(--shadow-soft-hover);
   filter: brightness(1.1);
 }
@@ -149,6 +149,17 @@
 .btn-pay-deposit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Icon spacing */
+.icon-spacing {
+  margin-right: 8px;
+}
+
+/* Debug message */
+.debug-message {
+  font-size: 12px;
+  color: red;
 }
 
 /* Responsive */

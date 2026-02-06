@@ -1,9 +1,14 @@
 import { Handshake, Heart, Package } from "lucide-react";
 import { Link } from "react-router";
 import type { Announce } from "../../types/Announce";
-import type { UserPrivate, UserPublic } from "../../types/User";
+import type {
+  PublicProfileData,
+  UserPrivate,
+  UserPublic,
+} from "../../types/User";
 import "./ProfileView.css";
 import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
+import ButtonReport from "../btn-report/ButtonReport";
 import CatalogCard from "../CatalogCard/CatalogCard";
 
 //discriminated union for profileView props.
@@ -21,6 +26,7 @@ type ProfileViewProps =
       user: UserPublic;
       items: Announce[];
       favorites: Announce[];
+      authUserId?: number; // ID of the authenticated user (not the viewed user)
     };
 
 function ProfileView(props: ProfileViewProps) {
@@ -34,8 +40,8 @@ function ProfileView(props: ProfileViewProps) {
   const API_URL = import.meta.env.VITE_API_URL;
 
   // user avatar
-  const avatarSrc = props.user.profile_picture
-    ? `${API_URL}${props.user.profile_picture}`
+  const avatarSrc = props.user.profil_picture
+    ? `${API_URL}${props.user.profil_picture}`
     : `${API_URL}/assets/images/avatar-default.png`;
 
   // private profile (me mode)
@@ -112,7 +118,11 @@ function ProfileView(props: ProfileViewProps) {
           </h3>
 
           <div className="profile-actions-grid reveal-stagger is-visible">
-            <Link to="/my-announces" className="profile-action-card">
+            <Link
+              to="/my-announces"
+              className="profile-action-card"
+              tabIndex={0}
+            >
               <div className="profile-action-icon">
                 <Package size={40} strokeWidth={1.5} />
               </div>
@@ -120,7 +130,11 @@ function ProfileView(props: ProfileViewProps) {
               <p>Manage your items</p>
             </Link>
 
-            <Link to="/my-favorites" className="profile-action-card">
+            <Link
+              to="/my-favorites"
+              className="profile-action-card"
+              tabIndex={0}
+            >
               <div className="profile-action-icon">
                 <Heart size={40} strokeWidth={1.5} />
               </div>
@@ -128,7 +142,11 @@ function ProfileView(props: ProfileViewProps) {
               <p>Find your favorites</p>
             </Link>
 
-            <Link to="/profile/requests" className="profile-action-card">
+            <Link
+              to="/profile/requests"
+              className="profile-action-card"
+              tabIndex={0}
+            >
               <div className="profile-action-icon">
                 <Handshake size={40} strokeWidth={1.5} />
               </div>
@@ -142,7 +160,8 @@ function ProfileView(props: ProfileViewProps) {
   }
 
   // public profile (member mode)
-  const { user, items, favorites } = props;
+  const { user, items, favorites, authUserId } = props;
+  const publicData = { user, items, favorites } as PublicProfileData;
 
   return (
     <section
@@ -167,6 +186,11 @@ function ProfileView(props: ProfileViewProps) {
         <p className="profile-location">
           {user.city} ({user.zipcode})
         </p>
+        <ButtonReport
+          targetType="user"
+          data={publicData.user}
+          userId={authUserId}
+        />
       </header>
       <section
         ref={infoRef}
@@ -175,7 +199,7 @@ function ProfileView(props: ProfileViewProps) {
       >
         <h2 id="announcements-title">
           Announcement ({items.length}){" "}
-          <Link to="/" className="profile-see-all">
+          <Link to="/" className="profile-see-all" tabIndex={0}>
             See all announcements
           </Link>
         </h2>
@@ -200,7 +224,11 @@ function ProfileView(props: ProfileViewProps) {
       >
         <h2 id="favorites-title">
           His favorites ({favorites.length})
-          <Link to={`/favorites/${user.id}`} className="profile-see-all">
+          <Link
+            to={`/favorites/${user.id}`}
+            className="profile-see-all"
+            tabIndex={0}
+          >
             See all favorites
           </Link>
         </h2>
@@ -212,7 +240,7 @@ function ProfileView(props: ProfileViewProps) {
             {favorites.slice(0, 6).map((fav) => (
               <li key={fav.id}>
                 {" "}
-                <Link to={`/announce/${fav.id}`}>
+                <Link to={`/announce/${fav.id}`} tabIndex={0}>
                   <CatalogCard data={fav} />
                 </Link>
               </li>

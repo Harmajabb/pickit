@@ -27,7 +27,7 @@
 }
 
 /* Modal Styles */
-.modalOverlay {
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -50,14 +50,14 @@
   backdrop-filter: blur(2px);
 }
 
-.modalOverlay:hover,
-.modalOverlay:active,
-.modalOverlay:focus {
+.modal-overlay:hover,
+.modal-overlay:active,
+.modal-overlay:focus {
   background-color: rgba(0, 0, 0, 0.75);
   outline: none;
 }
 
-.modalContent {
+.modal-content {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -76,7 +76,7 @@
   will-change: transform;
 }
 
-.modalTitle {
+.modal-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-text-primary);
@@ -90,7 +90,7 @@
   gap: 1rem;
 }
 
-.formGroup {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -103,7 +103,7 @@
   letter-spacing: 0.01em;
 }
 
-.requiredIndicator {
+.required-indicator {
   color: var(--color-error, #ef4444);
   margin-left: 0.25rem;
 }
@@ -153,14 +153,14 @@
   color: var(--color-text-secondary);
 }
 
-.modalActions {
+.modal-actions {
   display: flex;
   gap: 1rem;
   margin-top: 2rem;
   justify-content: flex-end;
 }
 
-.submitBtn {
+.submit-btn {
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -173,22 +173,22 @@
   letter-spacing: 0.01em;
 }
 
-.submitBtn:hover:not(:disabled) {
+.submit-btn:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
   box-shadow: var(--shadow-soft-hover);
   transform: translateY(-2px);
 }
 
-.submitBtn:active:not(:disabled) {
+.submit-btn:active:not(:disabled) {
   transform: scale(0.98) translateY(0);
 }
 
-.submitBtn:disabled {
+.submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.cancelBtn {
+.cancel-btn {
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -201,12 +201,12 @@
   letter-spacing: 0.01em;
 }
 
-.cancelBtn:hover {
+.cancel-btn:hover {
   background-color: var(--color-bg-tertiary);
   border-color: var(--color-text-secondary);
 }
 
-.cancelBtn:active {
+.cancel-btn:active {
   transform: scale(0.98);
 }
 
@@ -232,7 +232,7 @@
 
 /* Dark theme support */
 @media (prefers-color-scheme: dark) {
-  .modalContent {
+  .modal-content {
     background-color: var(--color-bg-primary);
     box-shadow: var(--shadow-standard);
   }
@@ -251,23 +251,23 @@
 
 /* Responsive */
 @media (max-width: 640px) {
-  .modalContent {
+  .modal-content {
     width: 95%;
     padding: 1.5rem;
   }
 
-  .modalTitle {
+  .modal-title {
     font-size: 1.125rem;
     margin-bottom: 1rem;
   }
 
-  .modalActions {
+  .modal-actions {
     flex-direction: column-reverse;
     gap: 0.75rem;
   }
 
-  .submitBtn,
-  .cancelBtn {
+  .submit-btn,
+  .cancel-btn {
     width: 100%;
   }
 }

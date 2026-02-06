@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS borrows (
     amount_refunded DECIMAL(10, 2) DEFAULT NULL COMMENT 'Amount refunded when object is broken',
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_date DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-    
     FOREIGN KEY (announces_id) REFERENCES announces(id) ON DELETE CASCADE,
     FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (borrower_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -169,47 +168,61 @@ CREATE TABLE IF NOT EXISTS reviews (
     INDEX idx_moderation (action_moderate)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE IF NOT EXISTS conversations (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    subject VARCHAR(100) NOT NULL,
-    message TEXT NOT NULL,
-    user_id INT NOT NULL COMMENT 'Sender',
-    announce_id INT DEFAULT NULL,
-    create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    user_id_owner INT NOT NULL,
+    user_id_requester INT NOT NULL,
+announce_id INT NOT NULL,
     moderate_by INT DEFAULT NULL,
     moderation_reason TEXT DEFAULT NULL,
-    status ENUM('sent', 'read', 'archived', 'moderated') DEFAULT 'sent',
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (announce_id) REFERENCES announces(id) ON DELETE SET NULL,
-    FOREIGN KEY (moderate_by) REFERENCES users(id) ON DELETE SET NULL,
-    
-    INDEX idx_user (user_id),
-    INDEX idx_announce (announce_id),
-    INDEX idx_status (status),
-    INDEX idx_date (create_date)
+    UNIQUE KEY unique_conversation (user_id_owner, user_id_requester, announce_id),
+    FOREIGN KEY (user_id_owner) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id_requester) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (announce_id) REFERENCES announces(id) ON DELETE CASCADE,
+    FOREIGN KEY (moderate_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    sender_id INT NOT NULL,
+    conversation_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_read TINYINT DEFAULT 0 COMMENT '0=unread, 1=read',
+
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE,
+
+    INDEX idx_conversation (conversation_id),
+    INDEX idx_sender (sender_id),
+    INDEX idx_created (created_at),
+    INDEX idx_is_read (is_read)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reporter_id INT NOT NULL COMMENT 'User reporting',
-    description TEXT NOT NULL,
+    reason VARCHAR(100) NOT NULL,
+    description VARCHAR(203),
     creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     status ENUM('pending', 'in_progress', 'resolved', 'rejected') DEFAULT 'pending',
     handled_by INT DEFAULT NULL COMMENT 'Admin handling the report',
     resolution_note TEXT DEFAULT NULL,
     reported_user_id INT DEFAULT NULL,
     reported_review_id INT DEFAULT NULL,
-    reported_message_id INT DEFAULT NULL,
+    reported_conversations_id INT DEFAULT NULL,
     reported_announce_id INT DEFAULT NULL,
     
     FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (handled_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (reported_user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (reported_review_id) REFERENCES reviews(id) ON DELETE CASCADE,
-    FOREIGN KEY (reported_message_id) REFERENCES messages(id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_conversations_id) REFERENCES conversations(id) ON DELETE CASCADE,
     FOREIGN KEY (reported_announce_id) REFERENCES announces(id) ON DELETE CASCADE,
     
+    INDEX idx_description (description),
+    INDEX idx_reason (reason),
     INDEX idx_reporter (reporter_id),
     INDEX idx_status (status),
     INDEX idx_date (creation_date)
@@ -271,11 +284,11 @@ CREATE TABLE IF NOT EXISTS category_changes (
 -- ============================================================================
 
 -- Users (3 users)
-INSERT IGNORE INTO users (id, lastname, firstname, zipcode, city, address, email, password, role) VALUES
-(1, 'Dupont', 'Jean', 59000, 'Lille', '15 Peace Street', 'jean.dupont@email.com', '$2y$10$examplehash123456789', 0),
-(2, 'Martin', 'Sophie', 75001, 'Paris', '42 Champs Avenue', 'sophie.martin@email.com', '$2y$10$examplehash987654321', 0),
-(3, 'Admin', 'Super', 59000, 'Lille', '1 Admin Street', 'admin@pikit.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', 1),
-(4, 'Fourdin', 'Pierre', 59000, 'Lille', '1 Admin Street', 'fourdin.pfmg@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$ZA4+JPXRjS9Jq6zsd6d3Fw$t2wRQ4TOyKPT5swyogbIhxG8gzeZ/EBpamZNFrBh4uc', 1);
+INSERT IGNORE INTO users (id, lastname, firstname, zipcode, city, address, email, password, profil_picture, role) VALUES
+(1, 'Dupont', 'Jean', 59000, 'Lille', '15 Peace Street', 'jean.dupont@email.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', NULL, 0),
+(2, 'Martin', 'Sophie', 75001, 'Paris', '42 Champs Avenue', 'sophie.martin@email.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', NULL, 0),
+(3, 'Admin', 'Super', 59000, 'Lille', '1 Admin Street', 'admin@pikit.com', '$argon2id$v=19$m=65536,t=3,p=4$6zcB46Y9IU2r2kJ/Fet/mA$8LbkGbb9ApXd+HoxkVAcW/Qf+T0f5rngWKwooWaNyHw', NULL, 1),
+(4, 'Fourdin', 'Pierre', 59000, 'Lille', '1 Admin Street', 'fourdin.pfmg@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$ZA4+JPXRjS9Jq6zsd6d3Fw$t2wRQ4TOyKPT5swyogbIhxG8gzeZ/EBpamZNFrBh4uc', NULL, 1);
 
 -- Categories (7 hierarchical categories)
 INSERT IGNORE INTO categories (id, category, parent_id) VALUES
@@ -290,18 +303,18 @@ INSERT IGNORE INTO categories (id, category, parent_id) VALUES
 -- Announces (2 listings)
 
 INSERT IGNORE INTO announces (id, title, description, amount_deposit, creation_date, update_date, start_borrow_date, end_borrow_date, location, status, zipcode, category_id, owner_id, state_of_product) VALUES
-(1, "Giant Talon Mountain Bike", "Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.", 200, '2024-10-09', '2024-10-31', '2024-12-01', '2025-03-31', "Lille, Nord", 'active', 59000, 7, 1, 'excellent'),
-(2, "Quiksilver Surfboard", "surfboard, ideal for beginners and intermediates. Includes protective cover.", 150, '2024-11-25', NULL, '2024-12-01', '2025-09-30', "Biarritz, Pyrénées-Atlantiques", 'active', 64200, 6, 2, 'good'),
-(3, "Raquette de Tennis Wilson Pro Staff", "Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.", 50, '2024-12-01', '2024-12-05', '2024-12-10', '2025-06-30', "Lyon, Rhône", 'active', 69000, 5, 3, 'new'),
-(6, "Paddle Gonflable Itiwit", "Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.", 120, '2024-10-20', '2024-11-02', '2025-05-01', '2025-09-30', "Annecy, Haute-Savoie", 'active', 74000, 6, 1, 'new'),
-(9, "Rollers en ligne Rollerblade", "Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.", 30, '2024-12-12', NULL, '2024-12-15', '2025-12-31', "Montpellier, Hérault", 'active', 34000, 7, 3, 'new'),
-(11, "Ballon de piscine", "Très beau ballon de piscine tout neuf pour surfer dans la joie et la bonne humeur", 5, '2026-01-30', '2026-01-30', '2026-01-30', '2026-02-28', 'Paris', 'active', 75018, 6, 3, 'good'),
-(12, "Bike helmet", "Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.", 50, '2026-02-02', NULL, '2026-02-02', '2027-08-05', 'Lyon', 'active', 59000, 7, 4, 'excellent'),
-(13, "Raquettes de randonnée", "Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.", 80, '2026-02-02', '2026-02-02', '2026-02-02', '2028-05-02', 'Lyon', 'active', 69000, 1, 4, 'good'),
-(14, "Sacoche de VTT", "Sacoche de guidon pratique et résistante, idéale pour transporter l’essentiel en toute sécurité tout en restant facilement accessible pendant vos sorties à vélo.", 30, '2026-02-02', NULL, '2026-02-03', '2032-08-04', 'Lyon', 'active', 69000, 3, 3, 'fair'),
-(15, "Paire de skis", "Paire de skis polyvalente et performante, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 250, '2026-02-02', NULL, '2026-02-25', '2028-04-12', 'Paris', 'active', 75020, 4, 3, 'excellent'),
-(16, "Snowboard", "Snowboard design polyvalent et performant, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 200, '2026-02-02', NULL, '2026-02-26', '2026-12-14', 'Paris', 'active', 75020, 1, 3, 'good'),
-(17, "VTT", "VTT robuste et polyvalent, conçu pour offrir un excellent contrôle et un confort optimal sur tous les sentiers, des chemins roulants aux terrains les plus techniques.", 250, '2026-02-02', NULL, '2026-03-23', '2030-12-31', 'Lille', 'active', 59000, 3, 3, 'good');
+(1, "Giant Talon Mountain Bike", "Mountain bike in excellent condition, perfect for mountains. Size L, hydraulic disc brakes.", 200, '2024-10-09', '2024-10-31', '2026-02-05', '2026-08-31', "Lille, Nord", 'active', 59000, 7, 1, 'excellent'),
+(2, "Quiksilver Surfboard", "surfboard, ideal for beginners and intermediates. Includes protective cover.", 150, '2024-11-25', NULL, '2026-02-05', '2026-12-30', "Biarritz, Pyrénées-Atlantiques", 'active', 64200, 6, 2, 'good'),
+(3, "Raquette de Tennis Wilson Pro Staff", "Modèle utilisé par les pros. Cordage neuf, grip changé récemment. Poids 315g.", 50, '2024-12-01', '2024-12-05', '2026-02-05', '2026-09-30', "Lyon, Rhône", 'active', 69000, 5, 3, 'new'),
+(6, "Paddle Gonflable Itiwit", "Pack complet avec pompe, pagaie et sac de transport. Idéal pour balades en lac ou mer calme.", 120, '2024-10-20', '2024-11-02', '2026-02-05', '2026-10-30', "Annecy, Haute-Savoie", 'active', 74000, 6, 1, 'new'),
+(9, "Rollers en ligne Rollerblade", "Pointure 42. Roues 80mm, roulements ABEC 7. Confortables pour la rando urbaine.", 30, '2024-12-12', NULL, '2026-02-05', '2027-02-04', "Montpellier, Hérault", 'active', 34000, 7, 3, 'new'),
+(11, "Ballon de piscine", "Très beau ballon de piscine tout neuf pour surfer dans la joie et la bonne humeur", 5, '2026-01-30', '2026-01-30', '2026-02-05', '2026-03-31', 'Paris', 'active', 75018, 6, 3, 'good'),
+(12, "Bike helmet", "Casque de VTT léger et résistant, offrant une protection optimale et une ventilation efficace pour rouler en toute sécurité et confort sur tous les terrains.", 50, '2026-02-02', NULL, '2026-02-05', '2027-12-04', 'Lyon', 'active', 59000, 7, 4, 'excellent'),
+(13, "Raquettes de randonnée", "Raquettes légères et robustes, conçues pour offrir une excellente accroche et une stabilité optimale lors de vos sorties sur terrains enneigés.", 80, '2026-02-02', '2026-02-02', '2026-02-05', '2029-03-04', 'Lyon', 'active', 69000, 1, 4, 'good'),
+(14, "Sacoche de VTT", "Sacoche de guidon pratique et résistante, idéale pour transporter l’essentiel en toute sécurité tout en restant facilement accessible pendant vos sorties à vélo.", 30, '2026-02-02', NULL, '2026-02-05', '2033-03-04', 'Lyon', 'active', 69000, 3, 3, 'fair'),
+(15, "Paire de skis", "Paire de skis polyvalente et performante, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 250, '2026-02-02', NULL, '2026-02-15', '2029-05-12', 'Paris', 'active', 75020, 4, 3, 'excellent'),
+(16, "Snowboard", "Snowboard design polyvalent et performant, offrant une excellente stabilité et une glisse fluide pour un maximum de plaisir sur tous types de neige.", 200, '2026-02-02', NULL, '2026-02-20', '2027-02-14', 'Paris', 'active', 75020, 1, 3, 'good'),
+(17, "VTT", "VTT robuste et polyvalent, conçu pour offrir un excellent contrôle et un confort optimal sur tous les sentiers, des chemins roulants aux terrains les plus techniques.", 250, '2026-02-02', NULL, '2026-03-05', '2031-12-31', 'Lille', 'active', 59000, 3, 3, 'good');
 
 -- Announces Images (25 images)
 INSERT IGNORE INTO announces_images (id, url, announce_id) VALUES
@@ -337,20 +350,148 @@ INSERT IGNORE INTO borrows (id, borrow_date, announces_id, owner_id, borrower_id
 (1, '2024-12-20 10:00:00', 2, 2, 1, '2024-12-22 18:00:00', 'confirmed', 'paid', 0),
 (2, '2024-12-15 14:00:00', 1, 1, 2, '2024-12-17 14:00:00', 'completed', 'refunded', 1);
 
--- Availability (availability for December 2024)
-INSERT IGNORE INTO availability (id, announce_id, date, status, borrow_id, daily_price) VALUES
-(1, 1, '2024-12-15', 'booked', 2, 25.00),
-(2, 1, '2024-12-16', 'booked', 2, 25.00),
-(3, 1, '2024-12-17', 'booked', 2, 25.00),
-(4, 1, '2024-12-18', 'available', NULL, 25.00),
-(5, 1, '2024-12-19', 'available', NULL, 25.00),
-(6, 1, '2024-12-20', 'available', NULL, 25.00),
-(7, 1, '2024-12-25', 'blocked', NULL, NULL),
-(8, 2, '2024-12-15', 'available', NULL, 30.00),
-(9, 2, '2024-12-16', 'available', NULL, 30.00),
-(10, 2, '2024-12-20', 'booked', 1, 30.00),
-(11, 2, '2024-12-21', 'booked', 1, 30.00),
-(12, 2, '2024-12-22', 'booked', 1, 30.00);
+-- Availability (availability for all announces with varied dates starting from 2026-02-05)
+-- Announce 1: Giant Talon Mountain Bike (2026-02-05 to 2026-08-31) - Daily price: 25€
+INSERT IGNORE INTO availability (announce_id, date, status, borrow_id, daily_price) VALUES
+(1, '2026-02-05', 'available', NULL, 25.00),
+(1, '2026-02-06', 'available', NULL, 25.00),
+(1, '2026-02-07', 'booked', 2, 25.00),
+(1, '2026-02-08', 'booked', 2, 25.00),
+(1, '2026-02-09', 'booked', 2, 25.00),
+(1, '2026-02-10', 'available', NULL, 25.00),
+(1, '2026-02-15', 'available', NULL, 25.00),
+(1, '2026-03-01', 'available', NULL, 25.00),
+(1, '2026-03-15', 'available', NULL, 25.00),
+(1, '2026-04-01', 'available', NULL, 25.00),
+(1, '2026-05-15', 'available', NULL, 25.00),
+(1, '2026-06-30', 'available', NULL, 25.00),
+(1, '2026-08-15', 'available', NULL, 25.00),
+
+-- Announce 2: Quiksilver Surfboard (2026-02-05 to 2026-12-30) - Daily price: 30-40€
+(2, '2026-02-05', 'available', NULL, 30.00),
+(2, '2026-02-10', 'available', NULL, 30.00),
+(2, '2026-02-20', 'available', NULL, 30.00),
+(2, '2026-03-15', 'available', NULL, 30.00),
+(2, '2026-04-10', 'booked', 1, 30.00),
+(2, '2026-04-11', 'booked', 1, 30.00),
+(2, '2026-04-12', 'booked', 1, 30.00),
+(2, '2026-05-01', 'available', NULL, 35.00),
+(2, '2026-06-15', 'available', NULL, 35.00),
+(2, '2026-07-20', 'available', NULL, 40.00),
+
+-- Announce 3: Raquette de Tennis Wilson (2026-02-05 to 2026-09-30) - Daily price: 12€
+(3, '2026-02-05', 'available', NULL, 12.00),
+(3, '2026-02-15', 'available', NULL, 12.00),
+(3, '2026-03-01', 'available', NULL, 12.00),
+(3, '2026-04-10', 'available', NULL, 12.00),
+(3, '2026-05-01', 'available', NULL, 12.00),
+(3, '2026-06-01', 'blocked', NULL, NULL),
+(3, '2026-07-01', 'available', NULL, 12.00),
+(3, '2026-08-15', 'available', NULL, 12.00),
+
+-- Announce 6: Paddle Gonflable Itiwit (2026-02-05 to 2026-10-30) - Daily price: 30-45€
+(6, '2026-02-05', 'available', NULL, 30.00),
+(6, '2026-02-20', 'booked', 4, 30.00),
+(6, '2026-02-21', 'booked', 4, 30.00),
+(6, '2026-02-22', 'booked', 4, 30.00),
+(6, '2026-03-10', 'available', NULL, 30.00),
+(6, '2026-04-15', 'available', NULL, 35.00),
+(6, '2026-05-20', 'available', NULL, 40.00),
+(6, '2026-06-25', 'available', NULL, 45.00),
+(6, '2026-08-10', 'available', NULL, 40.00),
+
+-- Announce 9: Rollers en ligne Rollerblade (2026-02-05 to 2027-02-04) - Daily price: 8€
+(9, '2026-02-05', 'available', NULL, 8.00),
+(9, '2026-02-20', 'available', NULL, 8.00),
+(9, '2026-03-15', 'blocked', NULL, NULL),
+(9, '2026-04-10', 'available', NULL, 8.00),
+(9, '2026-05-15', 'available', NULL, 8.00),
+(9, '2026-07-01', 'available', NULL, 8.00),
+(9, '2026-09-20', 'available', NULL, 8.00),
+(9, '2026-12-01', 'available', NULL, 8.00),
+
+-- Announce 11: Ballon de piscine (2026-02-05 to 2026-03-31) - Daily price: 2€
+(11, '2026-02-05', 'available', NULL, 2.00),
+(11, '2026-02-10', 'available', NULL, 2.00),
+(11, '2026-02-20', 'available', NULL, 2.00),
+(11, '2026-03-01', 'available', NULL, 2.00),
+(11, '2026-03-20', 'available', NULL, 2.00),
+
+-- Announce 12: Bike helmet (2026-02-05 to 2027-12-04) - Daily price: 15€
+(12, '2026-02-05', 'booked', 6, 15.00),
+(12, '2026-02-06', 'booked', 6, 15.00),
+(12, '2026-02-07', 'booked', 6, 15.00),
+(12, '2026-02-08', 'booked', 6, 15.00),
+(12, '2026-03-01', 'available', NULL, 15.00),
+(12, '2026-04-15', 'available', NULL, 15.00),
+(12, '2026-06-10', 'available', NULL, 15.00),
+(12, '2026-08-20', 'available', NULL, 15.00),
+(12, '2026-11-01', 'blocked', NULL, NULL),
+(12, '2026-12-15', 'available', NULL, 15.00),
+(12, '2027-06-30', 'available', NULL, 15.00),
+
+-- Announce 13: Raquettes de randonnée (2026-02-05 to 2029-03-04) - Daily price: 20€
+(13, '2026-02-05', 'available', NULL, 20.00),
+(13, '2026-03-01', 'available', NULL, 20.00),
+(13, '2026-03-25', 'booked', 8, 20.00),
+(13, '2026-03-26', 'booked', 8, 20.00),
+(13, '2026-03-27', 'booked', 8, 20.00),
+(13, '2026-03-28', 'booked', 8, 20.00),
+(13, '2026-04-20', 'available', NULL, 20.00),
+(13, '2026-11-15', 'blocked', NULL, NULL),
+(13, '2027-01-10', 'available', NULL, 20.00),
+(13, '2027-08-01', 'available', NULL, 20.00),
+(13, '2028-02-20', 'available', NULL, 20.00),
+(13, '2029-01-15', 'available', NULL, 20.00),
+
+-- Announce 14: Sacoche de VTT (2026-02-05 to 2033-03-04) - Daily price: 8€
+(14, '2026-02-05', 'available', NULL, 8.00),
+(14, '2026-03-10', 'available', NULL, 8.00),
+(14, '2026-05-01', 'available', NULL, 8.00),
+(14, '2026-08-20', 'available', NULL, 8.00),
+(14, '2026-11-10', 'blocked', NULL, NULL),
+(14, '2027-02-15', 'available', NULL, 8.00),
+(14, '2027-06-20', 'available', NULL, 8.00),
+(14, '2028-01-20', 'available', NULL, 8.00),
+(14, '2029-05-10', 'available', NULL, 8.00),
+(14, '2030-09-15', 'available', NULL, 8.00),
+
+-- Announce 15: Paire de skis (2026-02-15 to 2029-05-12) - Daily price: 50-65€
+(15, '2026-02-15', 'available', NULL, 50.00),
+(15, '2026-03-01', 'booked', 7, 50.00),
+(15, '2026-03-02', 'booked', 7, 50.00),
+(15, '2026-03-03', 'booked', 7, 50.00),
+(15, '2026-04-10', 'blocked', NULL, NULL),
+(15, '2026-11-20', 'available', NULL, 60.00),
+(15, '2026-12-10', 'available', NULL, 65.00),
+(15, '2027-01-25', 'available', NULL, 65.00),
+(15, '2027-02-15', 'available', NULL, 60.00),
+(15, '2027-11-20', 'available', NULL, 60.00),
+(15, '2028-01-15', 'available', NULL, 55.00),
+(15, '2028-03-20', 'available', NULL, 50.00),
+
+-- Announce 16: Snowboard (2026-02-20 to 2027-02-14) - Daily price: 45-55€
+(16, '2026-02-20', 'available', NULL, 45.00),
+(16, '2026-03-10', 'available', NULL, 45.00),
+(16, '2026-04-01', 'blocked', NULL, NULL),
+(16, '2026-05-25', 'available', NULL, 30.00),
+(16, '2026-07-15', 'available', NULL, 30.00),
+(16, '2026-09-20', 'available', NULL, 45.00),
+(16, '2026-10-15', 'available', NULL, 50.00),
+(16, '2026-12-01', 'available', NULL, 55.00),
+
+-- Announce 17: VTT (2026-03-05 to 2031-12-31) - Daily price: 40€
+(17, '2026-03-05', 'available', NULL, 40.00),
+(17, '2026-04-01', 'available', NULL, 40.00),
+(17, '2026-05-20', 'available', NULL, 40.00),
+(17, '2026-08-15', 'available', NULL, 40.00),
+(17, '2026-11-10', 'blocked', NULL, NULL),
+(17, '2027-01-20', 'available', NULL, 40.00),
+(17, '2027-06-30', 'available', NULL, 40.00),
+(17, '2028-02-20', 'available', NULL, 40.00),
+(17, '2028-09-15', 'available', NULL, 40.00),
+(17, '2029-04-25', 'available', NULL, 40.00),
+(17, '2030-07-20', 'available', NULL, 40.00);
 
 -- Favorites (2 favorites)
 INSERT IGNORE INTO favorites (id, user_id, announces_id, is_favorite) VALUES
@@ -361,11 +502,6 @@ INSERT IGNORE INTO favorites (id, user_id, announces_id, is_favorite) VALUES
 INSERT IGNORE INTO reviews (id, subject, review, user_id, announce_id, note, action_moderate) VALUES
 (1, 'Excellent Mountain Bike!', 'Equipment in perfect condition, very friendly owner. I recommend!', 2, 1, 5, 'approved'),
 (2, 'Very Good Board', 'Perfect for beginners, easy exchange with the owner.', 1, 2, 4, 'approved');
-
--- Messages (2 messages)
-INSERT IGNORE INTO messages (id, subject, message, user_id, announce_id, status) VALUES
-(1, 'Question about the Mountain Bike', 'Hello, is the mountain bike still available from December 20 to 22?', 2, 1, 'sent'),
-(2, 'Board Availability', 'Hi, is it possible to rent the board for next weekend?', 1, 2, 'read');
 
 -- Reports (1 report)
 INSERT IGNORE INTO reports (id, reporter_id, description, status, reported_announce_id) VALUES

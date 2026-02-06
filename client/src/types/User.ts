@@ -7,7 +7,7 @@ export interface UserPublic {
   lastname: string;
   city: string;
   zipcode: string;
-  profile_picture: string | null;
+  profil_picture: string | null;
 }
 
 // private user
@@ -19,6 +19,7 @@ export interface UserPrivate extends UserPublic {
 
 // Public user with item and favorites
 export interface PublicProfileData {
+  type: "public";
   user: UserPublic;
   items: Announce[];
   favorites: Announce[];
@@ -26,6 +27,7 @@ export interface PublicProfileData {
 
 // Private profile with only user
 export interface MyProfileData {
+  type: "private";
   user: UserPrivate;
 }
 
