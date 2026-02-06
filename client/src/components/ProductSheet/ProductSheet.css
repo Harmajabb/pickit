@@ -401,6 +401,11 @@ body {
   outline: none;
 }
 
+.double-button {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
+}
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
   /* Supprime l'affichage des miniatures */
