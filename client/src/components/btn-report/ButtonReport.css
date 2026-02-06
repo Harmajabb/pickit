@@ -13,19 +13,25 @@
 
 .modal-container {
   box-sizing: border-box;
-  background-color: white;
+  background-color: var(--color-title);
   color: var(--color-primary-text);
   display: flex;
   width: auto;
   flex-direction: column;
   align-items: center;
   position: relative;
-  border-radius: 2rem;
-  padding: 1rem;
+  border-radius: var(--b-radius);
+  padding: 1.5rem;
+}
+
+[data-theme="light"] .modal-container,
+.modal-content1,
+.modal-content2 {
+  background-color: var(--color-bg);
 }
 
 .modal-li {
-  width: 40rem;
+  width: 35rem;
   border: none;
   font-size: 1.5rem;
   display: flex;
@@ -35,15 +41,12 @@
   align-items: center;
   background: none;
 }
-.modal-bouton {
-  border-radius: 3rem;
-}
+
 .fleche-report {
   background-color: none;
-  height: 2rem;
-  width: 2rem;
+  height: 1.8rem;
   position: absolute;
-  left: 90%;
+  left: 85%;
 }
 .modal-overlay1 {
   position: fixed;
@@ -58,42 +61,38 @@
   justify-content: center;
 }
 
-.modal-content1 {
-  max-width: 650px;
-  padding: 50px;
-  box-sizing: border-box;
-  background-color: white;
-  color: var(--color-primary-text);
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 10px;
-  position: relative;
-}
-
 .motif-report {
   display: flex;
   flex-direction: column;
-  font-size: 2rem;
+  font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+  font-style: italic;
 }
 .text-report {
   margin-top: 2rem;
   margin-bottom: 2rem;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 1.1vw, 1.125rem);
   height: 5rem;
   resize: none;
 }
 .close-x {
   background: none;
   position: absolute;
-  top: 2%;
-  left: 94%;
+  top: 3%;
+  left: 93%;
 }
+
 .button-popup2 {
   display: flex;
   justify-content: center;
   margin-top: 1.5rem;
+}
+
+.report-btn {
+  background-color: var(--color-btn-secondary);
+  margin-top: 1rem;
+  &:hover {
+    background-color: var(--color-btn-secondary-hover);
+  }
 }
 
 .modal-overlay2 {
@@ -109,11 +108,12 @@
   justify-content: center;
 }
 
+.modal-content1,
 .modal-content2 {
   max-width: 650px;
   padding: 50px;
   box-sizing: border-box;
-  background-color: white;
+  background-color: var(--color-title);
   color: var(--color-primary-text);
   display: flex;
   width: 100%;
@@ -122,6 +122,7 @@
   border-radius: 10px;
   position: relative;
 }
+
 @media (max-width: 600px) {
   .popup-content button {
     margin: 1.5rem 1rem 1rem 1rem;
