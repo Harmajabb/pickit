@@ -199,7 +199,11 @@ function ProfileView(props: ProfileViewProps) {
       >
         <h2 id="announcements-title">
           Announcement ({items.length}){" "}
-          <Link to="/" className="profile-see-all" tabIndex={0}>
+          <Link
+            to={`/user/${user.id}/announces`}
+            className="profile-see-all"
+            tabIndex={0}
+          >
             See all announcements
           </Link>
         </h2>

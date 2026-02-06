@@ -10,6 +10,7 @@ import MyAnnouncesList from "./components/MyAnnouncesList/MyAnnouncesList";
 import MyRequests from "./components/MyRequest/MyRequest";
 import ProductSheet from "./components/ProductSheet/ProductSheet";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
+import UserAnnouncesList from "./components/UserAnnouncesList/UserAnnouncesList";
 import UserManager from "./components/UserManager/UserManager";
 import { AnnouncesProvider } from "./context/AnnouncesContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -23,6 +24,9 @@ import DepositPage from "./pages/Deposit/DepositPage";
 import FavoritesPage from "./pages/Favorite/FavoritesPage";
 import Home from "./pages/Home";
 import Inbox from "./pages/Inbox/Inbox";
+import GeneralConditions from "./pages/Legal_Notice/GeneralConditions";
+import LegalNotice from "./pages/Legal_Notice/LegalNotice";
+import PrivacyPolicy from "./pages/Legal_Notice/PrivacyPolicy";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
 
@@ -42,6 +46,7 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard", element: <Dashboard_Admin /> },
       { path: "/profile/me", element: <Profile mode="me" /> },
       { path: "/profile/:id", element: <Profile mode="member" /> },
+      { path: "/user/:id/announces", element: <UserAnnouncesList /> },
       { path: "/profile/requests", element: <MyRequests /> },
       { path: "/ad-dashboard/categories", element: <CategoryManager /> },
       { path: "/ad-dashboard/users", element: <UserManager /> },
@@ -52,6 +57,9 @@ const router = createBrowserRouter([
       { path: "/inbox", element: <Inbox /> },
       { path: "/chat", element: <ChatPage /> },
       { path: "/deposit/:id", element: <DepositPage /> },
+      { path: "/mentions-legales", element: <LegalNotice /> },
+      { path: "/conditions-generales", element: <GeneralConditions /> },
+      { path: "/politique-confidentialite", element: <PrivacyPolicy /> },
     ],
   },
 ]);
