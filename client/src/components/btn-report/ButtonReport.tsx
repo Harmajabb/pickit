@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import arrow from "../../assets/icons/fleche.svg";
 import { reportData } from "./reportData";
 import "./ButtonReport.css";
 import type { AnnounceDetail } from "../../types/Announce";
@@ -58,7 +59,7 @@ function ButtonReport({
       reporter_id: userId,
       description: description,
       reason: selectedReason?.label,
-      status: "PENDING",
+      status: "pending",
       reported_announce_id: targetType === "annonce" ? data.id : null,
       reported_user_id: targetType === "user" ? data.id : null,
       reported_message_id: targetType === "message" ? data.id : null,
@@ -83,20 +84,30 @@ function ButtonReport({
         setModalOpens2(true);
         setConfirmations("Une erreur est survenue lors de l'envoi.");
       }
-    } catch {}
+    } catch (error) {
+      console.error("Erreur API:", error);
+    }
   };
 
   const handleclose = () => {
     setModalOpens2(false);
     setModalOpens1(false);
   };
+
+  // Disable button if user is not authenticated
+  const isDisabled = userId === undefined;
+
   return (
     <>
       <button
         type="button"
         className="secondary"
         onClick={openModal}
+        disabled={isDisabled}
         aria-label="report"
+        title={
+          isDisabled ? "You must be logged in to report" : "Report this user"
+        }
       >
         Report
       </button>
@@ -114,11 +125,7 @@ function ButtonReport({
                   >
                     {reason.label}
 
-                    <img
-                      className="fleche-report"
-                      src="../src/assets/icons/fleche.svg"
-                      alt="fleche"
-                    />
+                    <img className="fleche-report" src={arrow} alt="fleche" />
                   </button>
                   <button
                     type="button"

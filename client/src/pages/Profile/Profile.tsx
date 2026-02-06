@@ -143,6 +143,7 @@ function Profile({ mode }: { mode: "me" | "member" }) {
         user={(data as PublicProfileData).user}
         items={"items" in data ? data.items : []}
         favorites={"favorites" in data ? data.favorites : []}
+        authUserId={authUser?.id}
       />
       {/* <ButtonReport targetType="user" data={publicData.user} userId={user?.id} /> */}
     </>

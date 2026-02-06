@@ -26,6 +26,7 @@ type ProfileViewProps =
       user: UserPublic;
       items: Announce[];
       favorites: Announce[];
+      authUserId?: number; // ID of the authenticated user (not the viewed user)
     };
 
 function ProfileView(props: ProfileViewProps) {
@@ -147,7 +148,7 @@ function ProfileView(props: ProfileViewProps) {
   }
 
   // public profile (member mode)
-  const { user, items, favorites } = props;
+  const { user, items, favorites, authUserId } = props;
   const publicData = { user, items, favorites } as PublicProfileData;
 
   return (
@@ -176,7 +177,7 @@ function ProfileView(props: ProfileViewProps) {
         <ButtonReport
           targetType="user"
           data={publicData.user}
-          userId={user?.id}
+          userId={authUserId}
         />
       </header>
       <section
