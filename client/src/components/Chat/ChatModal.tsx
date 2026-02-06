@@ -32,8 +32,8 @@ function ChatModal() {
   return (
     <dialog
       className="chat-modal-overlay"
+      open={chatContext.isChatOpen}
       onClick={handleClose}
-      // role="dialog"
       onKeyDown={(e) => {
         if (e.key === "Escape") {
           handleClose();

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./message.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3310";
@@ -17,38 +18,41 @@ interface MessageProps {
 }
 
 function Message({ content, receivedOrSent, createdAt, sender }: MessageProps) {
+  const [imageError, setImageError] = useState(false);
+
   const getInitials = (user?: User) => {
     if (!user) return "?";
-    return `${user.firstname[0]}${user.lastname[0]}`.toUpperCase();
+    
+    // Afficher les deux premières lettres
+    const firstInitial = user.firstname?.[0]?.toUpperCase() || "";
+    const lastInitial = user.lastname?.[0]?.toUpperCase() || "";
+    
+    if (firstInitial && lastInitial) {
+      return `${firstInitial}${lastInitial}`;
+    }
+    
+    return firstInitial || lastInitial || "?";
   };
 
+  const hasImage = sender?.profil_picture && !imageError;
   const initials = getInitials(sender);
 
   return (
     <div className={`${receivedOrSent} message`}>
       <div className="message-avatar">
-        {sender?.profil_picture ? (
+        {hasImage ? (
           <img
             src={`${API_URL}${sender.profil_picture}`}
             alt={`${sender.firstname} ${sender.lastname}`}
             className="message-avatar-img"
-            onError={(e) => {
-              // Si l'image ne charge pas, afficher les initiales
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-              (
-                e.currentTarget.nextElementSibling as HTMLDivElement
-              ).style.display = "flex";
-            }}
+            onError={() => setImageError(true)}
           />
         ) : null}
-        <div
-          className="message-avatar-initials"
-          style={{
-            display: sender?.profil_picture ? "none" : "flex",
-          }}
-        >
-          {initials}
-        </div>
+        {!hasImage && (
+          <div className="message-avatar-initials">
+            {initials}
+          </div>
+        )}
       </div>
       <div className="message-content">
         <p>{content}</p>

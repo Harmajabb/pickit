@@ -27,6 +27,28 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
+  // Initialize socket connection when user is authenticated
+  useEffect(() => {
+    if (!user) {
+      ChatSocketService.disconnect();
+      setSocketConnected(false);
+      return;
+    }
+
+    // Connect to socket if not already connected
+    if (!ChatSocketService.isConnected()) {
+      ChatSocketService.connect()
+        .then(() => {
+          setSocketConnected(true);
+        })
+        .catch((error) => {
+          console.error("Failed to connect socket:", error);
+        });
+    } else {
+      setSocketConnected(true);
+    }
+  }, [user]);
+
   const loadConversations = useCallback(async () => {
     if (!user) return;
 
@@ -70,7 +92,16 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeNewMessage = ChatSocketService.onNewMessage(
       (message: Message) => {
         if (currentConversation?.id === message.conversation_id) {
-          setMessages((prev) => [...prev, message]);
+          setMessages((prev) => {
+            // Replace temporary message (id === -1) with confirmed message
+            const hasTempMessage = prev.some((m) => m.id === -1);
+            if (hasTempMessage && message.sender_id === user?.id) {
+              // Replace the temp message
+              return prev.map((m) => (m.id === -1 ? message : m));
+            }
+            // Otherwise, add new message
+            return [...prev, message];
+          });
         }
       },
     );
@@ -79,7 +110,17 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeMessageSent = ChatSocketService.onMessageSent(
       (message: Message) => {
         if (currentConversation?.id === message.conversation_id) {
-          setMessages((prev) => [...prev, message]);
+          setMessages((prev) => {
+            // Replace temporary message with confirmed message
+            const tempIndex = prev.findIndex((m) => m.id === -1);
+            if (tempIndex !== -1) {
+              const updated = [...prev];
+              updated[tempIndex] = message;
+              return updated;
+            }
+            // If no temp message, just add it
+            return [...prev, message];
+          });
         }
       },
     );
@@ -170,20 +211,49 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     (conversation: Conversation) => {
       setCurrentConversation(conversation);
       setMessages([]);
-      ChatSocketService.joinConversation(conversation.id);
-      void loadMessages(conversation.id);
+      
+      // Charge les messages en premier, puis rejoint la conversation
+      void loadMessages(conversation.id).then(() => {
+        ChatSocketService.joinConversation(conversation.id);
+      });
     },
     [loadMessages],
   );
 
   const sendMessage = useCallback(
     (content: string) => {
-      if (!currentConversation || !content.trim()) return;
+      if (!currentConversation || !content.trim() || !user) return;
 
+      // Build proper sender object with firstname and lastname
+      const sender: Message["sender"] = {
+        id: user.id,
+        firstname: user.firstname || user.name?.split(" ")[0] || "User",
+        lastname: user.lastname || user.name?.split(" ").slice(1).join(" ") || "",
+        email: user.email || "",
+        profil_picture: user.profil_picture,
+      };
+
+      console.log("Sending message with sender:", sender);
+
+      // Add message immediately to local state (optimistic update)
+      const tempMessage: Message = {
+        id: -1, // Temporary ID until server confirms
+        conversation_id: currentConversation.id,
+        sender_id: user.id,
+        sender: sender,
+        content: content.trim(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Add temporary message to display
+      setMessages((prev) => [...prev, tempMessage]);
+
+      // Send to server via socket
       ChatSocketService.sendMessage(currentConversation.id, content.trim());
       ChatSocketService.setTyping(currentConversation.id, false);
     },
-    [currentConversation],
+    [currentConversation, user],
   );
 
   const setIsTyping = useCallback(
@@ -316,6 +386,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         deleteConversation,
         isChatOpen,
         setIsChatOpen,
+        setCurrentConversation,
       }}
     >
       {children}

@@ -31,4 +31,5 @@ export interface Conversation {
   announce_image?: string;
   unread_count?: number;
   created_at?: string;
+  last_message_time?: Date | null;
 }
