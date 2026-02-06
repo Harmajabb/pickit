@@ -22,10 +22,10 @@ import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import DepositPage from "./pages/Deposit/DepositPage";
 import FavoritesPage from "./pages/Favorite/FavoritesPage";
 import Home from "./pages/Home";
+import Inbox from "./pages/Inbox/Inbox";
 import GeneralConditions from "./pages/Legal_Notice/GeneralConditions";
 import LegalNotice from "./pages/Legal_Notice/LegalNotice";
 import PrivacyPolicy from "./pages/Legal_Notice/PrivacyPolicy";
-import Inbox from "./pages/Inbox/Inbox";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
 
