@@ -10,7 +10,7 @@ const PrivacyPolicy: React.FC = () => {
         <h2>1. Data Collection</h2>
         <p>
           We collect data strictly necessary for the operation of the service.
-          du service.
+          of the service.
         </p>
       </section>
 
