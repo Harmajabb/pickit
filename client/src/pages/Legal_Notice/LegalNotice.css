@@ -1,0 +1,32 @@
+.legal-container {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+/* On cible les balises directement à l'intérieur du container */
+.legal-container h1.legal-title {
+  color: var(--color-title);
+  border-bottom: 2px solid var(--color-green-light);
+  padding-bottom: 15px;
+  margin-bottom: 40px;
+}
+
+.legal-container section h2 {
+  color: var(--color-secondary-text);
+  margin-bottom: 10px;
+}
+
+.legal-container p {
+  color: var(--color-primary-text);
+  margin-bottom: 1rem;
+}
+
+.legal-container strong {
+  color: var(--color-accent);
+}
+
+.legal-container a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
