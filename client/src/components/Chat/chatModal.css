@@ -4,10 +4,13 @@
   display: none;
 }
 
+.chat-modal-overlay[open] {
+  display: flex;
+}
+
 /* Afficher sur mobile (< 769px) */
 @media (max-width: 768px) {
   .chat-modal-overlay {
-    display: fixed;
     position: fixed;
     top: 0;
     left: 0;

@@ -136,13 +136,14 @@ const chatRepository = {
         u2.profil_picture as requester_picture,
         a.title as announce_title,
         (SELECT url FROM announces_images WHERE announce_id = a.id LIMIT 1) as announce_image,
-        (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND is_read = 0) as unread_count
+        (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND is_read = 0) as unread_count,
+        (SELECT MAX(created_at) FROM messages WHERE conversation_id = c.id) as last_message_time
       FROM conversations c
       LEFT JOIN users u1 ON c.user_id_owner = u1.id
       LEFT JOIN users u2 ON c.user_id_requester = u2.id
       LEFT JOIN announces a ON c.announce_id = a.id
       WHERE c.user_id_owner = ? OR c.user_id_requester = ?
-      ORDER BY c.id DESC
+      ORDER BY last_message_time DESC, c.id DESC
       LIMIT ? OFFSET ?
     `;
 
@@ -197,7 +198,9 @@ const chatRepository = {
 
   async getMessageById(messageId: number): Promise<Message> {
     const [rows] = await databaseClient.query<RowDataPacket[]>(
-      `SELECT m.*, u.id, u.firstname, u.lastname, u.email, u.profil_picture
+      `SELECT 
+        m.id, m.content, m.sender_id, m.conversation_id, m.created_at, m.is_read,
+        u.id as user_id, u.firstname as firstname, u.lastname as lastname, u.email, u.profil_picture
        FROM messages m
        LEFT JOIN users u ON m.sender_id = u.id
        WHERE m.id = ?`,
@@ -217,7 +220,9 @@ const chatRepository = {
     offset = 0,
   ): Promise<Message[]> {
     const [rows] = await databaseClient.query<RowDataPacket[]>(
-      `SELECT m.*, u.id, u.firstname, u.lastname, u.email, u.profil_picture
+      `SELECT 
+        m.id, m.content, m.sender_id, m.conversation_id, m.created_at, m.is_read,
+        u.id as user_id, u.firstname as firstname, u.lastname as lastname, u.email, u.profil_picture
        FROM messages m
        LEFT JOIN users u ON m.sender_id = u.id
        WHERE m.conversation_id = ?
@@ -271,18 +276,28 @@ const chatRepository = {
       announce_title: row.announce_title,
       announce_image: row.announce_image,
       unread_count: row.unread_count || 0,
+      last_message_time: row.last_message_time,
     };
   },
 
   formatMessage(row: RowDataPacket): Message {
+    console.log("formatMessage row:", {
+      id: row.id,
+      sender_id: row.sender_id,
+      user_id: row.user_id,
+      firstname: row.firstname,
+      lastname: row.lastname,
+      email: row.email,
+    });
+
     return {
       id: row.id,
       content: row.content,
       sender_id: row.sender_id,
       sender:
-        row.id && row.firstname
+        row.user_id && row.firstname
           ? {
-              id: row.id,
+              id: row.user_id,
               firstname: row.firstname,
               lastname: row.lastname,
               email: row.email,

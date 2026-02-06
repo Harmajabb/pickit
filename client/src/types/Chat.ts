@@ -17,6 +17,7 @@ export interface Message {
   sender?: User;
   conversation_id: number;
   created_at: string;
+  updated_at?: string;
   is_read?: boolean;
 }
 
@@ -59,6 +60,7 @@ export interface ChatContextType {
   ) => Promise<Conversation>;
   deleteConversation: (conversationId: number) => Promise<void>;
   setIsChatOpen: (isOpen: boolean) => void;
+  setCurrentConversation: (conversation: Conversation | null) => void;
 }
 
 export interface SocketEvents {

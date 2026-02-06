@@ -36,7 +36,7 @@ const MessageList: FC<MessageListProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [scrollToBottom]);
+  }, [messages, scrollToBottom]);
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
