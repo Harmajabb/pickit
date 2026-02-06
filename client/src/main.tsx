@@ -20,6 +20,9 @@ import Dashboard_Admin from "./pages/Dashboard_Admin/Dashboard_Admin";
 import DepositPage from "./pages/Deposit/DepositPage";
 import FavoritesPage from "./pages/Favorite/FavoritesPage";
 import Home from "./pages/Home";
+import GeneralConditions from "./pages/Legal_Notice/GeneralConditions";
+import LegalNotice from "./pages/Legal_Notice/LegalNotice";
+import PrivacyPolicy from "./pages/Legal_Notice/PrivacyPolicy";
 import Profile from "./pages/Profile/Profile";
 import Register from "./pages/Register/Register";
 
@@ -47,6 +50,9 @@ const router = createBrowserRouter([
       { path: "/ad-dashboard/categories", element: <CategoryManager /> }, // Placeholder for Category Manager
       { path: "/ad-dashboard/users", element: <UserManager /> }, // Placeholder for User Manager
       { path: "/deposit/:id", element: <DepositPage /> },
+      { path: "/mentions-legales", element: <LegalNotice /> },
+      { path: "/conditions-generales", element: <GeneralConditions /> },
+      { path: "/politique-confidentialite", element: <PrivacyPolicy /> },
     ],
   },
 ]);
