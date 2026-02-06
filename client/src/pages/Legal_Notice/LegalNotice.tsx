@@ -21,10 +21,7 @@ const LegalNotice: React.FC = () => {
 
       <section className="legal-section">
         <h2>2. Accommodation</h2>
-        <p>
-          This site is hosted by [Hosting Provider Name], [Hosting Provider
-          Address].
-        </p>
+        <p>This site is hosted by Vite, http://localhost:3000/.</p>
       </section>
 
       <section className="legal-section">
