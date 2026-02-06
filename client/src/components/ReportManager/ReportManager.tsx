@@ -125,11 +125,11 @@ function ReportManager() {
   };
 
   const getTargetType = (report: Report): string => {
-    if (report.reported_announce_id) return "Annonce";
-    if (report.reported_user_id) return "Utilisateur";
+    if (report.reported_announce_id) return "Announcement";
+    if (report.reported_user_id) return "User";
     if (report.reported_conversations_id) return "Message";
-    if (report.reported_review_id) return "Avis";
-    return "Inconnu";
+    if (report.reported_review_id) return "Review";
+    return "Unknown";
   };
 
   return (
@@ -142,29 +142,28 @@ function ReportManager() {
 
         <div className="report-manager-container">
           <div className="report-filters">
-            <h3>Filtrer par Statut</h3>
+            <h3>Filter by Status</h3>
             <div className="filter-buttons">
               <button
                 type="button"
                 className={`filter-btn ${statusFilter === "all" ? "active" : ""}`}
                 onClick={() => setStatusFilter("all")}
               >
-                Tous ({reports.length})
+                All ({reports.length})
               </button>
               <button
                 type="button"
                 className={`filter-btn ${statusFilter === "pending" ? "active" : ""}`}
                 onClick={() => setStatusFilter("pending")}
               >
-                En attente (
-                {reports.filter((r) => r.status === "pending").length})
+                Pending ({reports.filter((r) => r.status === "pending").length})
               </button>
               <button
                 type="button"
                 className={`filter-btn ${statusFilter === "in_progress" ? "active" : ""}`}
                 onClick={() => setStatusFilter("in_progress")}
               >
-                En cours (
+                In Progress (
                 {reports.filter((r) => r.status === "in_progress").length})
               </button>
               <button
@@ -172,14 +171,16 @@ function ReportManager() {
                 className={`filter-btn ${statusFilter === "resolved" ? "active" : ""}`}
                 onClick={() => setStatusFilter("resolved")}
               >
-                Résolu ({reports.filter((r) => r.status === "resolved").length})
+                Resolved (
+                {reports.filter((r) => r.status === "resolved").length})
               </button>
               <button
                 type="button"
                 className={`filter-btn ${statusFilter === "rejected" ? "active" : ""}`}
                 onClick={() => setStatusFilter("rejected")}
               >
-                Rejeté ({reports.filter((r) => r.status === "rejected").length})
+                Rejected (
+                {reports.filter((r) => r.status === "rejected").length})
               </button>
             </div>
           </div>
@@ -190,7 +191,7 @@ function ReportManager() {
               <div className="loading">Loading reports...</div>
             ) : filteredReports.length === 0 ? (
               <div className="empty-state">
-                <p>Aucun signalement trouvé avec ce filtre</p>
+                <p>No reports found with this filter</p>
               </div>
             ) : (
               <div className="report-list">
@@ -237,14 +238,14 @@ function ReportManager() {
                                 const detail: ReportDetail = {
                                   ...report,
                                   reporter_name:
-                                    report.reporter_name || "Inconnu",
+                                    report.reporter_name || "Unknown",
                                   reported_name:
-                                    report.reported_name || "Inconnu",
+                                    report.reported_name || "Unknown",
                                 };
                                 setSelectedReport(detail);
                               }}
                             >
-                              Voir les détails
+                              View Details
                             </button>
                             {report.status !== "resolved" && (
                               <select
@@ -254,17 +255,17 @@ function ReportManager() {
                                 }
                                 className="status-select"
                               >
-                                <option value="pending">En attente</option>
-                                <option value="in_progress">En cours</option>
-                                <option value="resolved">Résolu</option>
-                                <option value="rejected">Rejeté</option>
+                                <option value="pending">Pending</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="rejected">Rejected</option>
                               </select>
                             )}
                             <button
                               type="button"
                               className="btn-delete"
                               onClick={() => handleDeleteReport(report.id)}
-                              title="Supprimer le signalement"
+                              title="Delete report"
                             >
                               <Trash2 size={18} />
                             </button>
@@ -298,7 +299,7 @@ function ReportManager() {
             aria-modal="true"
           >
             <div className="modal-header">
-              <h3>Détails du Signalement</h3>
+              <h3>Report Details</h3>
               <button
                 type="button"
                 className="modal-close"
@@ -310,62 +311,62 @@ function ReportManager() {
 
             <div className="modal-body">
               <div className="detail-row">
-                <span className="label">ID :</span>
+                <span className="label">ID:</span>
                 <span className="value">#{selectedReport?.id}</span>
               </div>
               <div className="detail-row">
-                <span className="label">Statut :</span>
+                <span className="label">Status:</span>
                 <span
                   className={`value status-badge ${selectedReport?.status}`}
                 >
                   {selectedReport?.status === "pending"
-                    ? "En attente"
+                    ? "Pending"
                     : selectedReport?.status === "in_progress"
-                      ? "En cours"
+                      ? "In Progress"
                       : selectedReport?.status === "resolved"
-                        ? "Résolu"
-                        : "Rejeté"}
+                        ? "Resolved"
+                        : "Rejected"}
                 </span>
               </div>
               <div className="detail-row">
-                <span className="label">Type :</span>
+                <span className="label">Type:</span>
                 <span className="value">{getTargetType(selectedReport)}</span>
               </div>
               <div className="detail-row">
-                <span className="label">Motif :</span>
+                <span className="label">Reason:</span>
                 <span className="value">{selectedReport?.reason || "N/A"}</span>
               </div>
               <div className="detail-row">
-                <span className="label">Description :</span>
+                <span className="label">Description:</span>
                 <p className="value description">
-                  {selectedReport?.description || "Aucune description fournie"}
+                  {selectedReport?.description || "No description provided"}
                 </p>
               </div>
               <div className="detail-row">
-                <span className="label">Signalé par :</span>
+                <span className="label">Reported by:</span>
                 <span className="value">
-                  {selectedReport?.reporter_name || "Inconnu"}
+                  {selectedReport?.reporter_name || "Unknown"}
                 </span>
               </div>
               <div className="detail-row">
-                <span className="label">Entité signalée :</span>
+                <span className="label">Reported Entity:</span>
                 <span className="value">
-                  {selectedReport?.reported_name || "Inconnu"}
+                  {selectedReport?.reported_name || "Unknown"}
                 </span>
               </div>
               <div className="detail-row">
-                <span className="label">Date :</span>
+                <span className="label">Date:</span>
                 <span className="value">
                   {selectedReport?.creation_date
                     ? new Date(selectedReport.creation_date).toLocaleString(
-                        "fr-FR",
+                        "en-US",
                       )
                     : "N/A"}
                 </span>
               </div>
               {selectedReport?.handled_by && (
                 <div className="detail-row">
-                  <span className="label">Traité par :</span>
+                  <span className="label">Handled by:</span>
                   <span className="value">
                     Admin ID: {selectedReport.handled_by}
                   </span>
@@ -373,7 +374,7 @@ function ReportManager() {
               )}
               {selectedReport?.resolution_note && (
                 <div className="detail-row">
-                  <span className="label">Note de résolution :</span>
+                  <span className="label">Resolution Note:</span>
                   <p className="value description">
                     {selectedReport.resolution_note}
                   </p>
@@ -393,10 +394,10 @@ function ReportManager() {
                   }}
                   className="status-select-modal"
                 >
-                  <option value="pending">Marquer comme en attente</option>
-                  <option value="in_progress">Marquer comme en cours</option>
-                  <option value="resolved">Marquer comme résolu</option>
-                  <option value="rejected">Marquer comme rejeté</option>
+                  <option value="pending">Mark as Pending</option>
+                  <option value="in_progress">Mark as In Progress</option>
+                  <option value="resolved">Mark as Resolved</option>
+                  <option value="rejected">Mark as Rejected</option>
                 </select>
               )}
               <button
@@ -404,7 +405,7 @@ function ReportManager() {
                 className="btn-close-modal"
                 onClick={() => setSelectedReport(null)}
               >
-                Fermer
+                Close
               </button>
             </div>
           </div>
