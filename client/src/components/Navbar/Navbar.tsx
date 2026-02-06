@@ -1,5 +1,5 @@
 import { MessageCircle } from "lucide-react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 // import roundedLogo from "../../assets/icons/rounded-logo.svg";
 import pickitDark from "../../assets/icons/pickit-dark.png";
@@ -23,11 +23,13 @@ import "./Navbar.css";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import SearchBar from "../SearchBar/SearchBar.tsx";
+import MobileChat from "../Chat/MobileChat";
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const chatContext = useContext(ChatContext);
   const isLogged = !!user;
+  const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -200,7 +202,7 @@ function Navbar() {
           type="button"
           onClick={() => {
             if (chatContext) {
-              chatContext.setIsChatOpen(true);
+              setIsMobileChatOpen(true);
               chatContext.loadConversations();
             }
           }}
@@ -232,6 +234,12 @@ function Navbar() {
           <span>{isLogged ? `Hello, ${user?.firstname}` : "Profile"}</span>
         </button>
       </nav>
+
+      {/* Mobile Chat Component */}
+      <MobileChat
+        isOpen={isMobileChatOpen}
+        onClose={() => setIsMobileChatOpen(false)}
+      />
     </>
   );
 }

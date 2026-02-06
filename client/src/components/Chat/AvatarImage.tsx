@@ -22,7 +22,16 @@ const AvatarImage: FC<AvatarImageProps> = ({
 
   const getInitials = () => {
     if (!user) return "?";
-    return `${user.firstname[0]}${user.lastname[0]}`.toUpperCase();
+    
+    // Afficher les deux premières lettres
+    const firstInitial = user.firstname?.[0]?.toUpperCase() || "";
+    const lastInitial = user.lastname?.[0]?.toUpperCase() || "";
+    
+    if (firstInitial && lastInitial) {
+      return `${firstInitial}${lastInitial}`;
+    }
+    
+    return firstInitial || lastInitial || "?";
   };
 
   const hasImage = user?.profil_picture && !imageError;
