@@ -1,13 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { ChatContext } from "../../context/ChatContext";
 import BorrowProgressStepper from "../BorrowProgressStepper/BorrowProgressStepper";
 import DeclareBrokenDepositButton from "../buttons-borrows/DeclareBrokenDepositButton";
 import DeclareDepositConformedButton from "../buttons-borrows/DeclareDepositConformedButton";
 import DeclareReturnedDepositButton from "../buttons-borrows/DeclareReturnedDepositButton";
 import "./MyRequest.css";
+import { MessageCircle } from "lucide-react";
 
 interface BorrowRequest {
   id: number;
+  announces_id?: number;
+  owner_id?: number;
+  borrower_id?: number;
   item_title: string;
   borrower_name: string;
   status: string;
@@ -26,6 +31,7 @@ function MyRequests() {
     [key: number]: boolean;
   }>({});
   const navigate = useNavigate();
+  const chatContext = useContext(ChatContext);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -179,6 +185,46 @@ function MyRequests() {
     }
   };
 
+  const handleOpenChat = async (
+    ownerUserId: number,
+    borrowerUserId: number,
+    announceId: number,
+  ) => {
+    try {
+      if (!chatContext) return;
+
+      // Vérifier si la conversation existe déjà
+      const existingConversation = chatContext.conversations.find(
+        (conv) =>
+          (conv.user_id_owner === ownerUserId ||
+            conv.user_id_owner === borrowerUserId) &&
+          (conv.user_id_requester === ownerUserId ||
+            conv.user_id_requester === borrowerUserId) &&
+          conv.announce_id === announceId,
+      );
+
+      if (existingConversation) {
+        // Ouvrir la conversation existante immédiatement
+        chatContext.selectConversation(existingConversation);
+        return;
+      }
+
+      // Créer la conversation via le contexte
+      const newConversation = await chatContext.createConversation(
+        ownerUserId,
+        borrowerUserId,
+        announceId,
+      );
+
+      if (newConversation) {
+        // Sélectionner et ouvrir la nouvelle conversation immédiatement
+        chatContext.selectConversation(newConversation);
+      }
+    } catch (error) {
+      console.error("Error opening chat:", error);
+    }
+  };
+
   const shouldShowDepositButtons = (
     status: string,
     depositStatus?: string,
@@ -273,6 +319,35 @@ function MyRequests() {
                       />
                     </>
                   )}
+
+                  {o.owner_id &&
+                    o.borrower_id &&
+                    o.announces_id &&
+                    (() => {
+                      const ownerId = o.owner_id;
+                      const borrowerId = o.borrower_id;
+                      const announcesId = o.announces_id;
+                      return (
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() =>
+                            handleOpenChat(ownerId, borrowerId, announcesId)
+                          }
+                        >
+                          <MessageCircle size={18} className="icon-spacing" />
+                          Contact Borrower
+                        </button>
+                      );
+                    })()}
+
+                  {/* Debug: afficher les IDs */}
+                  {!o.owner_id || !o.borrower_id ? (
+                    <p className="debug-message">
+                      IDs missing: owner_id={o.owner_id}, borrower_id=
+                      {o.borrower_id}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ))
@@ -324,6 +399,35 @@ function MyRequests() {
                       isLoading={loadingActions[o.id] || false}
                     />
                   )}
+
+                  {o.owner_id &&
+                    o.borrower_id &&
+                    o.announces_id &&
+                    (() => {
+                      const ownerId = o.owner_id;
+                      const borrowerId = o.borrower_id;
+                      const announcesId = o.announces_id;
+                      return (
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() =>
+                            handleOpenChat(ownerId, borrowerId, announcesId)
+                          }
+                        >
+                          <MessageCircle size={18} className="icon-spacing" />
+                          Contact Owner
+                        </button>
+                      );
+                    })()}
+
+                  {/* Debug: afficher les IDs */}
+                  {!o.owner_id || !o.borrower_id ? (
+                    <p className="debug-message">
+                      IDs missing: owner_id={o.owner_id}, borrower_id=
+                      {o.borrower_id}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ))

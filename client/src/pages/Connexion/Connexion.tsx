@@ -70,6 +70,7 @@ function Login() {
           aria-label="Forgot password link"
           to="/forgot-password"
           className="forgot-password-link"
+          tabIndex={0}
         >
           Oops i forgot my password
         </Link>
@@ -77,6 +78,7 @@ function Login() {
           aria-label="Register link"
           to="/register"
           className="register-link"
+          tabIndex={0}
         >
           Not registered ?
         </Link>

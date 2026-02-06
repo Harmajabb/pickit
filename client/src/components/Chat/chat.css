@@ -1,0 +1,82 @@
+/**
+ * Chat Main CSS - Global chat styles
+ */
+
+.chat-container {
+  display: flex;
+  height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.chat-sidebar {
+  width: 320px;
+  border-right: 1px solid var(--color-btn-secondary);
+  background-color: var(--color-card);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+}
+
+.chat-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+  color: var(--color-secondary-text);
+}
+
+.chat-empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.chat-empty-state-text {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.chat-empty-state-text + p {
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chat-container {
+    flex-direction: column;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-btn-secondary);
+  }
+
+  .chat-main {
+    flex: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .chat-sidebar {
+    display: none;
+  }
+
+  .chat-main {
+    width: 100%;
+  }
+}

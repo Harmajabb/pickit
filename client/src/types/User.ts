@@ -7,7 +7,7 @@ export interface UserPublic {
   lastname: string;
   city: string;
   zipcode: string;
-  profile_picture: string | null;
+  profil_picture: string | null;
 }
 
 // private user

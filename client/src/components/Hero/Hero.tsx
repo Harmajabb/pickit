@@ -33,7 +33,8 @@ function Hero() {
           <Link
             className="cta hero-cta hero-anim hero-anim--cta"
             to={heroContent.ctaTo}
-            aria-label={`${heroContent.ctaLabel} - Découvrir nos programmes`}
+            aria-label={`${heroContent.ctaLabel} - Discover our program`}
+            tabIndex={0}
           >
             {heroContent.ctaLabel}
           </Link>
