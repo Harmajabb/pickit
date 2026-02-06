@@ -86,14 +86,18 @@ function UserAnnouncesList() {
 
   return (
     <div className="user-announces-container">
+      <h1 className="user-announces-title">
+        {userName ? `${userName}'s announcements` : "User announcements"}
+      </h1>
       <div
         ref={headerRef}
         className={`user-announces-header reveal ${headerVisible ? "is-visible" : ""}`}
       >
-        <h1>
-          {userName ? `${userName}'s announcements` : "User announcements"}
-        </h1>
-        <Link to={`/profile/${id}`} className="primary" tabIndex={0}>
+        <Link
+          to={`/profile/${id}`}
+          className="primary user-announces-btn"
+          tabIndex={0}
+        >
           Back to profile
         </Link>
       </div>

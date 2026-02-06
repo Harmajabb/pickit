@@ -13,6 +13,14 @@
   gap: 1rem;
 }
 
+.user-announces-title {
+  margin-top: 7rem;
+}
+
+.user-announces-btn {
+  margin: 2rem auto;
+}
+
 .user-no-announces {
   text-align: center;
   padding: 4rem 2rem;
