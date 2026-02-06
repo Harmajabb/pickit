@@ -4,17 +4,18 @@ import arrow from "../../assets/icons/fleche.svg";
 import { reportData } from "./reportData";
 import "./ButtonReport.css";
 import type { AnnounceDetail } from "../../types/Announce";
+import type { Conversation } from "../../types/Chat";
 import type { UserPublic } from "../../types/User";
 
-interface Message {
-  id: number;
-  content?: string;
-}
+// interface Message {
+//   id: number;
+//   content?: string;
+// }
 
 type ReportAnnouncesProps =
   | { targetType: "annonce"; data: AnnounceDetail }
   | { targetType: "user"; data: UserPublic }
-  | { targetType: "message"; data: Message };
+  | { targetType: "message"; data: Conversation };
 
 interface ReportReason {
   id: string;
@@ -62,7 +63,7 @@ function ButtonReport({
       status: "pending",
       reported_announce_id: targetType === "annonce" ? data.id : null,
       reported_user_id: targetType === "user" ? data.id : null,
-      reported_message_id: targetType === "message" ? data.id : null,
+      reported_conversations_id: targetType === "message" ? data.id : null,
     };
     try {
       const response = await fetch(

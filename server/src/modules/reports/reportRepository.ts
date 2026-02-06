@@ -6,7 +6,7 @@ type report = {
   description: string | null;
   status: string;
   reported_user_id: number | null;
-  reported_message_id: number | null;
+  reported_conversations_id: number | null;
   reported_announce_id: number | null;
   reason?: string;
 };
@@ -21,7 +21,7 @@ class reportRepository {
         reason,
         status, 
         reported_user_id, 
-        reported_message_id, 
+        reported_conversations_id, 
         reported_announce_id
       ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)`,
       [
@@ -30,7 +30,7 @@ class reportRepository {
         reports.reason || null,
         reports.status,
         reports.reported_user_id,
-        reports.reported_message_id,
+        reports.reported_conversations_id,
         reports.reported_announce_id,
       ],
     );

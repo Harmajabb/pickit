@@ -22,7 +22,7 @@ const report: RequestHandler = async (req, res, next) => {
       reason: req.body.reason,
       status: "pending", // ✨ MODIFIÉ : minuscule
       reported_user_id: req.body.reported_user_id || null,
-      reported_message_id: req.body.reported_message_id || null,
+      reported_conversations_id: req.body.reported_conversations_id || null,
       reported_announce_id: req.body.reported_announce_id || null,
     };
 
