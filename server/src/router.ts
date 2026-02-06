@@ -190,6 +190,30 @@ router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 
 router.post("/api/reports", authActions.checkAuth, reportAction.report);
+router.get(
+  "/api/reports",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.browse,
+);
+router.get(
+  "/api/reports/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.read,
+);
+router.put(
+  "/api/reports/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.edit,
+);
+router.delete(
+  "/api/reports/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.destroy,
+);
 // Chat routes
 router.get(
   "/api/chat/conversations",
