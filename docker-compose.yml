@@ -3,21 +3,30 @@ version: "3.4"
 services:
   web:
     build: .
+    container_name: pickit-web
+    env_file:
+      - .env
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - "3310:3310"
+      - "${APP_PORT}:${APP_PORT}"
       - "3000:3000"
     environment:
-      APP_PORT: 3310
-      APP_SECRET: 123456789
-      DB_HOST: database
-      DB_PORT: 3306
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: js_template_fullstack
-      VITE_API_URL: "http://localhost:3310"
+      APP_PORT: ${APP_PORT}
+      APP_SECRET: ${APP_SECRET}
+      REFRESH_SECRET: ${REFRESH_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      CLIENT_URL: ${CLIENT_URL}
+      VITE_API_URL: ${VITE_API_URL}
+      VITE_KeyStripe: ${VITE_KeyStripe}
     command: sh -c "npm run dev"
     depends_on:
       database:
@@ -25,21 +34,22 @@ services:
 
   database:
     image: mysql/mysql-server:8.0
+    container_name: pickit-db
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uuser", "-ppassword" ] # Command to check health.
-      interval: 5s # Interval between health checks.
-      timeout: 5s # Timeout for each health checking.
-      retries: 20 # Hou many times retries.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
       start_period: 10s
     volumes:
-      - ./database-setup.sh:/docker-entrypoint-initdb.d/setup.sh
-    #      - db-data:/var/lib/mysql
+      - ./database-setup.sh:/docker-entrypoint-initdb.d/01-setup.sh
+      - ./server/database/schema.sql:/docker-entrypoint-initdb.d/02-schema.sql
     environment:
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      # Password for root access
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     ports:
       - target: 3306
-        published: 3306
+        published: 3307
         protocol: tcp

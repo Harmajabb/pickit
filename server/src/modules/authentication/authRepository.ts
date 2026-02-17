@@ -3,6 +3,14 @@ import databaseClient from "../../../database/client";
 import type { TypesRegister } from "./authTypes";
 
 class AuthRepository {
+  async checkbanned(userId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT ub.* FROM user_ban ub WHERE ub.user_id = ? AND ub.active = 1 AND ub.end_date > NOW() ORDER BY ub.end_date DESC LIMIT 1",
+      [userId],
+    );
+
+    return rows[0];
+  }
   async readById(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       "SELECT * FROM users WHERE id = ?",

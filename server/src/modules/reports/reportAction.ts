@@ -3,7 +3,6 @@ import reportRepository from "./reportRepository";
 
 const report: RequestHandler = async (req, res, next) => {
   try {
-    // ✨ AJOUT : Récupérer l'ID de l'utilisateur connecté
     const reporter_id = req.auth?.sub;
 
     if (!reporter_id) {
@@ -17,10 +16,10 @@ const report: RequestHandler = async (req, res, next) => {
     }
 
     const newReport = {
-      reporter_id: Number(reporter_id), // ✨ AJOUTÉ
+      reporter_id: Number(reporter_id),
       description: req.body.description || null,
       reason: req.body.reason,
-      status: "pending", // ✨ MODIFIÉ : minuscule
+      status: "pending",
       reported_user_id: req.body.reported_user_id || null,
       reported_conversations_id: req.body.reported_conversations_id || null,
       reported_announce_id: req.body.reported_announce_id || null,
@@ -33,4 +32,70 @@ const report: RequestHandler = async (req, res, next) => {
   }
 };
 
-export default { report };
+const browse: RequestHandler = async (_req, res, next) => {
+  try {
+    const reports = await reportRepository.readAll();
+    res.status(200).json(reports);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const read: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const reportData = await reportRepository.readById(id);
+
+    if (!reportData) {
+      res.status(404).json({ message: "Report not found" });
+      return;
+    }
+
+    res.status(200).json(reportData);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const edit: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const adminId = Number(req.auth?.sub);
+    const { status, resolution_note } = req.body;
+
+    if (!status) {
+      res.status(400).json({ message: "Status is required" });
+      return;
+    }
+
+    const existing = await reportRepository.readById(id);
+    if (!existing) {
+      res.status(404).json({ message: "Report not found" });
+      return;
+    }
+
+    await reportRepository.update(id, status, adminId, resolution_note || null);
+    res.status(200).json({ message: "Report updated successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const destroy: RequestHandler = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+
+    const existing = await reportRepository.readById(id);
+    if (!existing) {
+      res.status(404).json({ message: "Report not found" });
+      return;
+    }
+
+    await reportRepository.deleteById(id);
+    res.status(200).json({ message: "Report deleted successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { report, browse, read, edit, destroy };

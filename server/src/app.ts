@@ -150,7 +150,7 @@ const startScheduler = () => {
   };
 
   // Exécuter toutes les minutes (première vérification après 60 secondes)
-  setInterval(updateBorrows, 60 * 1000); // 60 secondes
+  setInterval(updateBorrows, 10 * 1000); // 10 secondes
 };
 
 startScheduler();

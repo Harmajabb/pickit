@@ -31,7 +31,14 @@ function Login() {
       });
       const res = await responseData.json();
       if (!responseData.ok) {
-        setResponse(res.message || "Connexion failed");
+        if (responseData.status === 403 && res.end_date) {
+          const endDate = new Date(res.end_date).toLocaleDateString("en-US");
+          setResponse(
+            `${res.message} Reason: ${res.reason}. Suspended until: ${endDate}.`,
+          );
+        } else {
+          setResponse(res.message || "Connexion failed");
+        }
         return;
       }
       login(res.user);

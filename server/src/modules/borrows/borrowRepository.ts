@@ -32,6 +32,8 @@ interface BorrowWithDetails extends RowDataPacket {
   owner_name: string;
   announce_title: string;
   amount_deposit: number;
+  amount_refunded: number | null;
+  payment_intent_id: string | null;
 }
 
 const borrowRepository = {
@@ -239,6 +241,8 @@ const borrowRepository = {
         b.borrower_id,
         b.owner_id,
         b.announces_id,
+        b.amount_refunded,
+        b.payment_intent_id,
         u.email as borrower_email,
         u.firstname as borrower_name,
         o.email as owner_email,

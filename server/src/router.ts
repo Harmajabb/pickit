@@ -10,6 +10,7 @@ import favoriteAction from "./modules/favorites/favoriteAction";
 import itemActions from "./modules/item/itemActions";
 import reportAction from "./modules/reports/reportAction";
 import searchActions from "./modules/search/searchAction";
+import stripeConnectActions from "./modules/stripe/stripeConnectActions";
 import userAction from "./modules/user/userActions";
 
 const router = express.Router();
@@ -190,6 +191,47 @@ router.post("/api/favorite/addFav", favoriteAction.addFavoriteHandler);
 router.delete("/api/favorite/removeFav", favoriteAction.delFavoriteHandler);
 
 router.post("/api/reports", authActions.checkAuth, reportAction.report);
+router.get(
+  "/api/reports",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.browse,
+);
+router.get(
+  "/api/reports/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.read,
+);
+router.put(
+  "/api/reports/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.edit,
+);
+router.delete(
+  "/api/reports/:id",
+  authActions.checkAuth,
+  authActions.verifyAdmin,
+  reportAction.destroy,
+);
+// Stripe Connect routes
+router.post(
+  "/api/stripe/connect/create-account",
+  authActions.checkAuth,
+  stripeConnectActions.createConnectAccount,
+);
+router.get(
+  "/api/stripe/connect/status",
+  authActions.checkAuth,
+  stripeConnectActions.getConnectStatus,
+);
+router.post(
+  "/api/stripe/connect/dashboard-link",
+  authActions.checkAuth,
+  stripeConnectActions.createDashboardLink,
+);
+
 // Chat routes
 router.get(
   "/api/chat/conversations",

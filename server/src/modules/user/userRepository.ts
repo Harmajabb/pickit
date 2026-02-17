@@ -16,6 +16,7 @@ export type UserMember = {
 export type UserPrivate = UserMember & {
   email: string;
   address: string;
+  stripe_account_id?: string | null;
 };
 
 export type BanStatus = {
@@ -51,7 +52,7 @@ class UserRepository {
   // my profile
   async readPrivateById(id: number): Promise<UserPrivate | null> {
     const [rows] = await databaseClient.query<Rows>(
-      "SELECT id, firstname, lastname, city, zipcode, address, email, profil_picture FROM users WHERE id = ?",
+      "SELECT id, firstname, lastname, city, zipcode, address, email, profil_picture, stripe_account_id FROM users WHERE id = ?",
       [id],
     );
     if (rows.length === 0) {
@@ -178,6 +179,26 @@ class UserRepository {
     );
 
     return this.readPrivateById(id);
+  }
+
+  // Stripe Connect
+  async updateStripeAccountId(
+    userId: number,
+    stripeAccountId: string,
+  ): Promise<void> {
+    await databaseClient.query(
+      "UPDATE users SET stripe_account_id = ? WHERE id = ?",
+      [stripeAccountId, userId],
+    );
+  }
+
+  async getStripeAccountId(userId: number): Promise<string | null> {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT stripe_account_id FROM users WHERE id = ?",
+      [userId],
+    );
+    if (rows.length === 0) return null;
+    return (rows[0] as { stripe_account_id: string | null }).stripe_account_id;
   }
 }
 

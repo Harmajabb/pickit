@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 import Stripe from "stripe";
 import databaseClient from "../../../database/client";
 import chatRepository from "../chat/chatRepository";
+import stripeConnectActions from "../stripe/stripeConnectActions";
 import userRepository from "../user/userRepository";
 import borrowRepository from "./borrowRepository";
 
@@ -604,19 +605,23 @@ const declaredepositbroken: RequestHandler = async (req, res) => {
         return res.status(404).json({ error: "Owner or Borrower not found" });
       }
 
-      // Calculate amount refunded in euros and save it
+      // Calculate amounts in euros
       const amountRefundedEuros = refundAmount / 100;
+      const amountKeptForOwner =
+        borrowDetails.amount_deposit - amountRefundedEuros;
+
       await borrowRepository.updateStatusWithRefundAmount(
         borrowIdNum,
         "object_broken",
         amountRefundedEuros,
       );
 
+      // Email to borrower with clear refund amount
       await transporter.sendMail({
         from: '"PickIt" <contact@pickit.fr>',
         to: borrowerData.email,
-        subject: "Deposit partial refund - PickIt",
-        text: `Hello ${borrowerData.firstname}, your deposit has not been fully refunded for ${reason}. Please check your PickIt account for details.`,
+        subject: "Partial deposit refund - PickIt",
+        text: `Hello ${borrowerData.firstname}, your deposit has not been fully refunded due to damaged equipment. Amount refunded: €${amountRefundedEuros.toFixed(2)} out of €${borrowDetails.amount_deposit.toFixed(2)}.`,
         html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
           
@@ -624,15 +629,30 @@ const declaredepositbroken: RequestHandler = async (req, res) => {
             <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
           </div>
     
-          <h2 style="color: #333;">Deposit update</h2>
+          <h2 style="color: #e74c3c;">Partial Deposit Refund</h2>
           
           <p>Hello <strong>${borrowerData.firstname}</strong>,</p>
           
-          <p>Unfortunately, your deposit has not been fully refunded for ${reason}. Please check your PickIt account for details.</p>
+          <p>The lender has reported damage to the borrowed item${reason ? `: <em>${reason}</em>` : ""}.</p>
           
-          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
-            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0; border: 1px solid #e0e0e0;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee;">Initial deposit</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">€${borrowDetails.amount_deposit.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; color: #27ae60;">Amount refunded</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #27ae60;">€${amountRefundedEuros.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #e74c3c;">Amount retained (damage)</td>
+                <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #e74c3c;">€${amountKeptForOwner.toFixed(2)}</td>
+              </tr>
+            </table>
           </div>
+    
+          <p>The refund will be processed within 5 to 7 business days to your payment method.</p>
           
           <p>Thank you for using <strong>PickIt</strong>!</p>
           
@@ -652,11 +672,12 @@ const declaredepositbroken: RequestHandler = async (req, res) => {
         ],
       });
 
+      // Email to owner with amount they receive as compensation
       await transporter.sendMail({
         from: '"PickIt" <contact@pickit.fr>',
         to: ownerData.email,
-        subject: "Deposit partial refund - PickIt",
-        text: `Hello ${ownerData.firstname}, the deposit for your borrower has not been fully refunded. Please check your PickIt account for details.`,
+        subject: "Compensation for damaged equipment - PickIt",
+        text: `Hello ${ownerData.firstname}, following the damaged equipment, an amount of €${amountKeptForOwner.toFixed(2)} will be paid to you as compensation.`,
         html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; color: #333;">
           
@@ -664,15 +685,31 @@ const declaredepositbroken: RequestHandler = async (req, res) => {
             <img src="cid:unique-logo-id" alt="PickIt Logo" style="width: 100px; height: auto;" />
           </div>
     
-          <h2 style="color: #333;">Deposit update</h2>
+          <h2 style="color: #333;">Compensation for Damaged Equipment</h2>
           
           <p>Hello <strong>${ownerData.firstname}</strong>,</p>
           
-          <p>The deposit for your borrower has not been fully refunded. Please check your PickIt account for details.</p>
+          <p>You have reported damage to the borrowed item${reason ? `: <em>${reason}</em>` : ""}.</p>
+          <p>Here is the compensation summary:</p>
           
-          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0; border: 1px dashed #ccc;">
-            <p style="margin: 0; font-weight: bold;">Status: Returned</p>
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0; border: 1px solid #e0e0e0;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee;">Initial deposit</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">€${borrowDetails.amount_deposit.toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee;">Refunded to borrower</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">€${amountRefundedEuros.toFixed(2)}</td>
+              </tr>
+              <tr style="background-color: #eafaf1;">
+                <td style="padding: 10px 8px; font-weight: bold; color: #27ae60;">Your compensation amount</td>
+                <td style="padding: 10px 8px; text-align: right; font-weight: bold; font-size: 1.2em; color: #27ae60;">€${amountKeptForOwner.toFixed(2)}</td>
+              </tr>
+            </table>
           </div>
+    
+          <p>The payment of <strong>€${amountKeptForOwner.toFixed(2)}</strong> will be processed within 5 to 7 business days to your account.</p>
           
           <p>Thank you for using <strong>PickIt</strong>!</p>
           
@@ -691,11 +728,43 @@ const declaredepositbroken: RequestHandler = async (req, res) => {
           },
         ],
       });
+
+      // Transfer compensation to lender via Stripe Connect (if they have a connected account)
+      let transfer = null;
+      if (amountKeptForOwner > 0) {
+        try {
+          const ownerStripeAccountId = await userRepository.getStripeAccountId(
+            borrow.owner_id,
+          );
+          if (ownerStripeAccountId) {
+            transfer = await stripeConnectActions.transferToLender(
+              ownerStripeAccountId,
+              amountKeptForOwner,
+              borrowIdNum,
+            );
+            console.log(
+              `Transfer of €${amountKeptForOwner.toFixed(2)} to owner ${borrow.owner_id} (${ownerStripeAccountId}) successful: ${transfer.id}`,
+            );
+          } else {
+            console.warn(
+              `Owner ${borrow.owner_id} has no Stripe Connect account — manual transfer required for €${amountKeptForOwner.toFixed(2)}`,
+            );
+          }
+        } catch (transferError) {
+          console.error("Stripe Connect transfer failed:", transferError);
+          // Don't fail the whole operation — the refund already succeeded
+        }
+      }
 
       return res.status(200).json({
         refund,
         success: true,
         message: "Deposit broken declared successfully",
+        amountRefunded: amountRefundedEuros,
+        amountKeptForOwner,
+        amountDeposit: borrowDetails.amount_deposit,
+        transferId: transfer?.id || null,
+        ownerHasStripeConnect: transfer !== null,
       });
     }
     return res.status(400).json({ error: "Refund not succeeded" });

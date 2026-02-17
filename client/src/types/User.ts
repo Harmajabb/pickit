@@ -15,6 +15,7 @@ export interface UserPublic {
 export interface UserPrivate extends UserPublic {
   email: string;
   address: string;
+  stripe_account_id?: string | null;
 }
 
 // Public user with item and favorites

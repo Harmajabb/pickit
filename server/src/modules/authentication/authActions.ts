@@ -27,6 +27,17 @@ const login: RequestHandler = async (req, res, next) => {
       return;
     }
 
+    const bannedUser = await authRepository.checkbanned(user.id);
+    if (bannedUser) {
+      await authRepository.updateRefreshToken(user.id, null);
+      res.status(403).json({
+        message: "Your account has been suspended.",
+        reason: bannedUser.reason,
+        end_date: bannedUser.end_date,
+      });
+      return;
+    }
+
     const token = jwt.sign(
       { sub: user.id, role: user.role, firstname: user.firstname },
       process.env.APP_SECRET as string,
@@ -137,7 +148,7 @@ const logout: RequestHandler = (_req, res) => {
     .json({ message: "Logout success !" });
 };
 
-const checkAuth: RequestHandler = (req, res, next) => {
+const checkAuth: RequestHandler = async (req, res, next) => {
   try {
     const token = req.cookies.access_token;
 
@@ -157,6 +168,21 @@ const checkAuth: RequestHandler = (req, res, next) => {
         email: decoded.email || "",
         role: decoded.role,
       };
+    }
+
+    const bannedUser = await authRepository.checkbanned(Number(req.auth?.sub));
+    if (bannedUser && bannedUser.active === 1) {
+      await authRepository.updateRefreshToken(Number(req.auth?.sub), null);
+      res
+        .clearCookie("access_token")
+        .clearCookie("refresh_token")
+        .status(403)
+        .json({
+          message: "Your account has been suspended.",
+          reason: bannedUser.reason,
+          end_date: bannedUser.end_date,
+        });
+      return;
     }
 
     next();

@@ -140,11 +140,16 @@ const BorrowProgressStepper: FC<BorrowProgressStepperProps> = ({
             <div className="warning-alert">
               <AlertTriangle size={18} className="alert-icon" />
               Object Broken - Amount refunded to borrower: €
-              {typeof amountRefunded === "number" && amountRefunded > 0
+              {typeof amountRefunded === "number"
                 ? amountRefunded.toFixed(2)
-                : typeof amountDeposit === "number"
-                  ? amountDeposit.toFixed(2)
-                  : "0.00"}
+                : "0.00"}
+              {amountDeposit > 0 && (
+                <>
+                  {" "}
+                  — Kept for owner: €
+                  {(amountDeposit - (amountRefunded || 0)).toFixed(2)}
+                </>
+              )}
             </div>
           )}
         </>

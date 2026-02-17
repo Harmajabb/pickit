@@ -170,9 +170,18 @@ function MyRequests() {
       );
 
       if (response.ok) {
+        const data = await response.json();
         setOwner((prev) =>
           prev.map((o) =>
-            o.id === borrowId ? { ...o, deposit_status: "kept" } : o,
+            o.id === borrowId
+              ? {
+                  ...o,
+                  status: "object_broken",
+                  deposit_status: "kept",
+                  amount_refunded: data.amountRefunded ?? o.amount_refunded,
+                  amount_kept: data.amountKeptForOwner ?? o.amount_kept,
+                }
+              : o,
           ),
         );
       } else {
