@@ -9,6 +9,7 @@ import {
   UserCog,
 } from "lucide-react";
 import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
+import ReportManager from "../../components/ReportManager/ReportManager";
 import type { Stats } from "./TS-Dashboard_Admin";
 
 const Dashboard_Admin = () => {
@@ -21,6 +22,7 @@ const Dashboard_Admin = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [activeSection, setActiveSection] = useState<string>("dashboard");
 
   useEffect(() => {
     if (user?.role === 1) {
@@ -35,6 +37,22 @@ const Dashboard_Admin = () => {
 
   if (!user || user.role !== 1) {
     return <div>Access Denied.</div>;
+  }
+
+  if (activeSection === "reports") {
+    return (
+      <div className="dashboard-admin">
+        <button
+          type="button"
+          onClick={() => setActiveSection("dashboard")}
+          className="secondary"
+          style={{ marginBottom: "2rem" }}
+        >
+          ← Back to Dashboard
+        </button>
+        <ReportManager />
+      </div>
+    );
   }
 
   return (
@@ -93,7 +111,11 @@ const Dashboard_Admin = () => {
             <User size={32} strokeWidth={2} />
             Manage Users
           </button>
-          <button className="secondary btnusers" type="button">
+          <button
+            onClick={() => setActiveSection("reports")}
+            className="secondary btnusers"
+            type="button"
+          >
             <FlagTriangleRight size={32} strokeWidth={2} />
             Manage Reports
           </button>

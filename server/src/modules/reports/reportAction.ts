@@ -23,6 +23,7 @@ const report: RequestHandler = async (req, res, next) => {
       reported_user_id: req.body.reported_user_id || null,
       reported_conversations_id: req.body.reported_conversations_id || null,
       reported_announce_id: req.body.reported_announce_id || null,
+      reported_review_id: req.body.reported_review_id || null,
     };
 
     await reportRepository.create(newReport);
