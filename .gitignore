@@ -10,4 +10,3 @@ biome.json
 .env.prod
 server/.env
 client/.env
-!*.env.sample
