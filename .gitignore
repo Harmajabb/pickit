@@ -4,3 +4,9 @@ node_modules
 .idea
 .vscode
 biome.json
+
+# Env files (ne jamais commiter les vrais .env)
+.env
+.env.prod
+server/.env
+client/.env

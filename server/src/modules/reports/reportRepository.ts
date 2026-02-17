@@ -49,25 +49,13 @@ class reportRepository {
     return result;
   }
 
-  async browse() {
+  async readAll() {
     const [rows] = await databaseClient.query<Rows>(
-      `SELECT 
-        r.id,
-        r.reporter_id,
-        r.reported_user_id,
-        r.reported_announce_id,
-        r.reported_conversations_id,
-        r.reported_review_id,
-        r.reason,
-        r.description,
-        r.status,
-        r.creation_date,
-        r.handled_by,
-        r.resolution_note,
-        u_reporter.firstname as reporter_firstname,
-        u_reporter.lastname as reporter_lastname,
-        u_reported.firstname as reported_firstname,
-        u_reported.lastname as reported_lastname
+      `SELECT r.*, 
+        u_reporter.firstname AS reporter_firstname, 
+        u_reporter.lastname AS reporter_lastname,
+        u_reported.firstname AS reported_firstname, 
+        u_reported.lastname AS reported_lastname
       FROM reports r
       LEFT JOIN users u_reporter ON r.reporter_id = u_reporter.id
       LEFT JOIN users u_reported ON r.reported_user_id = u_reported.id
@@ -78,23 +66,11 @@ class reportRepository {
 
   async readById(id: number) {
     const [rows] = await databaseClient.query<Rows>(
-      `SELECT 
-        r.id,
-        r.reporter_id,
-        r.reported_user_id,
-        r.reported_announce_id,
-        r.reported_conversations_id,
-        r.reported_review_id,
-        r.reason,
-        r.description,
-        r.status,
-        r.creation_date,
-        r.handled_by,
-        r.resolution_note,
-        u_reporter.firstname as reporter_firstname,
-        u_reporter.lastname as reporter_lastname,
-        u_reported.firstname as reported_firstname,
-        u_reported.lastname as reported_lastname
+      `SELECT r.*, 
+        u_reporter.firstname AS reporter_firstname, 
+        u_reporter.lastname AS reporter_lastname,
+        u_reported.firstname AS reported_firstname, 
+        u_reported.lastname AS reported_lastname
       FROM reports r
       LEFT JOIN users u_reporter ON r.reporter_id = u_reporter.id
       LEFT JOIN users u_reported ON r.reported_user_id = u_reported.id
@@ -107,17 +83,17 @@ class reportRepository {
   async update(
     id: number,
     status: string,
-    handled_by?: number,
-    resolution_note?: string,
+    handledBy: number,
+    resolutionNote: string | null,
   ) {
     const [result] = await databaseClient.query<Result>(
       "UPDATE reports SET status = ?, handled_by = ?, resolution_note = ? WHERE id = ?",
-      [status, handled_by || null, resolution_note || null, id],
+      [status, handledBy, resolutionNote, id],
     );
     return result;
   }
 
-  async delete(id: number) {
+  async deleteById(id: number) {
     const [result] = await databaseClient.query<Result>(
       "DELETE FROM reports WHERE id = ?",
       [id],

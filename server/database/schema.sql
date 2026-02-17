@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL,
     token7d TEXT DEFAULT NULL,
     profil_picture VARCHAR(255) DEFAULT NULL,
+    stripe_account_id VARCHAR(255) DEFAULT NULL COMMENT 'Stripe Connect account ID for receiving payouts',
     update_date DATETIME DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
     create_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     role TINYINT(1) DEFAULT 0 COMMENT '0=user, 1=admin',

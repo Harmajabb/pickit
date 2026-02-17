@@ -10,6 +10,7 @@ import "./ProfileView.css";
 import { useRevealOnScroll } from "../../../hooks/useRevealOnScroll";
 import ButtonReport from "../btn-report/ButtonReport";
 import CatalogCard from "../CatalogCard/CatalogCard";
+import StripeConnect from "../StripeConnect/StripeConnect";
 
 //discriminated union for profileView props.
 //If mode is "me": user must be UserPrivate (with email, address)
@@ -108,6 +109,9 @@ function ProfileView(props: ProfileViewProps) {
             </div>
           </dl>
         </section>
+
+        <StripeConnect />
+
         <section
           ref={actionsRef}
           className={`profile-actions reveal ${actionsVisible ? "is-visible" : ""}`}
