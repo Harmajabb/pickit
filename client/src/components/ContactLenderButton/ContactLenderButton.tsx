@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "./ContactLenderButton.css";
+import { ChatContext } from "../../context/ChatContext";
 
 interface ContactLenderButtonProps {
   announceId: number;
@@ -30,6 +31,7 @@ const ContactLenderButton = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
+  const chatContext = useContext(ChatContext);
 
   // Dates pour la demande
   const [borrowDate, setBorrowDate] = useState("");
@@ -155,6 +157,15 @@ const ContactLenderButton = ({
       setSuccess(true);
       setShowDateModal(false);
 
+      if (chatContext && currentUserId) {
+        const conversation = await chatContext.createConversation(
+          ownerId,
+          currentUserId,
+          announceId,
+        );
+        chatContext.selectConversation(conversation);
+        chatContext.setIsChatOpen(true);
+      }
       // Appeler le callback onSuccess si fourni
       if (onSuccess) {
         onSuccess();
