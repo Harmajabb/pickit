@@ -27,7 +27,7 @@
 
 .received p {
   border-radius: var(--b-radius) var(--b-radius) var(--b-radius) 0;
-  background: var(--color-btn);
+  background: var(--color-btn-hover);
   color: var(--color-dark-text);
   padding: 0.5rem 1rem;
   margin: 0;
@@ -47,3 +47,4 @@
   color: white;
   font-size: 12px;
   flex-shrink: 0;
+}

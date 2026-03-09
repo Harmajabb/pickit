@@ -52,13 +52,18 @@ class reportRepository {
   async readAll() {
     const [rows] = await databaseClient.query<Rows>(
       `SELECT r.*, 
-        u_reporter.firstname AS reporter_firstname, 
-        u_reporter.lastname AS reporter_lastname,
-        u_reported.firstname AS reported_firstname, 
-        u_reported.lastname AS reported_lastname
+          CONCAT(u_reporter.firstname, ' ', u_reporter.lastname) AS reporter_name,
+          CASE
+          WHEN r.reported_user_id IS NOT NULL THEN CONCAT(u_reported.firstname, ' ', u_reported.lastname)
+          WHEN r.reported_announce_id IS NOT NULL THEN a.title
+          WHEN r.reported_conversations_id IS NOT NULL THEN CONCAT('Conversation #', r.reported_conversations_id)
+          WHEN r.reported_review_id IS NOT NULL THEN CONCAT('Review #', r.reported_review_id)
+          ELSE 'Unknown'
+        END AS reported_name
       FROM reports r
       LEFT JOIN users u_reporter ON r.reporter_id = u_reporter.id
       LEFT JOIN users u_reported ON r.reported_user_id = u_reported.id
+      LEFT JOIN announces a ON r.reported_announce_id = a.id
       ORDER BY r.creation_date DESC`,
     );
     return rows;
@@ -67,13 +72,18 @@ class reportRepository {
   async readById(id: number) {
     const [rows] = await databaseClient.query<Rows>(
       `SELECT r.*, 
-        u_reporter.firstname AS reporter_firstname, 
-        u_reporter.lastname AS reporter_lastname,
-        u_reported.firstname AS reported_firstname, 
-        u_reported.lastname AS reported_lastname
+          CONCAT(u_reporter.firstname, ' ', u_reporter.lastname) AS reporter_name,
+          CASE
+          WHEN r.reported_user_id IS NOT NULL THEN CONCAT(u_reported.firstname, ' ', u_reported.lastname)
+          WHEN r.reported_announce_id IS NOT NULL THEN a.title
+          WHEN r.reported_conversations_id IS NOT NULL THEN CONCAT('Conversation #', r.reported_conversations_id)
+          WHEN r.reported_review_id IS NOT NULL THEN CONCAT('Review #', r.reported_review_id)
+          ELSE 'Unknown'
+        END AS reported_name
       FROM reports r
       LEFT JOIN users u_reporter ON r.reporter_id = u_reporter.id
       LEFT JOIN users u_reported ON r.reported_user_id = u_reported.id
+      LEFT JOIN announces a ON r.reported_announce_id = a.id
       WHERE r.id = ?`,
       [id],
     );

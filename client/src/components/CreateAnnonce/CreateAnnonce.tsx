@@ -159,7 +159,7 @@ function CreateAnnonce() {
 
   return (
     <div className="create-annonce-page">
-      <h1 className="create-annonce-title">Create Your Ad</h1>
+      <h1 className="create-annonce-title">Add an item</h1>
 
       <div className="form-container">
         <div className="image-column">
@@ -319,7 +319,7 @@ function CreateAnnonce() {
           </div>
 
           <button type="submit" className="primary create-annonce-submit-btn">
-            Create Ad
+            Create an item
           </button>
         </form>
       </div>

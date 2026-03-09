@@ -40,6 +40,10 @@ function ProfileView(props: ProfileViewProps) {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  if (!props.user) {
+    return null;
+  }
+
   // user avatar
   const avatarSrc = props.user.profil_picture
     ? `${API_URL}${props.user.profil_picture}`
